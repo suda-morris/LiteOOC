@@ -9,10 +9,42 @@
  */
 
 #include <loocBinTree.h>
+#include <loocSeqList.h>
 #include <stdio.h>
 
 int main(int argc, char **argv) {
 
+	int i = 0;
+	/**
+	 * 1. 顺序表的操作
+	 */
+	loocSeqList* list = loocSeqList_new(looc_file_line);
+	list->init(list, 10, sizeof(int));
+	for (i = 0; i < 10; i++) {
+		list->insert(list, &i);
+	}
+	for (i = 0; i < list->length; i++) {
+		printf("%d ", *(int*) (list->getElement(list, i)));
+	}
+	printf("\r\n");
+	list->remove(list, 3);
+	for (i = 0; i < list->length; i++) {
+		printf("%d ", *(int*) (list->getElement(list, i)));
+	}
+	printf("\r\n");
+	i = 55;
+	list->modify(list, 5, &i);
+	for (i = 0; i < list->length; i++) {
+		printf("%d ", *(int*) (list->getElement(list, i)));
+	}
+	printf("\r\n");
+	loocSeqList_delete(list);
+	/* 报告内存泄漏情况 */
+	looc_report();
+
+	/**
+	 * 2. 二叉树的操作
+	 */
 	loocBinTree_Int* root = loocBinTree_Int_new(looc_file_line);
 	root->init(root, 10);
 
