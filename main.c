@@ -8,8 +8,9 @@
  ============================================================================
  */
 
-#include <loocBinTree.h>
 #include <loocSeqList.h>
+#include <loocSingleList.h>
+#include <loocBinTree.h>
 #include <stdio.h>
 
 int main(int argc, char **argv) {
@@ -18,33 +19,55 @@ int main(int argc, char **argv) {
 	/**
 	 * 1. 顺序表的操作
 	 */
-	loocSeqList* list = loocSeqList_new(looc_file_line);
-	list->init(list, 10, sizeof(int));
+	printf("****************loocSeqList****************\r\n");
+	loocSeqList* seqList = loocSeqList_new(looc_file_line);
+	seqList->init(seqList, 10, sizeof(int));
 	for (i = 0; i < 10; i++) {
-		list->insert(list, &i);
+		seqList->insert(seqList, &i);
 	}
-	for (i = 0; i < list->length; i++) {
-		printf("%d ", *(int*) (list->getElement(list, i)));
+	for (i = 0; i < seqList->length; i++) {
+		printf("%d ", *(int*) (seqList->getElement(seqList, i)));
 	}
 	printf("\r\n");
-	list->remove(list, 3);
-	for (i = 0; i < list->length; i++) {
-		printf("%d ", *(int*) (list->getElement(list, i)));
+	seqList->remove(seqList, 3);
+	for (i = 0; i < seqList->length; i++) {
+		printf("%d ", *(int*) (seqList->getElement(seqList, i)));
 	}
 	printf("\r\n");
 	i = 55;
-	list->modify(list, 5, &i);
-	for (i = 0; i < list->length; i++) {
-		printf("%d ", *(int*) (list->getElement(list, i)));
+	seqList->modify(seqList, 5, &i);
+	for (i = 0; i < seqList->length; i++) {
+		printf("%d ", *(int*) (seqList->getElement(seqList, i)));
 	}
 	printf("\r\n");
-	loocSeqList_delete(list);
+	loocSeqList_delete(seqList);
 	/* 报告内存泄漏情况 */
 	looc_report();
 
 	/**
-	 * 2. 二叉树的操作
+	 * 2. 单向链表的操作
 	 */
+	printf("****************loocSingleList****************\r\n");
+	i = 22;
+	loocSingleListNode* singleListNode = loocSingleListNode_new(looc_file_line);
+	singleListNode->init(singleListNode, sizeof(int), (void*) &i);
+	loocSingleList* singleList = loocSingleList_new(looc_file_line);
+	singleList->init(singleList, sizeof(int), singleListNode);
+	for (i = 0; i < 10; i++) {
+		singleList->insertAt(singleList, i, (void*) &i);
+	}
+	for (i = 0; i < singleList->length; i++) {
+		printf("%d ", *(int*) (singleList->getAt(singleList, i)));
+	}
+	printf("\r\n");
+	loocSingleList_delete(singleList);
+	/* 报告内存泄漏情况 */
+	looc_report();
+
+	/**
+	 * 3. 二叉树的操作
+	 */
+	printf("****************loocBinTree****************\r\n");
 	loocBinTree_Int* root = loocBinTree_Int_new(looc_file_line);
 	root->init(root, 10);
 

@@ -136,6 +136,10 @@ typedef enum looc_bool {
 #define SUPER_CTOR(father)				\
 	father##_ctor(SUPER_PTR(cthis,father))
 
+/* 调用父类的dtor方法,father为父类名,必须是ABS_CTOR或者CTOR下面紧跟的第一条语句 */
+#define SUPER_DTOR(father)				\
+	father##_dtor(SUPER_PTR(cthis,father))
+
 /* 向下转型，selfptr为父类对象指针，self为父类名，child为子类名 */
 #define SUB_PTR(selfptr,self,child)		\
 	((child*)((char*)selfptr-looc_offsetof(child,self)))

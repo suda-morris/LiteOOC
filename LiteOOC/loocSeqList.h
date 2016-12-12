@@ -35,7 +35,7 @@ extern "C" {
 		int length;
 		/* 顺序表表头 */
 		void* head;
-		/* 创建一个顺序表*/
+		/* 初始化一个顺序表*/
 		void (*init)(loocSeqList* cthis, int maxSize, int elementSize);
 		/* 顺序表的插入操作:插入顺序表末尾 */
 		looc_bool (*insert)(loocSeqList* cthis, void* data);
