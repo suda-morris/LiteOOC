@@ -75,15 +75,13 @@ DTOR(loocSingleListNode)
  * @param headData    单向链表头的数据指针
  */
 static void loocSingleList_init(loocSingleList* cthis, int elementSize,
-		void* headData) {
+		loocSingleListNode* pHead) {
 	cthis->_elementSize = elementSize;
-	if (headData) {
-		loocSingleListNode* node = loocSingleListNode_new(looc_file_line);
-		node->init(node, elementSize, headData);
-		cthis->head = node;
+	if (pHead) {
+		cthis->head = pHead;
 		cthis->length++;
-		/* 因为head指向了node，所以要增加node的引用计数 */
-		node->loocObject._use++;
+		/* 因为head指向了pHead，所以要增加pHead的引用计数 */
+		pHead->loocObject._use++;
 	}
 }
 

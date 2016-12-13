@@ -66,14 +66,24 @@ int main(int argc, char **argv) {
 	 * 2. 单向链表的操作
 	 */
 	printf("****************loocSingleList****************\r\n");
+	i = 11;
 	/* 创建单向链表对象 */
 	loocSingleList* singleList = loocSingleList_new(looc_file_line);
+	/* 创建单链表节点对象 */
+	loocSingleListNode* singleListNode = loocSingleListNode_new(looc_file_line);
+	/* 节点对象初始化 */
+	singleListNode->init(singleListNode, sizeof(int), (void*) &i);
 	/* 初始化单向链表，创建头结点，分配内存空间,结点元素为int类型 */
-	singleList->init(singleList, sizeof(int), NULL);
+	singleList->init(singleList, sizeof(int), singleListNode);
 	/* 插入整形数据,插入链表头 */
-	for (i = 0; i < SINGLELIST_LENGTH; i++) {
-		singleList->insertAt(singleList, 0, (void*) &i);
-	}
+	i = 22;
+	singleList->insertAt(singleList, 0, (void*) &i);
+	i = 33;
+	singleList->insertAt(singleList, 1, (void*) &i);
+	i = 44;
+	singleList->insertAt(singleList, 2, (void*) &i);
+	i = 55;
+	singleList->insertAt(singleList, 3, (void*) &i);
 	/* 打印单向链表中的元素 */
 	for (i = 0; i < singleList->length; i++) {
 		printf("%d ", *(int*) (singleList->getAt(singleList, i)));

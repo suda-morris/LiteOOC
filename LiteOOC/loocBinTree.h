@@ -32,7 +32,7 @@ extern "C" {
 		loocBinTreeNode* rChild;
 		/* 初始化一个二叉树节点*/
 		void (*init)(loocBinTreeNode* cthis, int elementSize, void* data);
-		/* 增加左右子树 */
+		/* 增加左右子树,用于创建一颗二叉树 */
 		void (*setLeftChild)(loocBinTreeNode* cthis, void* newData);
 		void (*setRightChild)(loocBinTreeNode* cthis, void* newData);
 	};
