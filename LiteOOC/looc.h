@@ -148,10 +148,6 @@ typedef enum looc_bool {
 #define SUB_PTR_3(selfptr, self, child, grandchild, greatgrandchild)\
 	SUB_PTR(SUB_PTR_2(selfptr, self, child, grandchild), grandchild, greatgrandchild)
 
-/* 直接访问父类的数据成员 */
-#define INHERIT_FROM(father,cthis,field)\
-	cthis->father.field
-
 #ifdef __cplusplus
 }
 #endif

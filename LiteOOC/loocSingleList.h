@@ -47,8 +47,7 @@ extern "C" {
 		/* 每个单向链表都会有一个头*/
 		loocSingleListNode* head;
 		/* 初始化一个单向链表 */
-		void (*init)(loocSingleList* cthis, int elementSize,
-				loocSingleListNode* pHead);
+		void (*init)(loocSingleList* cthis, int elementSize, void* headData);
 		/* 在指定节点后面插入操作 */
 		looc_bool (*insertAt)(loocSingleList* cthis, int position,
 				void* newData);

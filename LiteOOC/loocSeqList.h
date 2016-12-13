@@ -15,7 +15,7 @@
 extern "C" {
 #endif
 
-#include <looc.h>
+#include "looc.h"
 #include "loocObject.h"
 
 	/* 顺序表默认大小 */
@@ -27,13 +27,13 @@ extern "C" {
 	CLASS(loocSeqList) {
 		/* 继承自loocObject */
 		EXTENDS(loocObject);
-		/* 顺序表最大大小 */
-		int _maxSize;
-		/* 顺序表中的元素大小 */
-		int _elementSize;
 		/* 顺序表的有效长度 */
 		int length;
-		/* 顺序表表头 */
+		/* 顺序表最大的大小 */
+		int _maxSize;
+		/* 顺序表中每个元素的大小 */
+		int _elementSize;
+		/* 顺序表表头指针 */
 		void* head;
 		/* 初始化一个顺序表*/
 		void (*init)(loocSeqList* cthis, int maxSize, int elementSize);
@@ -41,9 +41,9 @@ extern "C" {
 		looc_bool (*insert)(loocSeqList* cthis, void* data);
 		/* 删除指定位置的元素,location从0开始计数 */
 		looc_bool (*remove)(loocSeqList* cthis, int location);
-		/* 获取指定位置的元素 */
+		/* 获取指定位置的元素,location从0开始计数 */
 		void* (*getElement)(loocSeqList* cthis, int location);
-		/* 修改指定位置的元素 */
+		/* 修改指定位置的元素,location从0开始计数 */
 		looc_bool (*modify)(loocSeqList* cthis, int location, void* newData);
 	};
 
