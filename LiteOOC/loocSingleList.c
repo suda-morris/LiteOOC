@@ -33,7 +33,7 @@ static void loocSingleListNode_init(loocSingleListNode* cthis, int elementSize,
  */
 static void loocSingleListNode_finalize(loocObject* object) {
 	loocSingleListNode* node = SUB_PTR(object, loocObject, loocSingleListNode);
-	/* 释放数据域的兑空间 */
+	/* 释放数据域的空间 */
 	if (node->_data) {
 		looc_free(node->_data);
 	}
