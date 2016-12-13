@@ -18,31 +18,47 @@ extern "C" {
 #endif
 
 	/**
-	 * 二叉树的抽象类
+	 * 二叉树节点具体类
 	 */
-	ABS_CLASS(loocBinTree) {
+	CLASS(loocBinTreeNode) {
 		/* 继承自loocObject类  */
 		EXTENDS(loocObject);
-		/* 每个节点都有左右子树 */
-		loocBinTree* left;
-		loocBinTree* right;
-		/* 增加左右子树,公共方法，不需要子类去实现 */
-		void (*addSubLeft)(loocBinTree* cthis, loocBinTree* sleft);
-		void (*addSubRight)(loocBinTree* cthis, loocBinTree* sright);
-		/* 树的打印接口，需要子类自己实现,遍历方法：前序遍历（根->左->右） */
-		void (*print)(loocBinTree* cthis);
+		/* 数据域，指向实际的数据 */
+		void* _data;
+		/* 二叉树中的元素大小 */
+		int _elementSize;
+		/* 指向左右节点 */
+		loocBinTreeNode* lChild;
+		loocBinTreeNode* rChild;
+		/* 初始化一个二叉树节点*/
+		void (*init)(loocBinTreeNode* cthis, int elementSize, void* data);
+		/* 增加左右子树 */
+		void (*setLeftChild)(loocBinTreeNode* cthis, void* newData);
+		void (*setRightChild)(loocBinTreeNode* cthis, void* newData);
 	};
 
 	/**
-	 * 整型树的具体类
+	 * 二叉树具体类
 	 */
-	CLASS(loocBinTree_Int) {
-		/* 继承自loocBinTree类 */
-		EXTENDS(loocBinTree);
-		/* 数据 */
-		int nodeValue;
-		/* init方法一般会在new方法之后被调用，用来初始化成员变量 */
-		void (*init)(loocBinTree_Int* cthis, int value);
+	CLASS(loocBinTree) {
+		/* 继承自loocObject类  */
+		EXTENDS(loocObject);
+		/* 二叉树中的元素大小 */
+		int _elementSize;
+		/* 每个二叉树都会有一个根节点*/
+		loocBinTreeNode* root;
+		/* 初始化一个二叉树 */
+		void (*init)(loocBinTree* cthis, int elementSize,
+				loocBinTreeNode* pRoot);
+		/* 前序遍历 */
+		void (*preOrder)(loocBinTree* cthis,
+				void (*action)(loocBinTreeNode* node, void* args), void* args);
+		/* 中序遍历 */
+		void (*inOrder)(loocBinTree* cthis,
+				void (*action)(loocBinTreeNode* node, void* args), void* args);
+		/* 后序遍历 */
+		void (*postOrder)(loocBinTree* cthis,
+				void (*action)(loocBinTreeNode* node, void* args), void* args);
 	};
 
 #ifdef __cplusplus

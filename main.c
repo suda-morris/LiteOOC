@@ -16,6 +16,10 @@
 #define SEQLIST_LENGTH				(10)
 #define SINGLELIST_LENGTH			(5)
 
+static void actionPrint(loocBinTreeNode* node, void* args) {
+	printf("%d ", *(int*) (node->_data));
+}
+
 int main(int argc, char **argv) {
 
 	int i = 0;
@@ -84,36 +88,36 @@ int main(int argc, char **argv) {
 	 * 3. 二叉树的操作
 	 */
 	printf("****************loocBinTree****************\r\n");
-	loocBinTree_Int* root = loocBinTree_Int_new(looc_file_line);
-	root->init(root, 10);
-
-	loocBinTree_Int* lsub = loocBinTree_Int_new(looc_file_line);
-	lsub->init(lsub, 20);
-	root->loocBinTree.addSubLeft(SUPER_PTR(root, loocBinTree),
-			SUPER_PTR(lsub, loocBinTree));
-
-	loocBinTree_Int* rsub = loocBinTree_Int_new(looc_file_line);
-	rsub->init(rsub, 30);
-	root->loocBinTree.addSubRight(SUPER_PTR(root, loocBinTree),
-			SUPER_PTR(rsub, loocBinTree));
-
-	loocBinTree_Int* node = loocBinTree_Int_new(looc_file_line);
-	node->init(node, 40);
-	lsub->loocBinTree.addSubRight(SUPER_PTR(lsub, loocBinTree),
-			SUPER_PTR(node, loocBinTree));
-	rsub->loocBinTree.addSubLeft(SUPER_PTR(rsub, loocBinTree),
-			SUPER_PTR(node, loocBinTree));
-
-	node = loocBinTree_Int_new(looc_file_line);
-	node->init(node, 50);
-	rsub->loocBinTree.addSubRight(SUPER_PTR(rsub, loocBinTree),
-			SUPER_PTR(node, loocBinTree));
-
-	root->loocBinTree.print(SUPER_PTR(root, loocBinTree));
+	i = 10;
+	/* 创建二叉树对象 */
+	loocBinTree* binTree = loocBinTree_new(looc_file_line);
+	/* 创建二叉树节点对象 */
+	loocBinTreeNode* binTreeNode = loocBinTreeNode_new(looc_file_line);
+	/* 节点对象初始化 */
+	binTreeNode->init(binTreeNode, sizeof(int), (void*) &i);
+	/* 二叉树对象初始化，指定根节点 */
+	binTree->init(binTree, sizeof(int), binTreeNode);
+	/* 增加左子节点 */
+	i = 20;
+	binTreeNode->setLeftChild(binTreeNode, (void*) &i);
+	/* 增加右子节点 */
+	i = 30;
+	binTreeNode->setRightChild(binTreeNode, (void*) &i);
+	i = 40;
+	binTreeNode->lChild->setLeftChild(binTreeNode->lChild, (void*) &i);
+	i = 50;
+	binTreeNode->rChild->setRightChild(binTreeNode->rChild, (void*) &i);
+	/* 前序遍历打印节点 */
+	binTree->preOrder(binTree, actionPrint, NULL);
 	printf("\r\n");
-
-	loocBinTree_Int_delete(root);
-
+	/* 中序遍历打印节点 */
+	binTree->inOrder(binTree, actionPrint, NULL);
+	printf("\r\n");
+	/* 后序遍历打印节点 */
+	binTree->postOrder(binTree, actionPrint, NULL);
+	printf("\r\n");
+	/* 释放二叉树对象内存空间 */
+	loocBinTree_delete(binTree);
 	/* 报告内存泄漏情况 */
 	looc_report();
 

@@ -10,115 +10,224 @@
 
 #include "loocBinTree.h"
 #include <stdio.h>
+#include <string.h>
 
 /**
- * 增加左子树
- * @param cthis 当前树
- * @param sleft 欲添加的左子树
+ * 初始化二叉树节点
+ * @param cthis       当前二叉树节点对象指针
+ * @param elementSize 二叉树元素大小
+ * @param data        二叉树节点数据指针
  */
-static void loocBinTree_addSubLeft(loocBinTree* cthis, loocBinTree* sleft) {
-	cthis->left = sleft;
-	/* 增加左子树的引用计数 */
-	sleft->loocObject._use++;
+static void loocBinTreeNode_init(loocBinTreeNode* cthis, int elementSize,
+		void* data) {
+	cthis->_elementSize = elementSize;
+	cthis->_data = looc_malloc(elementSize, "looBinTreeNode_Entry",
+	looc_file_line);
+	/* 将数据从栈空间拷贝到堆空间 */
+	memcpy(cthis->_data, data, elementSize);
 }
 
 /**
- * 增加右子树
- * @param cthis  当前树
- * @param sright 欲添加的右子树
+ * 二叉树节点增加左节点
+ * @param cthis   当前二叉树节点对象指针
+ * @param newData 子节点二叉树数据指针
  */
-static void loocBinTree_addSubRight(loocBinTree* cthis, loocBinTree* sright) {
-	cthis->right = sright;
-	/* 增加右子树的引用计数 */
-	sright->loocObject._use++;
+static void loocBinTreeNode_setLeftChild(loocBinTreeNode* cthis, void* newData) {
+	loocBinTreeNode* node = loocBinTreeNode_new(looc_file_line);
+	node->init(node, cthis->_elementSize, newData);
+	cthis->lChild = node;
+	/* 增加引用计数 */
+	node->loocObject._use++;
 }
 
 /**
- * loocBinTree的构造函数
+ * 二叉树节点增加右节点
+ * @param cthis   当前二叉树节点对象指针
+ * @param newData 子节点二叉树数据指针
  */
-ABS_CTOR(loocBinTree)
-/* 调用父类的构造函数 */
-	SUPER_CTOR(loocObject);
-	cthis->left = NULL;
-	cthis->right = NULL;
-	/* 成员函数的绑定 */
-	FUNCTION_SETTING(addSubLeft, loocBinTree_addSubLeft);
-	FUNCTION_SETTING(addSubRight, loocBinTree_addSubRight);END_ABS_CTOR
-
-/**
- * loocBinTree的析构函数
- */
-DTOR(loocBinTree)
-/* 调用父类的析构函数，实质上就是子类实现的finalize方法 */
-	loocObject_dtor(SUPER_PTR(cthis, loocObject));
-END_DTOR
-
-/**
- * 整型树的成员变量初始化
- * @param cthis 当前整型树
- * @param value 成员变量初始化值
- */
-static void loocBinTree_Int_init(loocBinTree_Int* cthis, int value) {
-	cthis->nodeValue = value;
+static void loocBinTreeNode_setRightChild(loocBinTreeNode* cthis, void* newData) {
+	loocBinTreeNode* node = loocBinTreeNode_new(looc_file_line);
+	node->init(node, cthis->_elementSize, newData);
+	cthis->rChild = node;
+	/* 增加引用计数 */
+	node->loocObject._use++;
 }
 
 /**
- * 实现loocBinTree类的print接口,前序遍历，递归方式
- * @param cthis loocBinTree对象指针
- */
-static void loocBinTree_Int_print(loocBinTree* cthis) {
-	loocBinTree_Int* tree = SUB_PTR(cthis, loocBinTree, loocBinTree_Int);
-	printf("%d ", tree->nodeValue);
-	if (cthis->left) {
-		cthis->left->print(cthis->left);
-	}
-	if (cthis->right) {
-		cthis->right->print(cthis->right);
-	}
-}
-
-/**
- * 实现loocObject类的finalize接口
+ * 二叉树节点销毁函数
  * @param object loocObject对象指针
  */
-static void loocBinTree_Int_finalize(loocObject* object) {
-	/* 类型转化为具体的对象 */
-	loocBinTree* tree = SUB_PTR(object, loocObject, loocBinTree);
-	/* 如果成员变量中包含子对象，需要一一删除（注意先判断引用计数）*/
-	if (tree->left) {
-		if (tree->left->loocObject._use) {
-			tree->left->loocObject._use--;
+static void loocBinTreeNode_finalize(loocObject* object) {
+	loocBinTreeNode* node = SUB_PTR(object, loocObject, loocBinTreeNode);
+	if (node->_data) {
+		looc_free(node->_data);
+	}
+	if (node->lChild) {
+		if (node->lChild->loocObject._use) {
+			node->lChild->loocObject._use--;
 		}
-		if (tree->left->loocObject._use == 0) {
-			/* 实质上最终还是调用了当前函数 */
-			loocBinTree_delete(tree->left);
+		if (node->lChild->loocObject._use == 0) {
+			loocBinTreeNode_delete(node->lChild);
 		}
 	}
-	if (tree->right) {
-		if (tree->right->loocObject._use) {
-			tree->right->loocObject._use--;
+	if (node->rChild) {
+		if (node->rChild->loocObject._use) {
+			node->rChild->loocObject._use--;
 		}
-		if (tree->right->loocObject._use == 0) {
-			loocBinTree_delete(tree->right);
+		if (node->rChild->loocObject._use == 0) {
+			loocBinTreeNode_delete(node->rChild);
 		}
 	}
 }
 
 /**
- * loocBinTree_Int的构造函数
+ * loocBinTreeNode构造函数
  */
-CTOR(loocBinTree_Int)
-/* 调用父类的构造函数 */
-	SUPER_CTOR(loocBinTree);
-	/* 成员函数的绑定 */
-	FUNCTION_SETTING(init, loocBinTree_Int_init);
-	FUNCTION_SETTING(loocBinTree.print, loocBinTree_Int_print);
-	FUNCTION_SETTING(loocBinTree.loocObject.finalize, loocBinTree_Int_finalize);END_CTOR
+CTOR(loocBinTreeNode)
+/* 调用父类构造函数 */
+	SUPER_CTOR(loocObject);
+	cthis->_data = NULL;
+	cthis->_elementSize = 1;
+	cthis->lChild = NULL;
+	cthis->rChild = NULL;
+	/* 成员函数绑定 */
+	FUNCTION_SETTING(init, loocBinTreeNode_init);
+	FUNCTION_SETTING(setLeftChild, loocBinTreeNode_setLeftChild);
+	FUNCTION_SETTING(setRightChild, loocBinTreeNode_setRightChild);
+	FUNCTION_SETTING(loocObject.finalize, loocBinTreeNode_finalize);END_CTOR
 
 /**
- * loocBinTree_Int的析构函数
+ * loocBinTreeNode析构函数
  */
-DTOR(loocBinTree_Int)
+DTOR(loocBinTreeNode)
 /* 调用父类的析构函数，实质上就是子类实现的finalize方法 */
-	loocBinTree_dtor(SUPER_PTR(cthis, loocBinTree));
-END_DTOR
+	SUPER_DTOR(loocObject);END_DTOR
+
+/**
+ * 二叉树初始化
+ * @param cthis       当前二叉树对象指针
+ * @param elementSize 二叉树元素大小
+ * @param pRoot       二叉树根节点指针
+ */
+static void loocBinTree_init(loocBinTree* cthis, int elementSize,
+		loocBinTreeNode* pRoot) {
+	cthis->_elementSize = elementSize;
+	if (pRoot) {
+		cthis->root = pRoot;
+		/* 增加引用计数 */
+		pRoot->loocObject._use++;
+	}
+}
+
+/**
+ * 前序遍历算法(递归法)
+ * @param node    	二叉树节点对象指针
+ * @param action 	对数据节点执行的操作，由用户自定义实现
+ * @param args     	传递给action的第二个参数
+ */
+static void preOrder(loocBinTreeNode* node,
+		void (*action)(loocBinTreeNode* node, void* args), void* args) {
+	if (node != NULL) {
+		action(node, args);
+		preOrder(node->lChild, action, args);
+		preOrder(node->rChild, action, args);
+	}
+}
+
+/**
+ * 中序遍历算法(递归法)
+ * @param node    	二叉树节点对象指针
+ * @param action 	对数据节点执行的操作，由用户自定义实现
+ * @param args     	传递给action的第二个参数
+ */
+static void inOrder(loocBinTreeNode* node,
+		void (*action)(loocBinTreeNode* node, void* args), void* args) {
+	if (node != NULL) {
+		inOrder(node->lChild, action, args);
+		action(node, args);
+		inOrder(node->rChild, action, args);
+	}
+}
+
+/**
+ * 后序遍历算法(递归法)
+ * @param node    	二叉树节点对象指针
+ * @param action 	对数据节点执行的操作，由用户自定义实现
+ * @param args     	传递给action的第二个参数
+ */
+static void postOrder(loocBinTreeNode* node,
+		void (*action)(loocBinTreeNode* node, void* args), void* args) {
+	if (node != NULL) {
+		postOrder(node->lChild, action, args);
+		postOrder(node->rChild, action, args);
+		action(node, args);
+	}
+}
+
+/**
+ * 二叉树的前序遍历
+ * @param cthis    	当前二叉树对象指针
+ * @param action 	对数据节点执行的操作，由用户自定义实现
+ * @param args     	传递给action的第二个参数
+ */
+static void loocBinTree_preOrder(loocBinTree* cthis,
+		void (*action)(loocBinTreeNode* node, void* args), void* args) {
+	preOrder(cthis->root, action, args);
+}
+
+/**
+ * 二叉树的中序遍历
+ * @param cthis    	当前二叉树对象指针
+ * @param action 	对数据节点执行的操作，由用户自定义实现
+ * @param args     	传递给action的第二个参数
+ */
+static void loocBinTree_inOrder(loocBinTree* cthis,
+		void (*action)(loocBinTreeNode* node, void* args), void* args) {
+	inOrder(cthis->root, action, args);
+}
+
+/**
+ * 二叉树的后序遍历
+ * @param cthis    	当前二叉树对象指针
+ * @param action 	对数据节点执行的操作，由用户自定义实现
+ * @param args     	传递给action的第二个参数
+ */
+static void loocBinTree_postOrder(loocBinTree* cthis,
+		void (*action)(loocBinTreeNode* node, void* args), void* args) {
+	postOrder(cthis->root, action, args);
+}
+
+/**
+ * 二叉树销毁函数
+ * @param object loocObject对象指针
+ */
+static void loocBinTree_finalize(loocObject* object) {
+	loocBinTree* tree = SUB_PTR(object, loocObject, loocBinTree);
+	if (tree->root) {
+		if (tree->root->loocObject._use) {
+			tree->root->loocObject._use--;
+		}
+		if (tree->root->loocObject._use == 0) {
+			loocBinTreeNode_delete(tree->root);
+		}
+	}
+}
+
+/**
+ * loocBinTree构造函数
+ */
+CTOR(loocBinTree)
+	SUPER_CTOR(loocObject);
+	cthis->_elementSize = 1;
+	cthis->root = NULL;
+	FUNCTION_SETTING(init, loocBinTree_init);
+	FUNCTION_SETTING(preOrder, loocBinTree_preOrder);
+	FUNCTION_SETTING(inOrder, loocBinTree_inOrder);
+	FUNCTION_SETTING(postOrder, loocBinTree_postOrder);
+	FUNCTION_SETTING(loocObject.finalize, loocBinTree_finalize);END_CTOR
+
+/**
+ * loocBinTree析构函数
+ */
+DTOR(loocBinTree)
+	SUPER_DTOR(loocObject);END_DTOR
