@@ -26,6 +26,10 @@ static void loocDoubleListNode_init(loocDoubleListNode* cthis, int elementSize,
 	memcpy(cthis->_data, data, elementSize);
 }
 
+/**
+ * loocDoubleListNode的销毁函数
+ * @param object loocObject对象指针
+ */
 static void loocDoubleListNode_finalize(loocObject* object) {
 	loocDoubleListNode* node = SUB_PTR(object, loocObject, loocDoubleListNode);
 	/* 释放数据域的空间 */
@@ -41,19 +45,10 @@ static void loocDoubleListNode_finalize(loocObject* object) {
 			loocDoubleListNode_delete(node->next);
 		}
 	}
-	/* 根据引用计数来判断是否可以删除前一个结点 */
-	if (node->prior) {
-		if (node->prior->loocObject._use) {
-			node->prior->loocObject._use--;
-		}
-		if (node->prior->loocObject._use == 0) {
-			loocDoubleListNode_delete(node->prior);
-		}
-	}
 }
 
 /**
- * loocDoubleListNode构造函数
+ * loocDoubleListNode的构造函数
  */
 CTOR(loocDoubleListNode)
 /* 调用父类的构造函数 */
@@ -67,8 +62,159 @@ CTOR(loocDoubleListNode)
 	FUNCTION_SETTING(loocObject.finalize, loocDoubleListNode_finalize);END_CTOR
 
 /**
- * loocDoubleListNode析构函数
+ * loocDoubleListNode的析构函数
  */
 DTOR(loocDoubleListNode)
+/* 调用父类的析构函数，实质上就是子类实现的finalize方法 */
+	SUPER_DTOR(loocObject);END_DTOR
+
+/**
+ * 初始化双向链表
+ * @param cthis       当前双向链表对象指针
+ * @param elementSize 双向链表元素大小
+ * @param pHead       双向链表头的节点指针
+ */
+static void loocDoubleList_init(loocDoubleList* cthis, int elementSize,
+		loocDoubleListNode* pHead) {
+	cthis->_elementSize = elementSize;
+	if (pHead) {
+		cthis->head = pHead;
+		cthis->length++;
+		/* 因为head指向了pHead，所以要增加pHead的引用计数 */
+		pHead->loocObject._use++;
+	}
+}
+
+/**
+ * 在指定节点后插入新节点
+ * @param  cthis    当前双向链表对象指针
+ * @param  position 欲插入节点的位置
+ * @param  newData  带插入节点的数据指针
+ * @return          成功返回true，失败返回false
+ */
+static looc_bool loocDoubleList_insertAt(loocDoubleList* cthis, int position,
+		void* newData) {
+	loocDoubleListNode* p = cthis->head;
+	loocDoubleListNode* node;
+	int i;
+	if (cthis->length == 0) {
+		node = loocDoubleListNode_new(looc_file_line);
+		node->init(node, cthis->_elementSize, newData);
+		cthis->head = node;
+		/* 增加引用计数 */
+		node->loocObject._use++;
+		cthis->length++;
+		return looc_true;
+	}
+	if (position >= cthis->length || position < 0) {
+		return looc_false;
+	}
+	for (i = 0; i < position; i++) {
+		p = p->next;
+	}
+	node = loocDoubleListNode_new(looc_file_line);
+	node->init(node, cthis->_elementSize, newData);
+	node->next = p->next;
+	p->next = node;
+	node->prior = p;
+	if (node->next) {
+		node->next->prior = node;
+	}
+	/* 增加引用计数 */
+	node->loocObject._use++;
+	cthis->length++;
+	return looc_true;
+}
+
+/**
+ * 删除指定节点的数据
+ * @param  cthis    当前双向链表的对象指针
+ * @param  position 待删除节点的位置
+ * @return          成功返回true，失败返回false
+ */
+static looc_bool loocDoubleList_removeAt(loocDoubleList* cthis, int position) {
+	loocDoubleListNode* p = cthis->head;
+	loocDoubleListNode* q = NULL;
+	int i;
+	if (position >= cthis->length || position < 0) {
+		return looc_false;
+	}
+	if (position == 0) {
+		cthis->head = p->next;
+		if (p->next) {
+			p->next->prior = NULL;
+			p->next->loocObject._use++;
+		}
+		loocDoubleListNode_delete(p);
+	} else {
+		for (i = 0; i < (position - 1); i++) {
+			p = p->next;
+		}
+		q = p->next;
+		p->next = q->next;
+		if (q->next) {
+			q->next->loocObject._use++;
+			q->next->prior = p;
+		}
+		loocDoubleListNode_delete(q);
+	}
+	cthis->length--;
+	return looc_true;
+}
+
+/**
+ * 获取指定位置的节点数据
+ * @param cthis    当前双向链表对象指针
+ * @param position 欲获取数据的位置
+ * @return         成功返回数据指针，失败返回NULL
+ */
+static void* loocDoubleList_getAt(loocDoubleList* cthis, int position) {
+	loocDoubleListNode* p = cthis->head;
+	int i;
+	if (position >= cthis->length || position < 0) {
+		return NULL;
+	}
+	for (i = 0; i < position; i++) {
+		p = p->next;
+	}
+	return p->_data;
+}
+
+/**
+ * 双向链表销毁函数
+ * @param object loocObject对象指针
+ */
+static void loocDoubleList_finalize(loocObject* object) {
+	loocDoubleList* list = SUB_PTR(object, loocObject, loocDoubleList);
+	if (list->head) {
+		if (list->head->loocObject._use) {
+			list->head->loocObject._use--;
+		}
+		if (list->head->loocObject._use == 0) {
+			loocDoubleListNode_delete(list->head);
+		}
+	}
+	list->length = 0;
+}
+
+/**
+ * loocDoubleList的构造函数
+ */
+CTOR(loocDoubleList)
+	SUPER_CTOR(loocObject);
+	cthis->head = NULL;
+	cthis->_elementSize = 1;
+	cthis->length = 0;
+	/* 成员函数的绑定 */
+	FUNCTION_SETTING(init, loocDoubleList_init);
+	FUNCTION_SETTING(getAt, loocDoubleList_getAt);
+	FUNCTION_SETTING(insertAt, loocDoubleList_insertAt);
+	FUNCTION_SETTING(removeAt, loocDoubleList_removeAt);
+	FUNCTION_SETTING(loocObject.finalize, loocDoubleList_finalize);END_CTOR
+
+/**
+ * loocDoubleList的析构函数
+ */
+DTOR(loocDoubleList)
 /* 调用父类的析构函数，实质上就是子类实现的finalize方法 */
 	SUPER_DTOR(loocObject);END_DTOR

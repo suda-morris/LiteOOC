@@ -36,6 +36,30 @@ extern "C" {
 		void (*init)(loocDoubleListNode* cthis, int elementSize, void* data);
 	};
 
+	/**
+	 * 双向链表具体类
+	 */
+	CLASS(loocDoubleList) {
+		/* 继承自loocObject类  */
+		EXTENDS(loocObject);
+		/* 每个双向链表都会有一个头*/
+		loocDoubleListNode* head;
+		/* 双向链表的有效长度 */
+		int length;
+		/* 双向链表中的元素大小 */
+		int _elementSize;
+		/* 初始化一个双向链表 */
+		void (*init)(loocDoubleList* cthis, int elementSize,
+				loocDoubleListNode* pHead);
+		/* 获取指定节点 */
+		void* (*getAt)(loocDoubleList* cthis, int position);
+		/* 在指定节点后面插入操作 */
+		looc_bool (*insertAt)(loocDoubleList* cthis, int position,
+				void* newData);
+		/* 删除指定节点 */
+		looc_bool (*removeAt)(loocDoubleList* cthis, int position);
+	};
+
 #ifdef __cplusplus
 }
 #endif

@@ -10,6 +10,7 @@
 
 #include <loocSeqList.h>
 #include <loocSingleList.h>
+#include <loocDoubleList.h>
 #include <loocBinTree.h>
 #include <stdio.h>
 
@@ -95,7 +96,41 @@ int main(int argc, char **argv) {
 	looc_report();
 
 	/**
-	 * 3. 二叉树的操作
+	 * 3. 双向链表的操作
+	 */
+	printf("****************loocDoubleList****************\r\n");
+	i = 'a';
+	/* 创建双向链表对象 */
+	loocDoubleList* doubleList = loocDoubleList_new(looc_file_line);
+	/* 创建双向链表节点对象 */
+	loocDoubleListNode* doubleListNode = loocDoubleListNode_new(looc_file_line);
+	/* 节点对象初始化 */
+	doubleListNode->init(doubleListNode, sizeof(int), (void*) &i);
+	/* 初始化双向链表 */
+	doubleList->init(doubleList, sizeof(int), doubleListNode);
+	/* 插入数据 */
+	i = 'b';
+	doubleList->insertAt(doubleList, 0, (void*) &i);
+	i = 'c';
+	doubleList->insertAt(doubleList, 1, (void*) &i);
+	i = 'd';
+	doubleList->insertAt(doubleList, 2, (void*) &i);
+	i = 'e';
+	doubleList->insertAt(doubleList, 3, (void*) &i);
+	/* 删除指定位置节点 */
+	doubleList->removeAt(doubleList,2);
+	/* 打印双向链表中的数据 */
+	for (i = 0; i < doubleList->length; i++) {
+		printf("%c ", *(char*) (doubleList->getAt(doubleList, i)));
+	}
+	printf("\r\n");
+	/* 释放双向链表内存 */
+	loocDoubleList_delete(doubleList);
+	/* 报告内存泄漏情况 */
+	looc_report();
+
+	/**
+	 * 4. 二叉树的操作
 	 */
 	printf("****************loocBinTree****************\r\n");
 	i = 10;

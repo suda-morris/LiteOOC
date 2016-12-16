@@ -72,7 +72,7 @@ DTOR(loocSingleListNode)
  * 初始化单向链表
  * @param cthis       当前单向链表对象指针
  * @param elementSize 单向链表元素大小
- * @param headData    单向链表头的数据指针
+ * @param headData    单向链表头的节点指针
  */
 static void loocSingleList_init(loocSingleList* cthis, int elementSize,
 		loocSingleListNode* pHead) {
