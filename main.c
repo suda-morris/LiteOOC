@@ -13,6 +13,7 @@
 #include <loocDoubleList.h>
 #include <loocBinTree.h>
 #include <loocCircularList.h>
+#include <loocStack.h>
 #include <stdio.h>
 
 #define SEQLIST_LENGTH				(10)
@@ -170,7 +171,29 @@ int main(int argc, char **argv) {
 	looc_report();
 
 	/**
-	 * 5. 二叉树的操作
+	 * 5. 栈的操作
+	 */
+	printf("****************loocStack****************\r\n");
+	/* 创建栈对象 */
+	loocStack* stack = loocStack_new(looc_file_line);
+	/* 初始化栈 */
+	stack->init(stack, 10, sizeof(int));
+	/* 压栈操作 */
+	for (i = 0; i < 10; i++) {
+		stack->push(stack, (void*) &i);
+	}
+	/* 出栈操作 */
+	for (i = 0; i < 10; i++) {
+		printf("%d ", *(int*) stack->pop(stack));
+	}
+	printf("\r\n");
+	/* 释放栈内存空间 */
+	loocStack_delete(stack);
+	/* 报告内存泄漏情况 */
+	looc_report();
+
+	/**
+	 * 6. 二叉树的操作
 	 */
 	printf("****************loocBinTree****************\r\n");
 	i = 10;

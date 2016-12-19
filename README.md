@@ -16,5 +16,8 @@ Object Oriented Programming with C language
 ## loocCircularList
 循环链表的基本操作
 
+## loocStack
+栈的基本操作
+
 ## loocBinTree
 二叉树的基本操作
