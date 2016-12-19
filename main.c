@@ -35,28 +35,28 @@ int main(int argc, char **argv) {
 	seqList->init(seqList, SEQLIST_LENGTH, sizeof(int));
 	/* 向顺序表中插入10个数据 */
 	for (i = 0; i < SEQLIST_LENGTH; i++) {
-		seqList->insert(seqList, &i);
+		seqList->insert(seqList, (void*) &i);
 	}
 	/* 打印顺序表中的元素 */
 	for (i = 0; i < seqList->length; i++) {
-		printf("%d ", *(int*) (seqList->getElement(seqList, i)));
+		printf("%d ", *(int*) (seqList->getAt(seqList, i)));
 	}
 	printf("\r\n");
 	/* 删除顺序表中第9个元素 */
-	seqList->remove(seqList, 9);
+	seqList->removeAt(seqList, 9);
 	/* 删除顺序表中第0个元素 */
-	seqList->remove(seqList, 0);
+	seqList->removeAt(seqList, 0);
 	/* 打印顺序表中的元素 */
 	for (i = 0; i < seqList->length; i++) {
-		printf("%d ", *(int*) (seqList->getElement(seqList, i)));
+		printf("%d ", *(int*) (seqList->getAt(seqList, i)));
 	}
 	printf("\r\n");
-	/* 将顺序表中第5个元素修改为55 */
-	i = 55;
-	seqList->modify(seqList, 5, &i);
+	/* 将顺序表中第5个元素修改66 */
+	i = 66;
+	seqList->modifyAt(seqList, 5, &i);
 	/* 打印顺序表中的元素 */
 	for (i = 0; i < seqList->length; i++) {
-		printf("%d ", *(int*) (seqList->getElement(seqList, i)));
+		printf("%d ", *(int*) (seqList->getAt(seqList, i)));
 	}
 	printf("\r\n");
 	/* 释放顺序表内存空间 */
@@ -86,6 +86,8 @@ int main(int argc, char **argv) {
 	singleList->insertAt(singleList, 2, (void*) &i);
 	i = 55;
 	singleList->insertAt(singleList, 3, (void*) &i);
+	/* 删除指定位置节点 */
+	singleList->removeAt(singleList, 4);
 	/* 打印单向链表中的元素 */
 	for (i = 0; i < singleList->length; i++) {
 		printf("%d ", *(int*) (singleList->getAt(singleList, i)));
@@ -119,7 +121,8 @@ int main(int argc, char **argv) {
 	i = 'e';
 	doubleList->insertAt(doubleList, 3, (void*) &i);
 	/* 删除指定位置节点 */
-	doubleList->removeAt(doubleList, 2);
+	doubleList->removeAt(doubleList, 0);
+	doubleList->removeAt(doubleList, 3);
 	/* 打印双向链表中的数据 */
 	for (i = 0; i < doubleList->length; i++) {
 		printf("%c ", *(char*) (doubleList->getAt(doubleList, i)));
@@ -154,7 +157,8 @@ int main(int argc, char **argv) {
 	i = 21;
 	circularList->insertAt(circularList, 3, (void*) &i);
 	/* 删除指定位置节点 */
-	circularList->removeAt(circularList, 2);
+	circularList->removeAt(circularList, 0);
+	circularList->removeAt(circularList, 3);
 	/* 打印循环链表中的数据 */
 	for (i = 0; i < circularList->length; i++) {
 		printf("%d ", *(char*) (circularList->getAt(circularList, i)));

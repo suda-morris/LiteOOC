@@ -40,11 +40,11 @@ extern "C" {
 		/* 顺序表的插入操作:插入顺序表末尾 */
 		looc_bool (*insert)(loocSeqList* cthis, void* data);
 		/* 删除指定位置的元素,location从0开始计数 */
-		looc_bool (*remove)(loocSeqList* cthis, int location);
+		looc_bool (*removeAt)(loocSeqList* cthis, int location);
 		/* 获取指定位置的元素,location从0开始计数 */
-		void* (*getElement)(loocSeqList* cthis, int location);
+		void* (*getAt)(loocSeqList* cthis, int location);
 		/* 修改指定位置的元素,location从0开始计数 */
-		looc_bool (*modify)(loocSeqList* cthis, int location, void* newData);
+		looc_bool (*modifyAt)(loocSeqList* cthis, int location, void* newData);
 	};
 
 #ifdef __cplusPlus

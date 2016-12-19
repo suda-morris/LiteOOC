@@ -80,8 +80,6 @@ static void loocDoubleList_init(loocDoubleList* cthis, int elementSize,
 	if (pHead) {
 		cthis->head = pHead;
 		cthis->length++;
-		/* 因为head指向了pHead，所以要增加pHead的引用计数 */
-		pHead->loocObject._use++;
 	}
 }
 
@@ -97,12 +95,11 @@ static looc_bool loocDoubleList_insertAt(loocDoubleList* cthis, int position,
 	loocDoubleListNode* p = cthis->head;
 	loocDoubleListNode* node;
 	int i;
+	/* 如果当前链表没有任何数据 */
 	if (cthis->length == 0) {
 		node = loocDoubleListNode_new(looc_file_line);
 		node->init(node, cthis->_elementSize, newData);
 		cthis->head = node;
-		/* 增加引用计数 */
-		node->loocObject._use++;
 		cthis->length++;
 		return looc_true;
 	}
@@ -116,12 +113,12 @@ static looc_bool loocDoubleList_insertAt(loocDoubleList* cthis, int position,
 	node->init(node, cthis->_elementSize, newData);
 	node->next = p->next;
 	p->next = node;
+	/* 增加引用计数 */
+	node->loocObject._use++;
 	node->prior = p;
 	if (node->next) {
 		node->next->prior = node;
 	}
-	/* 增加引用计数 */
-	node->loocObject._use++;
 	cthis->length++;
 	return looc_true;
 }
@@ -143,8 +140,9 @@ static looc_bool loocDoubleList_removeAt(loocDoubleList* cthis, int position) {
 		cthis->head = p->next;
 		if (p->next) {
 			p->next->prior = NULL;
-			p->next->loocObject._use++;
+			p->next->loocObject._use--;
 		}
+		p->next = NULL;
 		loocDoubleListNode_delete(p);
 	} else {
 		for (i = 0; i < (position - 1); i++) {
@@ -153,9 +151,10 @@ static looc_bool loocDoubleList_removeAt(loocDoubleList* cthis, int position) {
 		q = p->next;
 		p->next = q->next;
 		if (q->next) {
-			q->next->loocObject._use++;
 			q->next->prior = p;
 		}
+		q->prior = NULL;
+		q->next = NULL;
 		loocDoubleListNode_delete(q);
 	}
 	cthis->length--;

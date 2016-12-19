@@ -80,8 +80,6 @@ static void loocSingleList_init(loocSingleList* cthis, int elementSize,
 	if (pHead) {
 		cthis->head = pHead;
 		cthis->length++;
-		/* 因为head指向了pHead，所以要增加pHead的引用计数 */
-		pHead->loocObject._use++;
 	}
 }
 
@@ -102,8 +100,6 @@ static looc_bool loocSingleList_insertAt(loocSingleList* cthis, int position,
 		node = loocSingleListNode_new(looc_file_line);
 		node->init(node, cthis->_elementSize, newData);
 		cthis->head = node;
-		/* 增加引用计数 */
-		node->loocObject._use++;
 		cthis->length++;
 		return looc_true;
 	}
@@ -138,10 +134,10 @@ static looc_bool loocSingleList_removeAt(loocSingleList* cthis, int position) {
 	}
 	if (position == 0) {
 		cthis->head = p->next;
-		/* 增加引用计数 */
 		if (p->next) {
-			p->next->loocObject._use++;
+			p->next->loocObject._use--;
 		}
+		p->next = NULL;
 		loocSingleListNode_delete(p);
 	} else {
 		for (i = 0; i < (position - 1); i++) {
@@ -149,10 +145,7 @@ static looc_bool loocSingleList_removeAt(loocSingleList* cthis, int position) {
 		}
 		q = p->next;
 		p->next = q->next;
-		/* 增加引用计数 */
-		if (q->next) {
-			q->next->loocObject._use++;
-		}
+		q->next = NULL;
 		loocSingleListNode_delete(q);
 	}
 	cthis->length--;

@@ -48,7 +48,7 @@ static looc_bool loocSeqList_insert(loocSeqList* cthis, void* data) {
  * @param  location 待删除数据的位置,从0开始计数
  * @return          成功返回true，失败返回false
  */
-static looc_bool loocSeqList_remove(loocSeqList* cthis, int location) {
+static looc_bool loocSeqList_removeAt(loocSeqList* cthis, int location) {
 	if (location >= cthis->length || location < 0) {
 		return looc_false;
 	} else {
@@ -67,7 +67,7 @@ static looc_bool loocSeqList_remove(loocSeqList* cthis, int location) {
  * @param location 要获取的数据的位置
  * @return         成功返回数据的地址，失败返回NULL
  */
-static void* loocSeqList_getElement(loocSeqList* cthis, int location) {
+static void* loocSeqList_getAt(loocSeqList* cthis, int location) {
 	if (location < 0 || location >= cthis->length) {
 		return NULL;
 	} else {
@@ -82,7 +82,7 @@ static void* loocSeqList_getElement(loocSeqList* cthis, int location) {
  * @param  newData  替换的新数据
  * @return          成功返回true，失败返回false
  */
-static looc_bool loocSeqList_modify(loocSeqList* cthis, int location,
+static looc_bool loocSeqList_modifyAt(loocSeqList* cthis, int location,
 		void* newData) {
 	if (location >= cthis->length || location < 0) {
 		return looc_false;
@@ -118,9 +118,9 @@ CTOR(loocSeqList)
 	/* 成员函数的绑定 */
 	FUNCTION_SETTING(init, loocSeqList_init);
 	FUNCTION_SETTING(insert, loocSeqList_insert);
-	FUNCTION_SETTING(remove, loocSeqList_remove);
-	FUNCTION_SETTING(getElement, loocSeqList_getElement);
-	FUNCTION_SETTING(modify, loocSeqList_modify);
+	FUNCTION_SETTING(removeAt, loocSeqList_removeAt);
+	FUNCTION_SETTING(getAt, loocSeqList_getAt);
+	FUNCTION_SETTING(modifyAt, loocSeqList_modifyAt);
 	FUNCTION_SETTING(loocObject.finalize, loocSeqList_finalize);END_CTOR
 
 /**

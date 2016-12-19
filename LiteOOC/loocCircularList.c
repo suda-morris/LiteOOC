@@ -133,8 +133,8 @@ static looc_bool loocCircularList_removeAt(loocCircularList* cthis,
 			p = p->next;
 		}
 		p->next = q->next;
-		q->next->loocObject._use++;
 		cthis->head = q->next;
+		q->next = NULL;
 		loocCircularListNode_delete(q);
 	} else {
 		for (i = 0; i < position - 1; i++) {
@@ -142,7 +142,7 @@ static looc_bool loocCircularList_removeAt(loocCircularList* cthis,
 		}
 		q = p->next;
 		p->next = q->next;
-		q->next->loocObject._use++;
+		q->next = NULL;
 		loocCircularListNode_delete(q);
 	}
 	cthis->length--;
@@ -178,7 +178,6 @@ static void loocCircularList_finalize(loocObject* object) {
 		node = list->head->next;
 		/* 切断环形链表 */
 		list->head->next = NULL;
-		node->loocObject._use--;
 		if (node->loocObject._use) {
 			node->loocObject._use--;
 		}
