@@ -14,6 +14,7 @@
 #include <loocBinTree.h>
 #include <loocCircularList.h>
 #include <loocStack.h>
+#include <loocQueue.h>
 #include <stdio.h>
 
 #define SEQLIST_LENGTH				(10)
@@ -193,7 +194,29 @@ int main(int argc, char **argv) {
 	looc_report();
 
 	/**
-	 * 6. 二叉树的操作
+	 * 6. 队列的操作
+	 */
+	printf("****************loocQueue****************\r\n");
+	/* 创建队列对象 */
+	loocQueue* queue = loocQueue_new(looc_file_line);
+	/* 初始化对列 */
+	queue->init(queue, 10, sizeof(int));
+	/* 入队操作 */
+	for (i = 0; i < 15; i++) {
+		queue->enqueue(queue, (void*) &i);
+	}
+	/* 出队操作 */
+	for (i = 0; i < 10; i++) {
+		printf("%d ", *(int*) queue->dequeue(queue));
+	}
+	printf("\r\n");
+	/* 释放队列内存空间 */
+	loocStack_delete(stack);
+	/* 报告内存泄漏情况 */
+	looc_report();
+
+	/**
+	 * 7. 二叉树的操作
 	 */
 	printf("****************loocBinTree****************\r\n");
 	i = 10;

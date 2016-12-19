@@ -19,5 +19,8 @@ Object Oriented Programming with C language
 ## loocStack
 栈的基本操作
 
+## loocQueue
+对列的基本操作
+
 ## loocBinTree
 二叉树的基本操作
