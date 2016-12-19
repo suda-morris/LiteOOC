@@ -11,12 +11,11 @@
 #ifndef LITEOOC_LOOCDOUBLELIST_H_
 #define LITEOOC_LOOCDOUBLELIST_H_
 
-#include <looc.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#include <looc.h>
 #include "loocObject.h"
 	/**
 	 * 双向链表数据节点具体类

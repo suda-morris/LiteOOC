@@ -12,6 +12,7 @@
 #include <loocSingleList.h>
 #include <loocDoubleList.h>
 #include <loocBinTree.h>
+#include <loocCircularList.h>
 #include <stdio.h>
 
 #define SEQLIST_LENGTH				(10)
@@ -118,7 +119,7 @@ int main(int argc, char **argv) {
 	i = 'e';
 	doubleList->insertAt(doubleList, 3, (void*) &i);
 	/* 删除指定位置节点 */
-	doubleList->removeAt(doubleList,2);
+	doubleList->removeAt(doubleList, 2);
 	/* 打印双向链表中的数据 */
 	for (i = 0; i < doubleList->length; i++) {
 		printf("%c ", *(char*) (doubleList->getAt(doubleList, i)));
@@ -130,7 +131,42 @@ int main(int argc, char **argv) {
 	looc_report();
 
 	/**
-	 * 4. 二叉树的操作
+	 * 4. 循环链表的操作
+	 */
+	printf("****************loocCircularList****************\r\n");
+	i = 17;
+	/* 创建循环链表对象 */
+	loocCircularList* circularList = loocCircularList_new(looc_file_line);
+	/* 创建循环链表节点对象 */
+	loocCircularListNode* circularListNode = loocCircularListNode_new(
+	looc_file_line);
+	/* 节点对象初始化 */
+	circularListNode->init(circularListNode, sizeof(int), (void*) &i);
+	/* 初始化循环链表 */
+	circularList->init(circularList, sizeof(int), circularListNode);
+	/* 插入数据 */
+	i = 18;
+	circularList->insertAt(circularList, 0, (void*) &i);
+	i = 19;
+	circularList->insertAt(circularList, 1, (void*) &i);
+	i = 20;
+	circularList->insertAt(circularList, 2, (void*) &i);
+	i = 21;
+	circularList->insertAt(circularList, 3, (void*) &i);
+	/* 删除指定位置节点 */
+	circularList->removeAt(circularList, 2);
+	/* 打印循环链表中的数据 */
+	for (i = 0; i < circularList->length; i++) {
+		printf("%d ", *(char*) (circularList->getAt(circularList, i)));
+	}
+	printf("\r\n");
+	/* 释放循环链表内存 */
+	loocCircularList_delete(circularList);
+	/* 报告内存泄漏情况 */
+	looc_report();
+
+	/**
+	 * 5. 二叉树的操作
 	 */
 	printf("****************loocBinTree****************\r\n");
 	i = 10;
