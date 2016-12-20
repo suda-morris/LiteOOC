@@ -76,10 +76,14 @@ DTOR(loocDoubleListNode)
  */
 static void loocDoubleList_init(loocDoubleList* cthis, int elementSize,
 		loocDoubleListNode* pHead) {
+	loocDoubleListNode* p = pHead;
 	cthis->_elementSize = elementSize;
 	if (pHead) {
 		cthis->head = pHead;
-		cthis->length++;
+		while (p) {
+			cthis->length++;
+			p = p->next;
+		}
 	}
 }
 

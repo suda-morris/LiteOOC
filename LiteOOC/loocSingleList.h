@@ -56,6 +56,8 @@ extern "C" {
 		looc_bool (*removeAt)(loocSingleList* cthis, int position);
 		/* 获取指定节点 */
 		void* (*getAt)(loocSingleList* cthis, int position);
+		/* 判断是否有环，并找出环的起始位置 */
+		loocSingleListNode* (*haveCircle)(loocSingleList* cthis);
 	};
 
 #ifdef __cplusPlus

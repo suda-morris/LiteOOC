@@ -112,6 +112,7 @@ int main(int argc, char **argv) {
 		printf("%d ", *(int*) (singleList->getAt(singleList, i)));
 	}
 	printf("\r\n");
+	printf("circle appears at %p\r\n", singleList->haveCircle(singleList));
 	/* 释放单向链表内存空间 */
 	loocSingleList_delete(singleList);
 	/* 报告内存泄漏情况 */

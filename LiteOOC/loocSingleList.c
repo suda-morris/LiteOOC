@@ -76,10 +76,14 @@ DTOR(loocSingleListNode)
  */
 static void loocSingleList_init(loocSingleList* cthis, int elementSize,
 		loocSingleListNode* pHead) {
+	loocSingleListNode* p = pHead;
 	cthis->_elementSize = elementSize;
 	if (pHead) {
 		cthis->head = pHead;
-		cthis->length++;
+		while (p) {
+			cthis->length++;
+			p = p->next;
+		}
 	}
 }
 
@@ -171,6 +175,42 @@ static void* loocSingleList_getAt(loocSingleList* cthis, int position) {
 }
 
 /**
+ * 判断单向链表是否有环，并找出环的起始节点
+ * @param  cthis 当前单向链表对象指针
+ * @return       如果有环但会起始节点地址，没有则返回NULL
+ */
+static loocSingleListNode* loocSingleList_haveCircle(loocSingleList* cthis) {
+	/* 头结点指针 */
+	loocSingleListNode* head = cthis->head;
+	/* 慢指针 */
+	loocSingleListNode* p;
+	/* 快指针 */
+	loocSingleListNode* q;
+	if (cthis->head == NULL) {
+		return NULL;
+	}
+	p = q = head;
+	while (q && q->next) {
+		p = p->next;
+		q = q->next->next;
+		if (p == q) {
+			break;
+		}
+	}
+	/* 有环 */
+	if (p == q && q->next) {
+		q = cthis->head;
+		while (p != q) {
+			p = p->next;
+			q = q->next;
+		}
+		return p;
+	} else {
+		return NULL;
+	}
+
+}
+/**
  * loocSingleList对象的销毁函数
  * @param object loocObject对象指针
  */
@@ -201,6 +241,7 @@ CTOR(loocSingleList)
 	FUNCTION_SETTING(insertAt, loocSingleList_insertAt);
 	FUNCTION_SETTING(removeAt, loocSingleList_removeAt);
 	FUNCTION_SETTING(getAt, loocSingleList_getAt);
+	FUNCTION_SETTING(haveCircle, loocSingleList_haveCircle);
 	FUNCTION_SETTING(loocObject.finalize, loocSingleList_finalize);END_CTOR
 
 /**
