@@ -12,10 +12,10 @@
 #include <string.h>
 
 /**
- * 初始化对列
- * @param cthis       当前对列对象指针
+ * 初始化队列
+ * @param cthis       当前队列对象指针
  * @param maxSize     队列中最多的元素数量
- * @param elementSize 对列中元素的大小
+ * @param elementSize 队列中元素的大小
  */
 static void loocQueue_init(loocQueue* cthis, int maxSize, int elementSize) {
 	cthis->_elementSize = elementSize;
@@ -26,7 +26,7 @@ static void loocQueue_init(loocQueue* cthis, int maxSize, int elementSize) {
 
 /**
  * 入队操作（从队尾）
- * @param  cthis 当前对列对象指针
+ * @param  cthis 当前队列对象指针
  * @param  data  入队数据指针
  * @return       成功返回true，失败返回false
  */
@@ -46,7 +46,7 @@ static looc_bool loocQueue_enqueue(loocQueue* cthis, void* data) {
 
 /**
  * 出队操作
- * @param cthis 当前对列对象指针
+ * @param cthis 当前队列对象指针
  * @return      成功返回出队的数据指针，失败返回NULL
  */
 static void* loocQueue_dequeue(loocQueue* cthis) {
@@ -63,7 +63,7 @@ static void* loocQueue_dequeue(loocQueue* cthis) {
 }
 
 /**
- * 对列销毁函数
+ * 队列销毁函数
  * @param object loocObject对象指针
  */
 static void loocQueue_finalize(loocObject* object) {

@@ -20,7 +20,13 @@ Object Oriented Programming with C language
 栈的基本操作
 
 ## loocQueue
-对列的基本操作
+队列的基本操作
+
+## loocHashMap
+哈希表（散列表）的基本操作
 
 ## loocBinTree
 二叉树的基本操作
+
+# LiteEA
+Engineering Algorithm

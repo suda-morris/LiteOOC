@@ -11,7 +11,6 @@
 #ifndef LITEOOC_LOOCQUEUE_H_
 #define LITEOOC_LOOCQUEUE_H_
 
-#include <loocStack.h>
 
 #ifdef __cplusplus
 extern "C" {

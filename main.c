@@ -15,13 +15,30 @@
 #include <loocCircularList.h>
 #include <loocStack.h>
 #include <loocQueue.h>
+#include <loocHashMap.h>
 #include <stdio.h>
 
 #define SEQLIST_LENGTH				(10)
 #define SINGLELIST_LENGTH			(5)
 
+/**
+ * 针对二叉树节点的操作
+ * @param node 当前二叉树节点
+ * @param args 参数
+ */
 static void actionPrint(loocBinTreeNode* node, void* args) {
 	printf("%d ", *(int*) (node->_data));
+}
+
+/**
+ * 散列函数(采用除数留余法计算散列地址)
+ * @param  cthis 当前Hash表对象指针
+ * @param  value 数据指针
+ * @return       返回数据的散列地址
+ */
+static int hash(loocHashMap* cthis, void* value) {
+	int data = *(int*) value;
+	return data % (cthis->_maxSize);
 }
 
 int main(int argc, char **argv) {
@@ -216,7 +233,57 @@ int main(int argc, char **argv) {
 	looc_report();
 
 	/**
-	 * 7. 二叉树的操作
+	 * 7. 哈希表的操作
+	 */
+	printf("****************loocHashMap****************\r\n");
+	/* 创建Hash表对象 */
+	loocHashMap* hashMap = loocHashMap_new(looc_file_line);
+	/* 初始化Hash表对象 */
+	hashMap->init(hashMap, 13, sizeof(int), hash);
+	/* 依次插入元素 */
+	i = 66;
+	hashMap->insert(hashMap, (void*) &i);
+	i = 32;
+	hashMap->insert(hashMap, (void*) &i);
+	i = 0;
+	hashMap->insert(hashMap, (void*) &i);
+	i = 478;
+	hashMap->insert(hashMap, (void*) &i);
+	i = 11;
+	hashMap->insert(hashMap, (void*) &i);
+	i = 23;
+	hashMap->insert(hashMap, (void*) &i);
+	i = 43;
+	hashMap->insert(hashMap, (void*) &i);
+	i = 55;
+	hashMap->insert(hashMap, (void*) &i);
+	i = 67;
+	hashMap->insert(hashMap, (void*) &i);
+	i = 108;
+	hashMap->insert(hashMap, (void*) &i);
+	i = 230;
+	hashMap->insert(hashMap, (void*) &i);
+	i = 223;
+	hashMap->insert(hashMap, (void*) &i);
+	i = 10;
+	hashMap->insert(hashMap, (void*) &i);
+	/* 输出Hash表中元素 */
+	for (i = 0; i < 13; i++) {
+		printf("{%d:%d} ", i, *(int*) hashMap->getAt(hashMap, i));
+	}
+	printf("\r\n");
+	/* 打印Hash表有效长度 */
+	printf("Total %d elements\r\n", hashMap->length);
+	/* 查找元素55 */
+	i = 55;
+	printf("Position of 55: %d\r\n", hashMap->search(hashMap, (void*) &i));
+	/* 释放Hash表内存空间 */
+	loocHashMap_delete(hashMap);
+	/* 报告内存泄漏情况 */
+	looc_report();
+
+	/**
+	 * 8. 二叉树的操作
 	 */
 	printf("****************loocBinTree****************\r\n");
 	i = 10;
