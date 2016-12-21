@@ -178,6 +178,15 @@ static void* loocSingleList_getAt(loocSingleList* cthis, int position) {
  * 判断单向链表是否有环，并找出环的起始节点
  * @param  cthis 当前单向链表对象指针
  * @return       如果有环但会起始节点地址，没有则返回NULL
+ * 设置快慢指针，p每次走一步，q每次走两步，q的速度是p的两倍。
+ * 假设链表的长度是L，链表起点到环的起点的距离为a，环的长度为r=L-a
+ * 快慢指针如果能相遇表示存在环
+ * 假设相遇的时候慢指针在环内已经走了X歩，总共走了S歩，那么快指针总共走了2S歩
+ * 在相遇的时候，假设快指针已经走了n圈环形路线了，则2S=S+nr
+ * 所以S=nr，又S=a+X
+ * 则a+X=nr=(n-1)r+r=(n-1)r+L-a
+ * a=(n-1)r+L-a-X,其中L-a-X表示相遇点继续前进到达环起始位置的距离
+ * 其意义为：链表起点到环的起点的长度a与快慢指针相遇点到环的起始位置的长度相等
  */
 static loocSingleListNode* loocSingleList_haveCircle(loocSingleList* cthis) {
 	/* 头结点指针 */

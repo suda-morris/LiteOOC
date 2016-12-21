@@ -55,7 +55,7 @@ void* looc_malloc(size_t size, const char* type, const char* file, int line) {
 		looc_memAllocList = pMemAllocUnit;
 
 		looc_dbginfo(
-				"LiteOOC: mlloc memory in %p, size: %lu, object type: %s, file: %s, line: %d.\r\n",
+				"LiteOOC: malloc memory in %p, size: %lu, object type: %s, file: %s, line: %d.\r\n",
 				addr, size, type, file, line);
 	}
 	return addr;

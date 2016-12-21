@@ -27,7 +27,7 @@
  * @param args 参数
  */
 static void actionPrint(loocBinTreeNode* node, void* args) {
-	printf("%d ", *(int*) (node->_data));
+	printf("%c ", *(char*) (node->_data));
 }
 
 /**
@@ -287,7 +287,7 @@ int main(int argc, char **argv) {
 	 * 8. 二叉树的操作
 	 */
 	printf("****************loocBinTree****************\r\n");
-	i = 10;
+	i = 'A';
 	/* 创建二叉树对象 */
 	loocBinTree* binTree = loocBinTree_new(looc_file_line);
 	/* 创建二叉树节点对象 */
@@ -296,16 +296,28 @@ int main(int argc, char **argv) {
 	binTreeNode->init(binTreeNode, sizeof(int), (void*) &i);
 	/* 二叉树对象初始化，指定根节点 */
 	binTree->init(binTree, sizeof(int), binTreeNode);
-	/* 增加左子节点 */
-	i = 20;
+	/* 增子节点 */
+	i = 'B';
 	binTreeNode->setLeftChild(binTreeNode, (void*) &i);
-	/* 增加右子节点 */
-	i = 30;
+	i = 'C';
 	binTreeNode->setRightChild(binTreeNode, (void*) &i);
-	i = 40;
+	i = 'D';
 	binTreeNode->lChild->setLeftChild(binTreeNode->lChild, (void*) &i);
-	i = 50;
+	i = 'E';
+	binTreeNode->lChild->setRightChild(binTreeNode->lChild, (void*) &i);
+	i = 'F';
+	binTreeNode->rChild->setLeftChild(binTreeNode->rChild, (void*) &i);
+	i = 'G';
 	binTreeNode->rChild->setRightChild(binTreeNode->rChild, (void*) &i);
+	i = 'H';
+	binTreeNode->lChild->lChild->setLeftChild(binTreeNode->lChild->lChild,
+			(void*) &i);
+	i = 'I';
+	binTreeNode->lChild->lChild->setRightChild(binTreeNode->lChild->lChild,
+			(void*) &i);
+	i = 'J';
+	binTreeNode->lChild->rChild->setRightChild(binTreeNode->lChild->rChild,
+			(void*) &i);
 	/* 前序遍历打印节点 */
 	binTree->preOrder(binTree, actionPrint, NULL);
 	printf("\r\n");
@@ -315,6 +327,21 @@ int main(int argc, char **argv) {
 	/* 后序遍历打印节点 */
 	binTree->postOrder(binTree, actionPrint, NULL);
 	printf("\r\n");
+	/* 层序遍历打印节点 */
+	binTree->layerOrder(binTree, actionPrint, NULL);
+	printf("\r\n");
+	/* 打印已知节点的父节点 */
+	printf("node E's Parent is :%c\r\n",
+			*(char*) (binTree->getParent(binTree, binTree->root->lChild->rChild)->_data));
+	/* 打印已知节点的兄弟节点 */
+	printf("node E's Brother is :%c\r\n",
+			*(char*) (binTree->getBrother(binTree,
+					binTree->root->lChild->rChild)->_data));
+	/* 打印树的高度 */
+	printf("Height of Tree: %d\r\n", binTree->getHeight(binTree));
+	/* 打印指定节点的深度 */
+	printf("Depth of node D: %d\r\n",
+			binTree->getDepthOfNode(binTree, binTree->root->lChild->lChild));
 	/* 释放二叉树对象内存空间 */
 	loocBinTree_delete(binTree);
 	/* 报告内存泄漏情况 */

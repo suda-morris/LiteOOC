@@ -11,12 +11,15 @@
 #ifndef LITEOOC_LOOCBINTREE_H_
 #define LITEOOC_LOOCBINTREE_H_
 
-#include <loocObject.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#include <looc.h>
+#include "loocObject.h"
+
+#define LOOC_QUEUE_SIZE_FOR_LAYER_ORDER		20
+#define LOOC_STACK_SIZE_FOR_DEPTH_ORDER		20
 	/**
 	 * 二叉树节点具体类
 	 */
@@ -59,6 +62,18 @@ extern "C" {
 		/* 后序遍历 */
 		void (*postOrder)(loocBinTree* cthis,
 				void (*action)(loocBinTreeNode* node, void* args), void* args);
+		/* 层序遍历 */
+		void (*layerOrder)(loocBinTree* cthis,
+				void (*action)(loocBinTreeNode* node, void* args), void* args);
+		/* 获取父节点 */
+		loocBinTreeNode* (*getParent)(loocBinTree* cthis, loocBinTreeNode* node);
+		/* 获取兄弟节点 */
+		loocBinTreeNode* (*getBrother)(loocBinTree* cthis,
+				loocBinTreeNode* node);
+		/* 获取树的高度 */
+		int (*getHeight)(loocBinTree* cthis);
+		/* 获取指定节点的深度 */
+		int (*getDepthOfNode)(loocBinTree* cthis, loocBinTreeNode* node);
 	};
 
 #ifdef __cplusplus
