@@ -11,11 +11,12 @@
 #include <loocSeqList.h>
 #include <loocSingleList.h>
 #include <loocDoubleList.h>
-#include <loocBinTree.h>
 #include <loocCircularList.h>
 #include <loocStack.h>
 #include <loocQueue.h>
 #include <loocHashMap.h>
+#include <loocBinTree.h>
+#include <loocBinSearchTree.h>
 #include <stdio.h>
 
 #define SEQLIST_LENGTH				(10)
@@ -26,8 +27,17 @@
  * @param node 当前二叉树节点
  * @param args 参数
  */
-static void actionPrint(loocBinTreeNode* node, void* args) {
+static void actionPrint_BinTree(loocBinTreeNode* node, void* args) {
 	printf("%c ", *(char*) (node->_data));
+}
+
+/**
+ * 针对二叉查找树节点的操作
+ * @param node 当前二叉查找树节点
+ * @param args 参数
+ */
+static void actionPrint_BinSearchTree(loocBinSearchTreeNode* node, void* args) {
+	printf("%d ", *(int*) (node->_data));
 }
 
 /**
@@ -39,6 +49,19 @@ static void actionPrint(loocBinTreeNode* node, void* args) {
 static int hash(loocHashMap* cthis, void* value) {
 	int data = *(int*) value;
 	return data % (cthis->_maxSize);
+}
+
+static int BST_compareStrategy(loocBinSearchTreeNode* cthis,
+		loocBinSearchTreeNode* node) {
+	int a = *(int*) cthis->_data;
+	int b = *(int*) node->_data;
+	if (a > b) {
+		return -1;
+	} else if (a < b) {
+		return 1;
+	} else {
+		return 0;
+	}
 }
 
 int main(int argc, char **argv) {
@@ -319,16 +342,16 @@ int main(int argc, char **argv) {
 	binTreeNode->lChild->rChild->setRightChild(binTreeNode->lChild->rChild,
 			(void*) &i);
 	/* 前序遍历打印节点 */
-	binTree->preOrder(binTree, actionPrint, NULL);
+	binTree->preOrder(binTree, actionPrint_BinTree, NULL);
 	printf("\r\n");
 	/* 中序遍历打印节点 */
-	binTree->inOrder(binTree, actionPrint, NULL);
+	binTree->inOrder(binTree, actionPrint_BinTree, NULL);
 	printf("\r\n");
 	/* 后序遍历打印节点 */
-	binTree->postOrder(binTree, actionPrint, NULL);
+	binTree->postOrder(binTree, actionPrint_BinTree, NULL);
 	printf("\r\n");
 	/* 层序遍历打印节点 */
-	binTree->layerOrder(binTree, actionPrint, NULL);
+	binTree->layerOrder(binTree, actionPrint_BinTree, NULL);
 	printf("\r\n");
 	/* 打印已知节点的父节点 */
 	printf("node E's Parent is :%c\r\n",
@@ -344,6 +367,66 @@ int main(int argc, char **argv) {
 			binTree->getDepthOfNode(binTree, binTree->root->lChild->lChild));
 	/* 释放二叉树对象内存空间 */
 	loocBinTree_delete(binTree);
+	/* 报告内存泄漏情况 */
+	looc_report();
+
+	/**
+	 * 9. 二叉查找树的操作
+	 */
+	printf("****************loocBinSearchTree****************\r\n");
+	i = 100;
+	/* 创建二叉查找树节点对象 */
+	loocBinSearchTreeNode* binSearchTreeNode = loocBinSearchTreeNode_new(
+	looc_file_line);
+	/* 初始化二叉查找树节点 */
+	binSearchTreeNode->init(binSearchTreeNode, sizeof(int), (void*) &i);
+	/* 创建二叉查找树对象 */
+	loocBinSearchTree* binSearchTree = loocBinSearchTree_new(looc_file_line);
+	/* 初始化二叉查找树,并设置根节点 */
+	binSearchTree->init(binSearchTree, sizeof(int), binSearchTreeNode,
+			BST_compareStrategy);
+	/* 往二叉查找树中插入数据 */
+	i = 77;
+	binSearchTree->insert(binSearchTree, (void*) &i);
+	i = 103;
+	binSearchTree->insert(binSearchTree, (void*) &i);
+	i = 191;
+	binSearchTree->insert(binSearchTree, (void*) &i);
+	i = 88;
+	binSearchTree->insert(binSearchTree, (void*) &i);
+	i = 143;
+	binSearchTree->insert(binSearchTree, (void*) &i);
+	i = 43;
+	binSearchTree->insert(binSearchTree, (void*) &i);
+	i = 51;
+	binSearchTree->insert(binSearchTree, (void*) &i);
+	i = 152;
+	binSearchTree->insert(binSearchTree, (void*) &i);
+	i = 6;
+	binSearchTree->insert(binSearchTree, (void*) &i);
+	i = 200;
+	binSearchTree->insert(binSearchTree, (void*) &i);
+	i = 199;
+	binSearchTree->insert(binSearchTree, (void*) &i);
+	/* 中序遍历打印节点,即排序 */
+	binSearchTree->inOrder(binSearchTree, actionPrint_BinSearchTree, NULL);
+	printf("\r\n");
+	/* 查询操作 */
+	i = 77;
+	binSearchTreeNode = binSearchTree->search(binSearchTree, (void*) &i);
+	if (binSearchTreeNode) {
+		if (binSearchTreeNode->parent) {
+			printf("Parent of node %d is node %d\r\n", i,
+					*(int*) (binSearchTreeNode->parent->_data));
+		}
+		/* 删除指定节点 */
+		binSearchTree->deleteNode(binSearchTree, binSearchTreeNode);
+	}
+	/* 中序遍历打印节点,即排序 */
+	binSearchTree->inOrder(binSearchTree, actionPrint_BinSearchTree, NULL);
+	printf("\r\n");
+	/* 释放二叉查找树对象内存空间 */
+	loocBinSearchTree_delete(binSearchTree);
 	/* 报告内存泄漏情况 */
 	looc_report();
 

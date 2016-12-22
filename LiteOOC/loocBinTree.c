@@ -116,8 +116,6 @@ static void loocBinTree_init(loocBinTree* cthis, int elementSize,
 	cthis->_elementSize = elementSize;
 	if (pRoot) {
 		cthis->root = pRoot;
-		/* 增加引用计数 */
-		pRoot->loocObject._use++;
 	}
 }
 
