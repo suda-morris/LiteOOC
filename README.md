@@ -30,5 +30,8 @@
 ## loocBinTree
 >二叉树的基本操作
 
+## loocBinSearchTree
+>二叉查找树的基本操作
+
 # LiteEA
 **Engineering Algorithm**

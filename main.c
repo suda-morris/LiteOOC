@@ -18,6 +18,7 @@
 #include <loocBinTree.h>
 #include <loocBinSearchTree.h>
 #include <stdio.h>
+#include <lea.h>
 
 #define SEQLIST_LENGTH				(10)
 #define SINGLELIST_LENGTH			(5)
@@ -429,6 +430,13 @@ int main(int argc, char **argv) {
 	loocBinSearchTree_delete(binSearchTree);
 	/* 报告内存泄漏情况 */
 	looc_report();
+
+	/* 算法测试 */
+	/* 判断数组是否是某个二叉查找树的后序遍历 */
+	printf("****************verifySquenceOfBST****************\r\n");
+	int test_squence[] = { 5, 7, 6, 9, 11, 10, 8 };
+	printf("verifySquenceOfBST %s\r\n",
+			verifySquenceOfBST(test_squence, 7) ? "pass" : "not pass");
 
 	return 0;
 }
