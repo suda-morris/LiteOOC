@@ -16,6 +16,7 @@
  */
 static int (*compare)(loocBinSearchTreeNode* cthis, loocBinSearchTreeNode* node) =
 NULL;
+
 /**
  * 初始化二叉查找树节点
  * @param cthis       当前二叉查找树节点对象指针
@@ -74,6 +75,9 @@ CTOR(loocBinSearchTreeNode)
 	FUNCTION_SETTING(init, loocBinSearchTreeNode_init);
 	FUNCTION_SETTING(loocObject.finalize, loocBinSearchTreeNode_finalize);END_CTOR
 
+/**
+ * loocBinSearchTreeNode的析构函数
+ */
 DTOR(loocBinSearchTreeNode)
 /* 调用父类的析构函数，实质上就是子类实现的finalize方法 */
 	SUPER_DTOR(loocObject);END_DTOR
@@ -190,6 +194,38 @@ static loocBinSearchTreeNode* loocBinSearchTree_search(loocBinSearchTree* cthis,
 		loocBinSearchTreeNode_delete(node);
 	}
 	return curNode;
+}
+
+/**
+ * 获取二叉查找树中的最大的节点
+ * @param  cthis 当前二叉查找树
+ * @return       最大的二叉查找树节点
+ */
+static loocBinSearchTreeNode* loocBinSearchTree_getMaxNode(
+		loocBinSearchTree* cthis) {
+	loocBinSearchTreeNode* node;
+	loocBinSearchTreeNode* temp = cthis->root;
+	while (temp) {
+		node = temp;
+		temp = temp->rChild;
+	}
+	return node;
+}
+
+/**
+ * 获取二叉查找树中的最小的节点
+ * @param  cthis 当前二叉查找树
+ * @return       最小的二叉查找树节点
+ */
+static loocBinSearchTreeNode* loocBinSearchTree_getMinNode(
+		loocBinSearchTree* cthis) {
+	loocBinSearchTreeNode* node;
+	loocBinSearchTreeNode* temp = cthis->root;
+	while (temp) {
+		node = temp;
+		temp = temp->lChild;
+	}
+	return node;
 }
 
 /**
@@ -327,6 +363,8 @@ CTOR(loocBinSearchTree)
 	FUNCTION_SETTING(insert, loocBinSearchTree_insert);
 	FUNCTION_SETTING(inOrder, loocBinSearchTree_inOrder);
 	FUNCTION_SETTING(search, loocBinSearchTree_search);
+	FUNCTION_SETTING(getMaxNode, loocBinSearchTree_getMaxNode);
+	FUNCTION_SETTING(getMinNode, loocBinSearchTree_getMinNode);
 	FUNCTION_SETTING(deleteNode, loocBinSearchTree_deleteNode);
 	FUNCTION_SETTING(loocObject.finalize, loocBinSearchTree_finalize);END_CTOR
 

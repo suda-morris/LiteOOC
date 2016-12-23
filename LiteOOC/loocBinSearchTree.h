@@ -27,7 +27,7 @@ extern "C" {
 		void* _data;
 		/* 二叉查找树中的元素大小 */
 		int _elementSize;
-		/* 指向左右节点 */
+		/* 指向左右节点和父节点 */
 		loocBinSearchTreeNode* lChild;
 		loocBinSearchTreeNode* rChild;
 		loocBinSearchTreeNode* parent;
@@ -60,6 +60,9 @@ extern "C" {
 				void* args);
 		/* 搜索操作 */
 		loocBinSearchTreeNode* (*search)(loocBinSearchTree* cthis, void* data);
+		/* 获取最大最小节点 */
+		loocBinSearchTreeNode* (*getMaxNode)(loocBinSearchTree* cthis);
+		loocBinSearchTreeNode* (*getMinNode)(loocBinSearchTree* cthis);
 		/* 删除节点操作 */
 		looc_bool (*deleteNode)(loocBinSearchTree* cthis,
 				loocBinSearchTreeNode* node);

@@ -56,7 +56,7 @@ extern void looc_report();
 #define looc_file_line_param	const char* file, int line
 
 /* 自定义布尔类型 */
-typedef enum looc_bool {
+typedef enum looc_bool_e {
 	looc_false = 0, looc_true = 1
 } looc_bool;
 

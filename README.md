@@ -33,5 +33,8 @@
 ## loocBinSearchTree
 >二叉查找树的基本操作
 
+## loocRedBlackTree
+>红黑树的基本操作
+
 # LiteEA
 **Engineering Algorithm**

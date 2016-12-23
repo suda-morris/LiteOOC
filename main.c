@@ -17,6 +17,7 @@
 #include <loocHashMap.h>
 #include <loocBinTree.h>
 #include <loocBinSearchTree.h>
+#include <loocRedBlackTree.h>
 #include <stdio.h>
 #include <lea.h>
 
@@ -54,6 +55,19 @@ static int hash(loocHashMap* cthis, void* value) {
 
 static int BST_compareStrategy(loocBinSearchTreeNode* cthis,
 		loocBinSearchTreeNode* node) {
+	int a = *(int*) cthis->_data;
+	int b = *(int*) node->_data;
+	if (a > b) {
+		return -1;
+	} else if (a < b) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+static int RBT_compareStrategy(loocRedBlackTreeNode* cthis,
+		loocRedBlackTreeNode* node) {
 	int a = *(int*) cthis->_data;
 	int b = *(int*) node->_data;
 	if (a > b) {
@@ -426,8 +440,34 @@ int main(int argc, char **argv) {
 	/* 中序遍历打印节点,即排序 */
 	binSearchTree->inOrder(binSearchTree, actionPrint_BinSearchTree, NULL);
 	printf("\r\n");
+	/* 打印最大最小值 */
+	printf("Max:%d\tMin:%d\r\n",
+			*(int*) binSearchTree->getMaxNode(binSearchTree)->_data,
+			*(int*) binSearchTree->getMinNode(binSearchTree)->_data);
 	/* 释放二叉查找树对象内存空间 */
 	loocBinSearchTree_delete(binSearchTree);
+	/* 报告内存泄漏情况 */
+	looc_report();
+
+	/**
+	 * 10. 红黑树的操作
+	 */
+	printf("****************loocRedBlackTree****************\r\n");
+	i = 77;
+	/* 创建红黑树节点对象 */
+	loocRedBlackTreeNode* redBlackTreeNode = loocRedBlackTreeNode_new(
+	looc_file_line);
+	/* 初始化红黑树节点 */
+	redBlackTreeNode->init(redBlackTreeNode, sizeof(int), (void*) &i,
+			looc_RBT_Black);
+	/* 创建红黑树对象 */
+	loocRedBlackTree* redBlackTree = loocRedBlackTree_new(looc_file_line);
+	/* 初始化红黑树对象 */
+	redBlackTree->init(redBlackTree, sizeof(int), redBlackTreeNode,
+			RBT_compareStrategy);
+
+	/* 释放红黑树对象内存空间 */
+	loocRedBlackTree_delete(redBlackTree);
 	/* 报告内存泄漏情况 */
 	looc_report();
 
