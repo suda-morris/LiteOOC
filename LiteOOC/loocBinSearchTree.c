@@ -236,100 +236,47 @@ static loocBinSearchTreeNode* loocBinSearchTree_getMinNode(
  */
 static looc_bool loocBinSearchTree_deleteNode(loocBinSearchTree* cthis,
 		loocBinSearchTreeNode* node) {
+	loocBinSearchTreeNode* y;
+	loocBinSearchTreeNode* x;
 	if (node == NULL) {
 		return looc_false;
 	}
-	/* 声明待删除节点的父节点 */
-	loocBinSearchTreeNode* p = node->parent;
-	/* 不存在子节点 */
-	if (node->lChild == NULL && node->rChild == NULL) {
-		if (p) {
-			if (p->lChild == node) {
-				p->lChild = NULL;
-			} else {
-				p->rChild = NULL;
-			}
-		}
-		loocBinSearchTreeNode_delete(node);
-		cthis->length--;
+	/* node有一个子节点或者没有子节点 */
+	if (node->lChild == NULL || node->rChild == NULL) {
+		y = node;
 	}
-	/* 只存在右子节点 */
-	else if (node->lChild == NULL && node->rChild) {
-		/* 如果是根节点 */
-		if (p == NULL) {
-			cthis->root = node->rChild;
-			node->rChild->loocObject._use--;
-			node->rChild = NULL;
-			loocBinSearchTreeNode_delete(node);
-			cthis->length--;
-		} else {
-			node->rChild->parent = p;
-			if (p->lChild == node) {
-				p->lChild = node->rChild;
-			} else {
-				p->rChild = node->rChild;
-			}
-			node->rChild = NULL;
-			loocBinSearchTreeNode_delete(node);
-			cthis->length--;
-		}
-	}
-	/* 只存在左子节点 */
-	else if (node->lChild && node->rChild == NULL) {
-		/* 如果是根节点 */
-		if (p == NULL) {
-			cthis->root = node->lChild;
-			node->lChild->loocObject._use--;
-			node->lChild = NULL;
-			loocBinSearchTreeNode_delete(node);
-			cthis->length--;
-		} else {
-			node->lChild->parent = p;
-			if (p->lChild == node) {
-				p->lChild = node->lChild;
-			} else {
-				p->rChild = node->lChild;
-			}
-			node->lChild = NULL;
-			loocBinSearchTreeNode_delete(node);
-			cthis->length--;
-		}
-	}
-	/* 左右子节点都存在,用右子树中的最小节点来替换node节点 */
+	/* node有两个子节点 */
 	else {
-		/* 寻找右子树中的最小节点rminNode */
-		loocBinSearchTreeNode* rminNode;
-		loocBinSearchTreeNode* tempNode = node->rChild;
-		while (tempNode) {
-			rminNode = tempNode;
-			tempNode = tempNode->lChild;
+		y = node->rChild;
+		while (y->lChild) {
+			y = y->lChild;
 		}
-		/* 右子树中有左节点 */
-		if (rminNode->parent->lChild == rminNode) {
-			rminNode->parent->lChild = rminNode->rChild;
-		}
-		/* 右子树没有左节点，那么本身就是最小节点 */
-		else {
-			rminNode->parent->rChild = rminNode->rChild;
-		}
-		rminNode->parent = p;
-		rminNode->lChild = node->lChild;
-		rminNode->rChild = node->rChild;
-		if (p == NULL) {
-			cthis->root = rminNode;
-			rminNode->loocObject._use--;
-		} else {
-			if (p->lChild == node) {
-				p->lChild = rminNode;
-			} else {
-				p->rChild = rminNode;
-			}
-		}
-		node->lChild = NULL;
-		node->rChild = NULL;
-		loocBinSearchTreeNode_delete(node);
-		cthis->length--;
 	}
+	if (y->lChild) {
+		x = y->lChild;
+	} else {
+		x = y->rChild;
+	}
+	if (x) {
+		x->parent = y->parent;
+	}
+	if (y->parent == NULL) {
+		cthis->root = x;
+		if (x) {
+			x->loocObject._use--;
+		}
+	} else if (y->parent->lChild == y) {
+		y->parent->lChild = x;
+	} else if (y->parent->rChild == y) {
+		y->parent->rChild = x;
+	}
+	if (y != node) {
+		memcpy(node->_data, y->_data, cthis->_elementSize);
+	}
+	y->lChild = NULL;
+	y->rChild = NULL;
+	loocBinSearchTreeNode_delete(y);
+	cthis->length--;
 	return looc_true;
 }
 
