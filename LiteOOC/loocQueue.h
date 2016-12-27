@@ -11,7 +11,6 @@
 #ifndef LITEOOC_LOOCQUEUE_H_
 #define LITEOOC_LOOCQUEUE_H_
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -40,7 +39,7 @@ extern "C" {
 		int length;
 		/* 内存池 */
 		void* queue_pool;
-		/* 初始化一个栈*/
+		/* 初始化一个队列*/
 		void (*init)(loocQueue* cthis, int maxSize, int elementSize);
 		/* 入队操作 */
 		looc_bool (*enqueue)(loocQueue* cthis, void* data);

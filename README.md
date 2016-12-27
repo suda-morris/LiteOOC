@@ -36,5 +36,11 @@
 ## loocRedBlackTree
 >红黑树的基本操作
 
+## loocHeap
+>最大堆（优先队列）的基本操作
+
+## loocLinkedGraph
+>邻接表存储的图
+
 # LiteEA
 **Engineering Algorithm**

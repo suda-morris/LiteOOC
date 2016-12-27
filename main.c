@@ -18,6 +18,7 @@
 #include <loocBinTree.h>
 #include <loocBinSearchTree.h>
 #include <loocRedBlackTree.h>
+#include <loocHeap.h>
 #include <stdio.h>
 #include <lea.h>
 
@@ -106,6 +107,24 @@ static int RBT_compareStrategy(loocRedBlackTreeNode* cthis,
 		loocRedBlackTreeNode* node) {
 	int a = *(int*) cthis->_data;
 	int b = *(int*) node->_data;
+	if (a > b) {
+		return -1;
+	} else if (a < b) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+/**
+ * 堆的比较策略
+ * @param  old 旧节点
+ * @param  new 新节点
+ * @return     新节点的关键字大于旧节点的关键字就返回1，小于返回-1，等于返回0
+ */
+static int Heap_compareStrategy(void* old, void* new) {
+	int a = *(int*) old;
+	int b = *(int*) new;
 	if (a > b) {
 		return -1;
 	} else if (a < b) {
@@ -517,6 +536,38 @@ int main(int argc, char **argv) {
 	/* 释放红黑树对象内存空间 */
 	loocRedBlackTree_delete(redBlackTree);
 	/* 报告内存泄漏情况 */
+	looc_report();
+
+	/**
+	 * 11. 堆的操作
+	 */
+	printf("****************loocHeap****************\r\n");
+	/* 创建堆对象 */
+	loocHeap* heap = loocHeap_new(looc_file_line);
+	/* 初始化堆对象,存储int值 */
+	heap->init(heap, 10, sizeof(int), Heap_compareStrategy);
+	/* 插入数据 */
+	i = 77;
+	heap->insert(heap, (void*) &i);
+	i = 101;
+	heap->insert(heap, (void*) &i);
+	i = 98;
+	heap->insert(heap, (void*) &i);
+	i = 43;
+	heap->insert(heap, (void*) &i);
+	i = 110;
+	heap->insert(heap, (void*) &i);
+	i = 140;
+	heap->insert(heap, (void*) &i);
+	for (i = 0; i < 6; i++) {
+		/* 打印堆中最大值 */
+		printf("%d\r\n", *(int*) (heap->getMax(heap)));
+		/* 删除堆中最大值 */
+		heap->deleteMax(heap);
+	}
+	/* 释放堆对象内存空间 */
+	loocHeap_delete(heap);
+	/* 报告内存泄露情况 */
 	looc_report();
 
 	/* 算法测试 */
