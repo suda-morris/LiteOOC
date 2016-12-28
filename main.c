@@ -19,6 +19,8 @@
 #include <loocBinSearchTree.h>
 #include <loocRedBlackTree.h>
 #include <loocHeap.h>
+#include <loocAdjacencyGraph.h>
+#include <loocLinkedGraph.h>
 #include <stdio.h>
 #include <lea.h>
 
@@ -567,6 +569,66 @@ int main(int argc, char **argv) {
 	}
 	/* 释放堆对象内存空间 */
 	loocHeap_delete(heap);
+	/* 报告内存泄露情况 */
+	looc_report();
+
+	/**
+	 * 12. 图（邻接矩阵存储）的操作
+	 */
+	printf("****************loocAdjacencyGraph****************\r\n");
+	/* 创建图对象 */
+	loocAdjacencyGraph* adjGraph = loocAdjacencyGraph_new(looc_file_line);
+	/* 初始化无向图，顶点元素为int数，最多10个顶点 */
+	adjGraph->init(adjGraph, 10, sizeof(int), 0);
+	/* 增加顶点 */
+	i = 11;
+	adjGraph->addVertex(adjGraph, (void*) &i);
+	i = 22;
+	adjGraph->addVertex(adjGraph, (void*) &i);
+	i = 33;
+	adjGraph->addVertex(adjGraph, (void*) &i);
+	i = 44;
+	adjGraph->addVertex(adjGraph, (void*) &i);
+	i = 55;
+	adjGraph->addVertex(adjGraph, (void*) &i);
+	/* 增加边 */
+	adjGraph->insertEdge(adjGraph, 0, 1, 1);
+	adjGraph->insertEdge(adjGraph, 1, 2, 2);
+	adjGraph->insertEdge(adjGraph, 3, 4, 3);
+	/* 计算出度 */
+	printf("out degree of node:%d\r\n", adjGraph->outDegree(adjGraph, 4));
+	/* 释放图对象内存空间 */
+	loocAdjacencyGraph_delete(adjGraph);
+	/* 报告内存泄露情况 */
+	looc_report();
+
+	/**
+	 * 13. 图（邻接表存储）的操作
+	 */
+	printf("****************loocLinkedGraph****************\r\n");
+	/* 创建图对象 */
+	loocLinkedGraph* linkGraph = loocLinkedGraph_new(looc_file_line);
+	/* 初始化无向图，顶点元素为int数，最多10个顶点 */
+	linkGraph->init(linkGraph, 10, sizeof(int), 0);
+	/* 增加顶点 */
+	i = 11;
+	linkGraph->addVertex(linkGraph, (void*) &i);
+	i = 22;
+	linkGraph->addVertex(linkGraph, (void*) &i);
+	i = 33;
+	linkGraph->addVertex(linkGraph, (void*) &i);
+	i = 44;
+	linkGraph->addVertex(linkGraph, (void*) &i);
+	i = 55;
+	linkGraph->addVertex(linkGraph, (void*) &i);
+	/* 增加边 */
+	linkGraph->insertEdge(linkGraph, 0, 1, 1);
+	linkGraph->insertEdge(linkGraph, 1, 2, 2);
+	linkGraph->insertEdge(linkGraph, 3, 4, 3);
+	/* 计算出度 */
+	printf("out degree of node:%d\r\n", linkGraph->outDegree(linkGraph, 1));
+	/* 释放图对象内存空间 */
+	loocLinkedGraph_delete(linkGraph);
 	/* 报告内存泄露情况 */
 	looc_report();
 

@@ -39,8 +39,11 @@
 ## loocHeap
 >最大堆（优先队列）的基本操作
 
+## loocAdjacencyGraph
+>加权图的邻接矩阵存储
+
 ## loocLinkedGraph
->邻接表存储的图
+>加权图的邻接表存储
 
 # LiteEA
 **Engineering Algorithm**
