@@ -50,10 +50,20 @@ extern "C" {
 		/* 插入边操作 */
 		looc_bool (*insertEdge)(loocLinkedGraph* cthis, int v1, int v2,
 				int weight);
+		/* 删除边操作 */
+		looc_bool (*deleteEdge)(loocLinkedGraph* cthis, int v1, int v2);
 		/* 判定顶点之间是否有边存在 */
 		looc_bool (*existEdge)(loocLinkedGraph* cthis, int v1, int v2);
-		/* 计算某个节点的出度 */
+		/* 计算某个顶点的出度 */
 		int (*outDegree)(loocLinkedGraph* cthis, int v);
+		/* 计算某个顶点的入度 */
+		int (*inDegree)(loocLinkedGraph* cthis, int v);
+		/* 深度优先遍历 */
+		void (*DFS)(loocLinkedGraph* cthis, int v,
+				void (*action)(void* node, void* args), void* args);
+		/* 广度优先遍历 */
+		void (*BFS)(loocLinkedGraph* cthis, int v,
+				void (*action)(void* node, void* args), void* args);
 	};
 
 #ifdef __cplusplus

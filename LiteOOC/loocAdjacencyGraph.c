@@ -9,6 +9,7 @@
  */
 
 #include <loocAdjacencyGraph.h>
+#include <loocQueue.h>
 #include <string.h>
 
 /**
@@ -57,7 +58,28 @@ static looc_bool loocAdjacencyGraph_insertEdge(loocAdjacencyGraph* cthis,
 	/* 如果是无向图，还要插入边<v2,v1> */
 	if (cthis->check == 0) {
 		*(cthis->G + v2 * cthis->_maxVertex + v1) = weight;
-		cthis->numE++;
+	}
+	return looc_true;
+}
+
+/**
+ * 从图中删除边
+ * @param  cthis  当前图对象指针
+ * @param  v1     边的一点
+ * @param  v2     边的另一点
+ * @return        成功返回true，失败返回false
+ */
+static looc_bool loocAdjacencyGraph_deleteEdge(loocAdjacencyGraph* cthis,
+		int v1, int v2) {
+	if ((v1 >= cthis->numV) || (v2 >= cthis->numV) || (v1 < 0) || (v2 < 0)) {
+		return looc_false;
+	}
+	/* 删除边<v1,v2> */
+	*(cthis->G + v1 * cthis->_maxVertex + v2) = LOOC_GRAPH_NO_EDGE;
+	cthis->numE--;
+	/* 如果是无向图，还要删除边<v2,v1> */
+	if (cthis->check == 0) {
+		*(cthis->G + v2 * cthis->_maxVertex + v1) = LOOC_GRAPH_NO_EDGE;
 	}
 	return looc_true;
 }
@@ -122,6 +144,115 @@ static int loocAdjacencyGraph_outDegree(loocAdjacencyGraph* cthis, int v) {
 }
 
 /**
+ * 计算顶点的入度
+ * @param  cthis 当前图对象指针
+ * @param  v     某个顶点的索引
+ * @return       返回指定顶点的入度
+ */
+static int loocAdjacencyGraph_inDegree(loocAdjacencyGraph* cthis, int v) {
+	int sum = 0;
+	int i;
+	if ((cthis->numV <= v) || (v < 0)) {
+		sum = 0;
+	} else {
+		/* 就是计算G[v]这一列有边的元素个数 */
+		for (i = 0; i < cthis->numV; i++) {
+			if ((*(cthis->G + i * cthis->_maxVertex + v)) != LOOC_GRAPH_NO_EDGE) {
+				sum++;
+			}
+		}
+	}
+	return sum;
+}
+
+/**
+ * 真正的dfs算法
+ * @param cthis 当前图对象指针
+ * @param v     开始访问的第一个顶点
+ * @param action 访问函数，由用户自己实现
+ * @param args	传递给action函数的参数
+ * @param visited 访问标记数组
+ */
+static void dfs(loocAdjacencyGraph* cthis, int v,
+		void (*action)(void* node, void* args), void* args, int* visited) {
+	int i;
+	/* 访问当前节点 */
+	action(cthis->data_pool + cthis->_elementSize * v, args);
+	visited[v] = 1;
+	for (i = 0; i < cthis->numV; i++) {
+		if ((*(cthis->G + v * cthis->_maxVertex + i)) != LOOC_GRAPH_NO_EDGE) {
+			if (visited[i] == 0) {
+				dfs(cthis, i, action, args, visited);
+			}
+		}
+	}
+}
+
+/**
+ * 图的深度优先遍历
+ * @param cthis 当前图对象指针
+ * @param v     开始访问的第一个顶点
+ * @param action 访问函数，由用户自己实现
+ * @param args	传递给action函数的参数
+ */
+static void loocAdjacencyGraph_DFS(loocAdjacencyGraph* cthis, int v,
+		void (*action)(void* node, void* args), void* args) {
+	int* visited = looc_malloc(sizeof(int) * cthis->numV,
+			"loocAdjacencyGraph_visited", looc_file_line);
+	int i = 0;
+	/* 初始化访问数组 */
+	for (i = 0; i < cthis->numV; i++) {
+		visited[i] = 0;
+	}
+	/* 调用dfs算法 */
+	dfs(cthis, v, action, args, visited);
+	/* 释放访问数组空间 */
+	looc_free(visited);
+}
+
+/**
+ * 图的广度优先遍历
+ * @param cthis 当前图对象指针
+ * @param v     开始访问的第一个顶点
+ * @param action 访问函数，由用户自己实现
+ * @param args	传递给action函数的参数
+ */
+static void loocAdjacencyGraph_BFS(loocAdjacencyGraph* cthis, int v,
+		void (*action)(void* node, void* args), void* args) {
+	int* visited = looc_malloc(sizeof(int) * cthis->numV,
+			"loocAdjacencyGraph_visited", looc_file_line);
+	int i = 0;
+	/* 设置队列，记录访问顺序 */
+	loocQueue* queue = loocQueue_new(looc_file_line);
+	queue->init(queue, cthis->numV, sizeof(int));
+	/* 初始化访问数组 */
+	for (i = 0; i < cthis->numV; i++) {
+		visited[i] = 0;
+	}
+	queue->enqueue(queue, (void*) &v);
+	/* 队列不为空，循环遍历 */
+	while (queue->length) {
+		v = *(int*) queue->dequeue(queue);
+		if (visited[v] == 0) {
+			/* 访问当前节点 */
+			action(cthis->data_pool + cthis->_elementSize * v, args);
+			visited[v] = 1;
+			for (i = 0; i < cthis->numV; i++) {
+				if (loocAdjacencyGraph_existEdge(cthis, v, i)) {
+					if (visited[i] == 0) {
+						queue->enqueue(queue, (void*) &i);
+					}
+				}
+			}
+		}
+	}
+	/* 释放队列的内存空间 */
+	loocQueue_delete(queue);
+	/* 释放访问数组空间 */
+	looc_free(visited);
+}
+
+/**
  * 图的销毁函数
  * @param object loocObject对象指针
  */
@@ -153,9 +284,13 @@ CTOR(loocAdjacencyGraph)
 	/* 成员函数绑定 */
 	FUNCTION_SETTING(init, loocAdjacencyGraph_init);
 	FUNCTION_SETTING(insertEdge, loocAdjacencyGraph_insertEdge);
+	FUNCTION_SETTING(deleteEdge, loocAdjacencyGraph_deleteEdge);
 	FUNCTION_SETTING(addVertex, loocAdjacencyGraph_addVertex);
 	FUNCTION_SETTING(existEdge, loocAdjacencyGraph_existEdge);
 	FUNCTION_SETTING(outDegree, loocAdjacencyGraph_outDegree);
+	FUNCTION_SETTING(inDegree, loocAdjacencyGraph_inDegree);
+	FUNCTION_SETTING(DFS, loocAdjacencyGraph_DFS);
+	FUNCTION_SETTING(BFS, loocAdjacencyGraph_BFS);
 	FUNCTION_SETTING(loocObject.finalize, loocAdjacencyGraph_finalize);END_CTOR
 
 /**

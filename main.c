@@ -70,6 +70,14 @@ static void actionPrint_RedBlackTree(loocRedBlackTreeNode* node, void* args) {
 }
 
 /**
+ * 针对图的节点的操作
+ * @param node 当前图顶点节点
+ * @param args 参数
+ */
+static void actionPrint_Graph(void* node, void* args) {
+	printf("%c ", *(char*) node);
+}
+/**
  * 散列函数(采用除数留余法计算散列地址)
  * @param  cthis 当前Hash表对象指针
  * @param  value 数据指针
@@ -581,22 +589,39 @@ int main(int argc, char **argv) {
 	/* 初始化无向图，顶点元素为int数，最多10个顶点 */
 	adjGraph->init(adjGraph, 10, sizeof(int), 0);
 	/* 增加顶点 */
-	i = 11;
+	i = 'a';
 	adjGraph->addVertex(adjGraph, (void*) &i);
-	i = 22;
+	i = 'b';
 	adjGraph->addVertex(adjGraph, (void*) &i);
-	i = 33;
+	i = 'c';
 	adjGraph->addVertex(adjGraph, (void*) &i);
-	i = 44;
+	i = 'd';
 	adjGraph->addVertex(adjGraph, (void*) &i);
-	i = 55;
+	i = 'e';
+	adjGraph->addVertex(adjGraph, (void*) &i);
+	i = 'f';
 	adjGraph->addVertex(adjGraph, (void*) &i);
 	/* 增加边 */
 	adjGraph->insertEdge(adjGraph, 0, 1, 1);
-	adjGraph->insertEdge(adjGraph, 1, 2, 2);
+	adjGraph->insertEdge(adjGraph, 0, 2, 1);
+	adjGraph->insertEdge(adjGraph, 0, 4, 1);
+	adjGraph->insertEdge(adjGraph, 1, 4, 2);
+	adjGraph->insertEdge(adjGraph, 2, 3, 2);
 	adjGraph->insertEdge(adjGraph, 3, 4, 3);
+	adjGraph->insertEdge(adjGraph, 5, 2, 2);
+	adjGraph->insertEdge(adjGraph, 3, 5, 3);
 	/* 计算出度 */
-	printf("out degree of node:%d\r\n", adjGraph->outDegree(adjGraph, 4));
+	printf("out degree of node:%d\r\n", adjGraph->outDegree(adjGraph, 2));
+	/* 删除边 <v2,v3>*/
+	adjGraph->deleteEdge(adjGraph, 2, 3);
+	/* 计算入度 */
+	printf("in degree of node:%d\r\n", adjGraph->inDegree(adjGraph, 3));
+	/* 深度优先遍历,从0号顶点开始 */
+	adjGraph->DFS(adjGraph, 0, actionPrint_Graph, NULL);
+	printf("\r\n");
+	/* 广度优先遍历，从0号节点开始 */
+	adjGraph->BFS(adjGraph, 0, actionPrint_Graph, NULL);
+	printf("\r\n");
 	/* 释放图对象内存空间 */
 	loocAdjacencyGraph_delete(adjGraph);
 	/* 报告内存泄露情况 */
@@ -611,22 +636,39 @@ int main(int argc, char **argv) {
 	/* 初始化无向图，顶点元素为int数，最多10个顶点 */
 	linkGraph->init(linkGraph, 10, sizeof(int), 0);
 	/* 增加顶点 */
-	i = 11;
+	i = 'a';
 	linkGraph->addVertex(linkGraph, (void*) &i);
-	i = 22;
+	i = 'b';
 	linkGraph->addVertex(linkGraph, (void*) &i);
-	i = 33;
+	i = 'c';
 	linkGraph->addVertex(linkGraph, (void*) &i);
-	i = 44;
+	i = 'd';
 	linkGraph->addVertex(linkGraph, (void*) &i);
-	i = 55;
+	i = 'e';
+	linkGraph->addVertex(linkGraph, (void*) &i);
+	i = 'f';
 	linkGraph->addVertex(linkGraph, (void*) &i);
 	/* 增加边 */
 	linkGraph->insertEdge(linkGraph, 0, 1, 1);
-	linkGraph->insertEdge(linkGraph, 1, 2, 2);
+	linkGraph->insertEdge(linkGraph, 0, 2, 1);
+	linkGraph->insertEdge(linkGraph, 0, 4, 1);
+	linkGraph->insertEdge(linkGraph, 1, 4, 2);
+	linkGraph->insertEdge(linkGraph, 2, 3, 2);
 	linkGraph->insertEdge(linkGraph, 3, 4, 3);
+	linkGraph->insertEdge(linkGraph, 5, 2, 2);
+	linkGraph->insertEdge(linkGraph, 3, 5, 3);
 	/* 计算出度 */
-	printf("out degree of node:%d\r\n", linkGraph->outDegree(linkGraph, 1));
+	printf("out degree of node:%d\r\n", linkGraph->outDegree(linkGraph, 2));
+	/* 删除边 <v2,v3>*/
+	linkGraph->deleteEdge(linkGraph, 2, 3);
+	/* 计算入度 */
+	printf("in degree of node:%d\r\n", linkGraph->inDegree(linkGraph, 3));
+	/* 深度优先遍历,从0号顶点开始 */
+	linkGraph->DFS(linkGraph, 0, actionPrint_Graph, NULL);
+	printf("\r\n");
+	/* 广度优先遍历，从0号节点开始 */
+	linkGraph->BFS(linkGraph, 0, actionPrint_Graph, NULL);
+	printf("\r\n");
 	/* 释放图对象内存空间 */
 	loocLinkedGraph_delete(linkGraph);
 	/* 报告内存泄露情况 */

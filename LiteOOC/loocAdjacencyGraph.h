@@ -49,12 +49,22 @@ extern "C" {
 		/* 插入边操作 */
 		looc_bool (*insertEdge)(loocAdjacencyGraph* cthis, int v1, int v2,
 				int weight);
+		/* 删除边 */
+		looc_bool (*deleteEdge)(loocAdjacencyGraph* cthis, int v1, int v2);
 		/* 插入顶点 */
 		looc_bool (*addVertex)(loocAdjacencyGraph* cthis, void* data);
 		/* 判定顶点之间是否有边存在 */
 		looc_bool (*existEdge)(loocAdjacencyGraph* cthis, int v1, int v2);
-		/* 计算某个节点的出度 */
+		/* 计算某个顶点的出度 */
 		int (*outDegree)(loocAdjacencyGraph* cthis, int v);
+		/* 计算某个顶点的入度 */
+		int (*inDegree)(loocAdjacencyGraph* cthis, int v);
+		/* 深度优先遍历 */
+		void (*DFS)(loocAdjacencyGraph* cthis, int v,
+				void (*action)(void* node, void* args), void* args);
+		/* 广度优先遍历 */
+		void (*BFS)(loocAdjacencyGraph* cthis, int v,
+				void (*action)(void* node, void* args), void* args);
 	};
 
 #ifdef __cplusplus
