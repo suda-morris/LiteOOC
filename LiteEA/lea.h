@@ -23,6 +23,26 @@ extern "C" {
  */
 looc_bool verifySquenceOfBST(int squence[], int length);
 
+/**
+ * 数制转换，直接转换成字符串
+ */
+void transNum(int num, int d, char result[]);
+
+/**
+ * 插入排序
+ */
+void insertSort(int D[], int n);
+
+/**
+ * 冒泡排序
+ */
+void bubbleSort(int D[], int n);
+
+/**
+ * 快速排序
+ */
+void quickSort(int D[], int p, int r);
+
 #ifdef __cplusPlus
 }
 #endif

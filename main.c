@@ -332,7 +332,7 @@ int main(int argc, char **argv) {
 	}
 	printf("\r\n");
 	/* 释放队列内存空间 */
-	loocStack_delete(stack);
+	loocQueue_delete(queue);
 	/* 报告内存泄漏情况 */
 	looc_report();
 
@@ -681,6 +681,34 @@ int main(int argc, char **argv) {
 	printf("verifySquenceOfBST %s\r\n",
 			verifySquenceOfBST(test_squence, 7) ? "pass" : "not pass");
 
-	return 0;
-}
+	/* 数制转换 */
+	char result[16];
+	transNum(76374, 16, result);
+	printf("%s\r\n", result);
+	transNum(234, 2, result);
+	printf("%s\r\n", result);
 
+	/* 插入排序 */
+	int data1[10] = { 45, 43, 23, 76, 897, 567, 32, 0, 24, 43 };
+	insertSort(data1, 10);
+	for (i = 0; i < 10; i++) {
+		printf("%d\t", data1[i]);
+	}
+	printf("\r\n");
+
+	/* 冒泡排序 */
+	int data2[10] = { 23, 43, 23, 19, 87, 65, 78, 90, 7, 10 };
+	bubbleSort(data2, 10);
+	for (i = 0; i < 10; i++) {
+		printf("%d\t", data2[i]);
+	}
+	printf("\r\n");
+
+	/* 快速排序 */
+	int data3[10] = { 23, 32, 76, 43, 11, 88, 23, 76, 23, 90 };
+	quickSort(data3, 0, 9);
+	for (i = 0; i < 10; i++) {
+		printf("%d\t", data3[i]);
+	}
+	printf("\r\n");
+}
