@@ -716,9 +716,9 @@ int main(int argc, char **argv) {
 	printf("\r\n");
 
 	/* 归并排序 */
-	int data4[9] = { 23, 25, 48, 73, 12, 82, 75, 30, 16 };
-	mergeSort(data4, 9);
-	for (i = 0; i < 9; i++) {
+	int data4[10] = { 32, 26, 15, 89, 87, 100, 654, 54, 33, 26 };
+	mergeSort(data4, 10);
+	for (i = 0; i < 10; i++) {
 		printf("%d\t", data4[i]);
 	}
 	printf("\r\n");
@@ -736,6 +736,30 @@ int main(int argc, char **argv) {
 	selectionSort(data6, 10);
 	for (i = 0; i < 10; i++) {
 		printf("%d\t", data6[i]);
+	}
+	printf("\r\n");
+
+	/* 堆排序 */
+	int data7[10] = { 32, 26, 15, 89, 87, 100, 654, 54, 33, 26 };
+	heapSort(data7, 10);
+	for (i = 0; i < 10; i++) {
+		printf("%d\t", data7[i]);
+	}
+	printf("\r\n");
+
+	/* 计数排序 */
+	int data8[10] = { 30, 54, 87, 98, 86, 34, 25, 55, 41, 67 };
+	countingSort(data8, 10);
+	for (i = 0; i < 10; i++) {
+		printf("%d\t", data8[i]);
+	}
+	printf("\r\n");
+
+	/* 基数排序 */
+	int data9[10] = { 35, 64, 88, 87, 896, 354, 15, 64, 1, 123 };
+	radixSort(data9, 10, 3, 10);
+	for (i = 0; i < 10; i++) {
+		printf("%d\t", data9[i]);
 	}
 	printf("\r\n");
 }

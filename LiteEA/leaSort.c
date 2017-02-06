@@ -8,6 +8,7 @@
  ============================================================================
  */
 #include "leaSort.h"
+#include <stdlib.h>
 
 /**
  * 插入排序(稳定)
@@ -40,7 +41,7 @@ void selectionSort(int D[], int n) {
 	int max;
 	for (i = 1; i < n; i++) {
 		max = n - i;		//将max初始化为待排序元素的最末尾位置
-		for (j = 0; j < n - i - 1; j++) {
+		for (j = 0; j < n - i; j++) {
 			if (D[j] > D[max]) {	//寻找待排序元素中最大元素的位置
 				max = j;
 			}
@@ -189,4 +190,142 @@ void shellSort(int D[], int n) {
 			}
 		} while (changed == 1);
 	}
+}
+
+static void keepHeap(int D[], int heap_size, int k) {
+	int left = 2 * k + 1;
+	int right = 2 * k + 2;
+	int largest = k;
+	/* 判断节点k与其左右孩子节点的大小 */
+	if (heap_size > left && D[left] > D[largest]) {
+		largest = left;
+	}
+	if (heap_size > right && D[right] > D[largest]) {
+		largest = right;
+	}
+	/* 如果子节点更大则交换 */
+	if (largest != k) {
+		D[k] = D[k] ^ D[largest];
+		D[largest] = D[k] ^ D[largest];
+		D[k] = D[k] ^ D[largest];
+		/* 递归，保持堆的性质 */
+		keepHeap(D, heap_size, largest);
+	}
+}
+
+static void buildHeap(int D[], int heap_size) {
+	/* 最后一个非叶子节点 */
+	int i = heap_size / 2 - 1;
+	while (i >= 0) {
+		/* 对每个节点修正堆的性质 */
+		keepHeap(D, heap_size, i);
+		i--;
+	}
+}
+
+/**
+ * 堆排序(不稳定)
+ * @param D 待排序数组
+ * @param n 数组长度
+ * 时间复杂度：O(nlog2n)
+ */
+void heapSort(int D[], int n) {
+	int i;
+	int heap_size = n;
+	buildHeap(D, heap_size);	//此时是一个无序堆
+	/* 将无序堆中的根节点交换至无序堆的末尾 */
+	for (i = heap_size - 1; i > 0; i--) {
+		if (D[0] != D[i]) {
+			D[0] = D[0] ^ D[i];
+			D[i] = D[0] ^ D[i];
+			D[0] = D[0] ^ D[i];
+		}
+		/* 无序堆的大小减一，整个数组的末尾是有序的 */
+		heap_size--;
+		/* 修正堆的根节点 */
+		keepHeap(D, heap_size, 0);
+	}
+}
+
+/**
+ * 计数排序(稳定)
+ * @param D 待排序数组
+ * @param n 数组长度
+ * 时间复杂度：O(n)
+ */
+void countingSort(int D[], int n) {
+	int i, j;
+	int k;
+	int max = D[0], min = D[0];
+	int *B;
+	/* 求最大最小值 */
+	for (i = 0; i < n; i++) {
+		if (D[i] > max) {
+			max = D[i];
+		}
+		if (D[i] < min) {
+			min = D[i];
+		}
+	}
+	k = max - min + 1;	//数组B的长度
+	B = malloc(k * sizeof(int));
+	for (i = 0; i < k; i++) {
+		B[i] = 0;
+	}
+	/* 存放计数值 */
+	for (i = 0; i < n; i++) {
+		B[D[i] - min]++;
+	}
+	/* 反向填充目标数组 */
+	j = 0;
+	for (i = 0; i < k; i++) {
+		while (B[i] > 0) {
+			D[j++] = i + min;
+			B[i]--;
+		}
+	}
+	free(B);
+}
+
+/**
+ * 基数排序(稳定)
+ * @param D 待排序数组
+ * @param n 数组长度
+ * @param d 所有元素最多位数
+ * @param w 基数，一般取10
+ * 时间复杂度：O(d(n+w))
+ */
+void radixSort(int D[], int n, int d, int w) {
+	int* temp = malloc(n * sizeof(int));	//存储每趟排序的中间数据
+	int* count = malloc(w * sizeof(int));
+	int i, j, k;
+	int degree = 1;
+	/* 总共排序d趟 */
+	for (i = 0; i < d; i++) {
+		/* 计数排序 */
+		for (j = 0; j < w; j++) {
+			count[j] = 0;
+		}
+		/* 统计每一位上相同值的元素个数 */
+		for (j = 0; j < n; j++) {
+			k = D[j] / degree % 10;
+			count[k]++;
+		}
+		/* 计算在原数组中各组值的结束位置 */
+		for (j = 1; j < w; j++) {
+			count[j] += count[j - 1];
+		}
+		/* 从后往前依次将各组的值放入临时数组中，这样才能不破坏稳定性 */
+		for (j = n - 1; j >= 0; j--) {
+			k = D[j] / degree % 10;
+			count[k]--;
+			temp[count[k]] = D[j];
+		}
+		for (j = 0; j < n; j++) {
+			D[j] = temp[j];
+		}
+		degree *= 10;
+	}
+	free(temp);
+	free(count);
 }
