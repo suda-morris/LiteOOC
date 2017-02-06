@@ -688,6 +688,9 @@ int main(int argc, char **argv) {
 	transNum(234, 2, result);
 	printf("%s\r\n", result);
 
+	/* 大小端模式 */
+	printf("Machine %s little endian\r\n", isLittleEndian() ? "is" : "isn't");
+
 	/* 插入排序 */
 	int data1[10] = { 45, 43, 23, 76, 897, 567, 32, 0, 24, 43 };
 	insertSort(data1, 10);
@@ -709,6 +712,30 @@ int main(int argc, char **argv) {
 	quickSort(data3, 0, 9);
 	for (i = 0; i < 10; i++) {
 		printf("%d\t", data3[i]);
+	}
+	printf("\r\n");
+
+	/* 归并排序 */
+	int data4[9] = { 23, 25, 48, 73, 12, 82, 75, 30, 16 };
+	mergeSort(data4, 9);
+	for (i = 0; i < 9; i++) {
+		printf("%d\t", data4[i]);
+	}
+	printf("\r\n");
+
+	/* 希尔排序 */
+	int data5[10] = { 32, 26, 15, 89, 87, 100, 654, 54, 33, 26 };
+	shellSort(data5, 10);
+	for (i = 0; i < 10; i++) {
+		printf("%d\t", data5[i]);
+	}
+	printf("\r\n");
+
+	/* 选择排序 */
+	int data6[10] = { 32, 26, 15, 89, 87, 100, 654, 54, 33, 26 };
+	selectionSort(data6, 10);
+	for (i = 0; i < 10; i++) {
+		printf("%d\t", data6[i]);
 	}
 	printf("\r\n");
 }

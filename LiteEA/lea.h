@@ -16,6 +16,7 @@ extern "C" {
 #endif
 
 #include "looc.h"
+#include "leaSort.h"
 
 /**
  * 验证一个数组是否是一个二叉查找树的后序遍历的结果
@@ -24,24 +25,14 @@ extern "C" {
 looc_bool verifySquenceOfBST(int squence[], int length);
 
 /**
+ * 判断CPU是否是小端模式
+ */
+int isLittleEndian(void);
+
+/**
  * 数制转换，直接转换成字符串
  */
 void transNum(int num, int d, char result[]);
-
-/**
- * 插入排序
- */
-void insertSort(int D[], int n);
-
-/**
- * 冒泡排序
- */
-void bubbleSort(int D[], int n);
-
-/**
- * 快速排序
- */
-void quickSort(int D[], int p, int r);
 
 #ifdef __cplusPlus
 }

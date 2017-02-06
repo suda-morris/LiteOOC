@@ -74,6 +74,22 @@ static void _transNum(int origin, int num, int d, char result[]) {
 }
 
 /**
+ * 判断CPU是否是小端模式
+ * @return  如果是小端模式返回1，否则返回0
+ */
+int isLittleEndian(void) {
+	union w {
+		int a;
+		char b;
+	} c;
+	c.a = 1;
+	if (c.b == 1) {
+		return 1;
+	}
+	return 0;
+}
+
+/**
  * 数制转换(辗转相除)
  * @param num    待转换的数字
  * @param d      进制
@@ -83,84 +99,3 @@ void transNum(int num, int d, char result[]) {
 	_transNum(num, num, d, result);
 }
 
-/**
- * 插入排序(稳定)
- * @param D 待排序数组
- * @param n 数组长度
- * 时间复杂度：O(n^2)
- */
-void insertSort(int D[], int n) {
-	int i, j;
-	int key;
-	/* n-1趟排序 */
-	for (i = 1; i < n; i++) {
-		key = D[i];
-		/* 挪位 */
-		for (j = i - 1; j >= 0 && D[j] > key; j--) {
-			D[j + 1] = D[j];
-		}
-		D[j + 1] = key;
-	}
-}
-
-/**
- * 冒泡排序(稳定)
- * @param D 待排序数组
- * @param n 数组长度
- * 时间复杂度：O(n^2)
- */
-void bubbleSort(int D[], int n) {
-	int changed = 0;
-	int i = 1, j = 0;
-	/* 最多n-1趟 */
-	do {
-		for (j = 0; j < n - i; j++) {
-			if (D[j] > D[j + 1]) {
-				/* 利用按位异或运算交换两数的值，省去中间变量 */
-				D[j] = D[j] ^ D[j + 1];
-				D[j + 1] = D[j] ^ D[j + 1];
-				D[j] = D[j] ^ D[j + 1];
-				changed = 1;	//本趟排序发生了元素交换
-			}
-		}
-		i++;
-	} while (i < n && changed == 1);
-}
-
-/* 序列划分函数 */
-static int partition(int D[], int p, int r) {
-	int i, j;
-	i = p - 1;
-	for (j = p; j < r; j++) {
-		if (D[j] <= D[r]) {	//发现小于划界元素的键值
-			i++;
-			if (D[i] != D[j]) {	//使用异或来交换数值
-				D[i] = D[i] ^ D[j];
-				D[j] = D[i] ^ D[j];
-				D[i] = D[i] ^ D[j];
-			}
-		}
-	}
-	if (D[i + 1] != D[r]) {
-		D[i + 1] = D[i + 1] ^ D[r];
-		D[r] = D[i + 1] ^ D[r];
-		D[i + 1] = D[i + 1] ^ D[r];
-	}
-	return i + 1;
-}
-
-/**
- * 快速排序(不稳定)
- * @param D 待排序数组
- * @param p 起始元素下标，从0开始
- * @param r 末尾元素下标，从0开始
- * 时间复杂度：O(nlog2n)
- */
-void quickSort(int D[], int p, int r) {
-	int position = 0;
-	if (p < r) {
-		position = partition(D, p, r);	//返回划界元素最终位置
-		quickSort(D, p, position - 1);	//对划分的子序列进行递归操作
-		quickSort(D, position + 1, r);
-	}
-}
