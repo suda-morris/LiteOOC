@@ -762,4 +762,7 @@ int main(int argc, char **argv) {
 		printf("%d\t", data9[i]);
 	}
 	printf("\r\n");
+
+	/* 二分查找 */
+	printf("key:88@ %d\r\n", binSearch(data9, 10, 88));
 }

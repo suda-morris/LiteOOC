@@ -50,3 +50,6 @@
 
 ## leaSort
 >排序算法
+
+## leaSearch
+>查找算法

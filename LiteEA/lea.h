@@ -17,6 +17,7 @@ extern "C" {
 
 #include "looc.h"
 #include "leaSort.h"
+#include "leaSearch.h"
 
 /**
  * 验证一个数组是否是一个二叉查找树的后序遍历的结果
