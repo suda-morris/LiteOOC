@@ -586,36 +586,51 @@ int main(int argc, char **argv) {
 	printf("****************loocAdjacencyGraph****************\r\n");
 	/* 创建图对象 */
 	loocAdjacencyGraph* adjGraph = loocAdjacencyGraph_new(looc_file_line);
-	/* 初始化无向图，顶点元素为int数，最多10个顶点 */
-	adjGraph->init(adjGraph, 10, sizeof(int), 0);
+	/* 初始化有向图，顶点元素为int数，最多10个顶点 */
+	adjGraph->init(adjGraph, 10, sizeof(int), 1);
 	/* 增加顶点 */
-	i = 'a';
+	i = '0';
 	adjGraph->addVertex(adjGraph, (void*) &i);
-	i = 'b';
+	i = '1';
 	adjGraph->addVertex(adjGraph, (void*) &i);
-	i = 'c';
+	i = '2';
 	adjGraph->addVertex(adjGraph, (void*) &i);
-	i = 'd';
+	i = '3';
 	adjGraph->addVertex(adjGraph, (void*) &i);
-	i = 'e';
+	i = '4';
 	adjGraph->addVertex(adjGraph, (void*) &i);
-	i = 'f';
+	i = '5';
+	adjGraph->addVertex(adjGraph, (void*) &i);
+	i = '6';
+	adjGraph->addVertex(adjGraph, (void*) &i);
+	i = '7';
+	adjGraph->addVertex(adjGraph, (void*) &i);
+	i = '8';
 	adjGraph->addVertex(adjGraph, (void*) &i);
 	/* 增加边 */
 	adjGraph->insertEdge(adjGraph, 0, 1, 1);
-	adjGraph->insertEdge(adjGraph, 0, 2, 1);
 	adjGraph->insertEdge(adjGraph, 0, 4, 1);
-	adjGraph->insertEdge(adjGraph, 1, 4, 2);
-	adjGraph->insertEdge(adjGraph, 2, 3, 2);
-	adjGraph->insertEdge(adjGraph, 3, 4, 3);
-	adjGraph->insertEdge(adjGraph, 5, 2, 2);
-	adjGraph->insertEdge(adjGraph, 3, 5, 3);
-	/* 计算出度 */
-	printf("out degree of node:%d\r\n", adjGraph->outDegree(adjGraph, 2));
-	/* 删除边 <v2,v3>*/
-	adjGraph->deleteEdge(adjGraph, 2, 3);
+	adjGraph->insertEdge(adjGraph, 1, 5, 2);
+	adjGraph->insertEdge(adjGraph, 5, 4, 2);
+	adjGraph->insertEdge(adjGraph, 5, 8, 2);
+	adjGraph->insertEdge(adjGraph, 4, 7, 3);
+	adjGraph->insertEdge(adjGraph, 4, 8, 3);
+	adjGraph->insertEdge(adjGraph, 3, 6, 4);
+	adjGraph->insertEdge(adjGraph, 6, 7, 5);
+	adjGraph->insertEdge(adjGraph, 8, 7, 5);
+	/* 拓扑排序 */
+	int topOrder_adj[10];
+	adjGraph->topologySort(adjGraph, topOrder_adj);
+	for (i = 0; i < adjGraph->numV; i++) {
+		printf("%d\t", topOrder_adj[i]);
+	}
+	printf("\r\n");
+	/* 计算v5的出度 */
+	printf("out degree of node:%d\r\n", adjGraph->outDegree(adjGraph, 5));
+	/* 删除边 <v5,v8>*/
+	adjGraph->deleteEdge(adjGraph, 5, 8);
 	/* 计算入度 */
-	printf("in degree of node:%d\r\n", adjGraph->inDegree(adjGraph, 3));
+	printf("in degree of node:%d\r\n", adjGraph->inDegree(adjGraph, 8));
 	/* 深度优先遍历,从0号顶点开始 */
 	adjGraph->DFS(adjGraph, 0, actionPrint_Graph, NULL);
 	printf("\r\n");
@@ -633,36 +648,51 @@ int main(int argc, char **argv) {
 	printf("****************loocLinkedGraph****************\r\n");
 	/* 创建图对象 */
 	loocLinkedGraph* linkGraph = loocLinkedGraph_new(looc_file_line);
-	/* 初始化无向图，顶点元素为int数，最多10个顶点 */
-	linkGraph->init(linkGraph, 10, sizeof(int), 0);
+	/* 初始化有向图，顶点元素为int数，最多10个顶点 */
+	linkGraph->init(linkGraph, 10, sizeof(int), 1);
 	/* 增加顶点 */
-	i = 'a';
+	i = '0';
 	linkGraph->addVertex(linkGraph, (void*) &i);
-	i = 'b';
+	i = '1';
 	linkGraph->addVertex(linkGraph, (void*) &i);
-	i = 'c';
+	i = '2';
 	linkGraph->addVertex(linkGraph, (void*) &i);
-	i = 'd';
+	i = '3';
 	linkGraph->addVertex(linkGraph, (void*) &i);
-	i = 'e';
+	i = '4';
 	linkGraph->addVertex(linkGraph, (void*) &i);
-	i = 'f';
+	i = '5';
+	linkGraph->addVertex(linkGraph, (void*) &i);
+	i = '6';
+	linkGraph->addVertex(linkGraph, (void*) &i);
+	i = '7';
+	linkGraph->addVertex(linkGraph, (void*) &i);
+	i = '8';
 	linkGraph->addVertex(linkGraph, (void*) &i);
 	/* 增加边 */
 	linkGraph->insertEdge(linkGraph, 0, 1, 1);
-	linkGraph->insertEdge(linkGraph, 0, 2, 1);
 	linkGraph->insertEdge(linkGraph, 0, 4, 1);
-	linkGraph->insertEdge(linkGraph, 1, 4, 2);
-	linkGraph->insertEdge(linkGraph, 2, 3, 2);
-	linkGraph->insertEdge(linkGraph, 3, 4, 3);
-	linkGraph->insertEdge(linkGraph, 5, 2, 2);
-	linkGraph->insertEdge(linkGraph, 3, 5, 3);
-	/* 计算出度 */
-	printf("out degree of node:%d\r\n", linkGraph->outDegree(linkGraph, 2));
-	/* 删除边 <v2,v3>*/
-	linkGraph->deleteEdge(linkGraph, 2, 3);
+	linkGraph->insertEdge(linkGraph, 1, 5, 2);
+	linkGraph->insertEdge(linkGraph, 5, 4, 2);
+	linkGraph->insertEdge(linkGraph, 5, 8, 2);
+	linkGraph->insertEdge(linkGraph, 4, 7, 3);
+	linkGraph->insertEdge(linkGraph, 4, 8, 3);
+	linkGraph->insertEdge(linkGraph, 3, 6, 4);
+	linkGraph->insertEdge(linkGraph, 6, 7, 5);
+	linkGraph->insertEdge(linkGraph, 8, 7, 5);
+	/* 拓扑排序 */
+	int topOrder_link[10];
+	linkGraph->topologySort(linkGraph, topOrder_link);
+	for (i = 0; i < linkGraph->numV; i++) {
+		printf("%d\t", topOrder_link[i]);
+	}
+	printf("\r\n");
+	/* 计算v5的出度 */
+	printf("out degree of node:%d\r\n", linkGraph->outDegree(linkGraph, 5));
+	/* 删除边 <v5,v8>*/
+	linkGraph->deleteEdge(linkGraph, 5, 8);
 	/* 计算入度 */
-	printf("in degree of node:%d\r\n", linkGraph->inDegree(linkGraph, 3));
+	printf("in degree of node:%d\r\n", linkGraph->inDegree(linkGraph, 8));
 	/* 深度优先遍历,从0号顶点开始 */
 	linkGraph->DFS(linkGraph, 0, actionPrint_Graph, NULL);
 	printf("\r\n");

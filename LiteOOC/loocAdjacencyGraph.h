@@ -16,12 +16,13 @@ extern "C" {
 
 #include <looc.h>
 #include "loocObject.h"
+#include <limits.h>
 
 	/* 默认顶点的最大数*/
 #define LOOC_DEFAULT_LOOCADJACENCYGRAPH_VERTEX			(20)
 
 	/* ∞设为双字节无符号整数的最大值65535*/
-#define LOOC_GRAPH_NO_EDGE 								(65535)
+#define LOOC_GRAPH_NO_EDGE 								(INT_MAX)
 
 	/**
 	 * 加权图的邻接矩阵存储结构
@@ -65,6 +66,8 @@ extern "C" {
 		/* 广度优先遍历 */
 		void (*BFS)(loocAdjacencyGraph* cthis, int v,
 				void (*action)(void* node, void* args), void* args);
+		/* 拓扑排序 */
+		looc_bool (*topologySort)(loocAdjacencyGraph* cthis, int order[]);
 	};
 
 #ifdef __cplusplus

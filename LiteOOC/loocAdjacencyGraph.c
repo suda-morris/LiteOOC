@@ -49,7 +49,8 @@ static void loocAdjacencyGraph_init(loocAdjacencyGraph* cthis, int maxVertex,
  */
 static looc_bool loocAdjacencyGraph_insertEdge(loocAdjacencyGraph* cthis,
 		int v1, int v2, int weight) {
-	if ((v1 >= cthis->numV) || (v2 >= cthis->numV) || (v1 < 0) || (v2 < 0)) {
+	if ((v1 >= cthis->numV) || (v2 >= cthis->numV) || (v1 < 0) || (v2 < 0)
+			|| (v1 == v2)) {
 		return looc_false;
 	}
 	/* 插入边<v1,v2> */
@@ -71,7 +72,8 @@ static looc_bool loocAdjacencyGraph_insertEdge(loocAdjacencyGraph* cthis,
  */
 static looc_bool loocAdjacencyGraph_deleteEdge(loocAdjacencyGraph* cthis,
 		int v1, int v2) {
-	if ((v1 >= cthis->numV) || (v2 >= cthis->numV) || (v1 < 0) || (v2 < 0)) {
+	if ((v1 >= cthis->numV) || (v2 >= cthis->numV) || (v1 < 0) || (v2 < 0)
+			|| (v1 == v2)) {
 		return looc_false;
 	}
 	/* 删除边<v1,v2> */
@@ -253,6 +255,63 @@ static void loocAdjacencyGraph_BFS(loocAdjacencyGraph* cthis, int v,
 }
 
 /**
+ * 拓扑排序
+ * @param  cthis 当前图对象指针
+ * @param  order 存储排序后的顶点下标
+ * @return       成功返回true，否则返回false(表明这不是一个DAG，即不是一个有向无环图)
+ */
+static looc_bool loocAdjacencyGraph_topologySort(loocAdjacencyGraph* cthis,
+		int order[]) {
+	int indegree[cthis->_maxVertex];
+	int i, j, v;
+	int cnt = 0;
+	loocQueue* queue = NULL;
+	if (cthis->check) {
+		queue = loocQueue_new(looc_file_line);
+		queue->init(queue, cthis->_maxVertex, sizeof(int));
+		for (i = 0; i < cthis->numV; i++) {
+			indegree[i] = 0;
+		}
+		/* 遍历图得到每个顶点的入度 */
+		for (i = 0; i < cthis->numV; i++) {
+			for (j = 0; j < cthis->numV; j++) {
+				if ((*(cthis->G + i * cthis->_maxVertex + j))
+						!= LOOC_GRAPH_NO_EDGE) {
+					indegree[j]++;
+				}
+			}
+		}
+		/* 将所有入度为0的顶点入列 */
+		for (i = 0; i < cthis->numV; i++) {
+			if (indegree[i] == 0) {
+				queue->enqueue(queue, (void*) &i);
+			}
+		}
+		/* 开始拓扑排序 */
+		while (queue->length) {
+			v = *(int*) queue->dequeue(queue);
+			order[cnt++] = v;
+			for (i = 0; i < cthis->numV; i++) {
+				if ((*(cthis->G + v * cthis->_maxVertex + i))
+						!= LOOC_GRAPH_NO_EDGE) {
+					if (--indegree[i] == 0) {
+						queue->enqueue(queue, (void*) &i);
+					}
+				}
+			}
+		}
+		loocQueue_delete(queue);
+		if (cnt != cthis->numV) {
+			return looc_false;
+		} else {
+			return looc_true;
+		}
+	} else {
+		return looc_false;
+	}
+}
+
+/**
  * 图的销毁函数
  * @param object loocObject对象指针
  */
@@ -291,6 +350,7 @@ CTOR(loocAdjacencyGraph)
 	FUNCTION_SETTING(inDegree, loocAdjacencyGraph_inDegree);
 	FUNCTION_SETTING(DFS, loocAdjacencyGraph_DFS);
 	FUNCTION_SETTING(BFS, loocAdjacencyGraph_BFS);
+	FUNCTION_SETTING(topologySort, loocAdjacencyGraph_topologySort);
 	FUNCTION_SETTING(loocObject.finalize, loocAdjacencyGraph_finalize);END_CTOR
 
 /**

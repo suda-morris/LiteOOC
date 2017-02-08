@@ -64,6 +64,8 @@ extern "C" {
 		/* 广度优先遍历 */
 		void (*BFS)(loocLinkedGraph* cthis, int v,
 				void (*action)(void* node, void* args), void* args);
+		/* 拓扑排序 */
+		looc_bool (*topologySort)(loocLinkedGraph* cthis, int order[]);
 	};
 
 #ifdef __cplusplus

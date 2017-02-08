@@ -74,6 +74,16 @@ static void _transNum(int origin, int num, int d, char result[]) {
 }
 
 /**
+ * 数制转换(辗转相除)
+ * @param num    待转换的数字
+ * @param d      进制
+ * @param result 存放转换后的字符串
+ */
+void transNum(int num, int d, char result[]) {
+	_transNum(num, num, d, result);
+}
+
+/**
  * 判断CPU是否是小端模式
  * @return  如果是小端模式返回1，否则返回0
  */
@@ -87,15 +97,5 @@ int isLittleEndian(void) {
 		return 1;
 	}
 	return 0;
-}
-
-/**
- * 数制转换(辗转相除)
- * @param num    待转换的数字
- * @param d      进制
- * @param result 存放转换后的字符串
- */
-void transNum(int num, int d, char result[]) {
-	_transNum(num, num, d, result);
 }
 

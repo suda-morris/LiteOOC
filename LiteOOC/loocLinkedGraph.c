@@ -42,7 +42,8 @@ static void loocLinkedGraph_init(loocLinkedGraph* cthis, int maxVertex,
 			sizeof(loocSingleList*) * maxVertex, "loocLinkedGraph_head",
 			looc_file_line);
 	for (i = 0; i < maxVertex; i++) {
-		cthis->h[i] = NULL;
+		cthis->h[i] = loocSingleList_new(looc_file_line);
+		cthis->h[i]->init(cthis->h[i], sizeof(AdjVertexNode), NULL);
 	}
 }
 
@@ -76,15 +77,11 @@ static looc_bool loocLinkedGraph_insertEdge(loocLinkedGraph* cthis, int v1,
 		int v2, int weight) {
 	AdjVertexNode node;
 	loocSingleListNode* listNode;
-	if ((v1 >= cthis->numV) || (v2 >= cthis->numV) || (v1 < 0) || (v2 < 0)) {
+	if ((v1 >= cthis->numV) || (v2 >= cthis->numV) || (v1 < 0) || (v2 < 0)
+			|| (v1 == v2)) {
 		return looc_false;
 	}
 	/* 插入边 <V1, V2> */
-	/* 还没有该顶点参与的边 */
-	if (cthis->h[v1] == NULL) {
-		cthis->h[v1] = loocSingleList_new(looc_file_line);
-		cthis->h[v1]->init(cthis->h[v1], sizeof(node), NULL);
-	}
 	/* 相同的边是否已经存在 */
 	listNode = cthis->h[v1]->head;
 	while (listNode) {
@@ -104,10 +101,6 @@ static looc_bool loocLinkedGraph_insertEdge(loocLinkedGraph* cthis, int v1,
 	cthis->numE++;
 	/* 若是无向图，还要插入边 <V2, V1> */
 	if (cthis->check == 0) {
-		if (cthis->h[v2] == NULL) {
-			cthis->h[v2] = loocSingleList_new(looc_file_line);
-			cthis->h[v2]->init(cthis->h[v2], sizeof(node), NULL);
-		}
 		listNode = cthis->h[v2]->head;
 		while (listNode) {
 			if (((AdjVertexNode*) (listNode->_data))->AdjIndex == v1) {
@@ -137,7 +130,8 @@ static looc_bool loocLinkedGraph_deleteEdge(loocLinkedGraph* cthis, int v1,
 	loocSingleListNode* listNode;
 	AdjVertexNode* node;
 	int position = -1;
-	if ((v1 >= cthis->numV) || (v2 >= cthis->numV) || (v1 < 0) || (v2 < 0)) {
+	if ((v1 >= cthis->numV) || (v2 >= cthis->numV) || (v1 < 0) || (v2 < 0)
+			|| (v1 == v2)) {
 		return looc_false;
 	}
 	/* 删除边<v1,v2> */
@@ -339,6 +333,65 @@ static void loocLinkedGraph_BFS(loocLinkedGraph* cthis, int v,
 }
 
 /**
+ * 拓扑排序
+ * @param  cthis 当前图对象指针
+ * @param  order 存储排序后的顶点下标
+ * @return       成功返回true，否则返回false(表明这不是一个DAG，即不是一个有向无环图)
+ */
+static looc_bool loocLinkedGraph_topologySort(loocLinkedGraph* cthis,
+		int order[]) {
+	int indegree[cthis->_maxVertex];
+	int i, v;
+	int cnt = 0;
+	loocSingleListNode* listNode = NULL;
+	AdjVertexNode* node = NULL;
+	loocQueue* queue = NULL;
+	if (cthis->check) {
+		queue = loocQueue_new(looc_file_line);
+		queue->init(queue, cthis->_maxVertex, sizeof(int));
+		for (i = 0; i < cthis->numV; i++) {
+			indegree[i] = 0;
+		}
+		/* 遍历图得到每个顶点的入度 */
+		for (i = 0; i < cthis->numV; i++) {
+			listNode = cthis->h[i]->head;
+			while (listNode) {
+				node = (AdjVertexNode*) (listNode->_data);
+				indegree[node->AdjIndex]++;
+				listNode = listNode->next;
+			}
+		}
+		/* 将所有入度为0的顶点入列 */
+		for (i = 0; i < cthis->numV; i++) {
+			if (indegree[i] == 0) {
+				queue->enqueue(queue, (void*) &i);
+			}
+		}
+		/* 开始拓扑排序 */
+		while (queue->length) {
+			v = *(int*) queue->dequeue(queue);
+			order[cnt++] = v;
+			listNode = cthis->h[v]->head;
+			while (listNode) {
+				node = (AdjVertexNode*) (listNode->_data);
+				if (--indegree[node->AdjIndex] == 0) {
+					queue->enqueue(queue, (void*) &(node->AdjIndex));
+				}
+				listNode = listNode->next;
+			}
+		}
+		loocQueue_delete(queue);
+		if (cnt != cthis->numV) {
+			return looc_false;
+		} else {
+			return looc_true;
+		}
+	} else {
+		return looc_false;
+	}
+}
+
+/**
  * 图的销毁函数
  * @param object loocObject对象指针
  */
@@ -349,7 +402,7 @@ static void loocLinkedGraph_finalize(loocObject* object) {
 		looc_free(graph->data_pool);
 	}
 	if (graph->h) {
-		for (i = 0; i < graph->numV; i++) {
+		for (i = 0; i < graph->_maxVertex; i++) {
 			if (graph->h[i]) {
 				loocSingleList_delete(graph->h[i]);
 			}
@@ -381,6 +434,7 @@ CTOR(loocLinkedGraph)
 	FUNCTION_SETTING(inDegree, loocLinkedGraph_inDegree);
 	FUNCTION_SETTING(DFS, loocLinkedGraph_DFS);
 	FUNCTION_SETTING(BFS, loocLinkedGraph_BFS);
+	FUNCTION_SETTING(topologySort, loocLinkedGraph_topologySort);
 	FUNCTION_SETTING(loocObject.finalize, loocLinkedGraph_finalize);END_CTOR
 
 /**
