@@ -18,9 +18,12 @@ extern "C" {
 #include <looc.h>
 #include "loocObject.h"
 #include "loocSingleList.h"
+#include <limits.h>
 
 	/* 默认顶点的最大数*/
 #define LOOC_DEFAULT_LOOCLINKEDGRAPH_VERTEX			(20)
+
+#define LOOC_GRAPH_NO_EDGE 							(INT_MAX)
 
 	/**
 	 * 邻接表存储的图
@@ -66,6 +69,9 @@ extern "C" {
 				void (*action)(void* node, void* args), void* args);
 		/* 拓扑排序 */
 		looc_bool (*topologySort)(loocLinkedGraph* cthis, int order[]);
+		/* 单源最短路径 */
+		looc_bool (*Dijkstra)(loocLinkedGraph* cthis, int S, int dist[],
+				int path[]);
 	};
 
 #ifdef __cplusplus

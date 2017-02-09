@@ -68,6 +68,9 @@ extern "C" {
 				void (*action)(void* node, void* args), void* args);
 		/* 拓扑排序 */
 		looc_bool (*topologySort)(loocAdjacencyGraph* cthis, int order[]);
+		/* 单源最短路径 */
+		looc_bool (*Dijkstra)(loocAdjacencyGraph* cthis, int S, int dist[],
+				int path[]);
 	};
 
 #ifdef __cplusplus

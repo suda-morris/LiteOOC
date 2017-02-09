@@ -392,6 +392,79 @@ static looc_bool loocLinkedGraph_topologySort(loocLinkedGraph* cthis,
 }
 
 /**
+ * 单元最短路径
+ * @param  cthis 当前图对象指针
+ * @param  S     源点
+ * @param  dist  各顶点到源的最短路径距离
+ * @param  path  记录最短路径上中间点的前驱点
+ * @return       成功返回true，失败返回false
+ */
+static looc_bool loocLinkedGraph_Dijkstra(loocLinkedGraph* cthis, int S,
+		int dist[], int path[]) {
+	int v;
+	int minV;
+	int minDist;
+	int* collected = looc_malloc(sizeof(int) * cthis->numV,
+			"loocLinkedGraph_collected", looc_file_line);
+	loocSingleListNode* listNode;
+	AdjVertexNode* node;
+	/* 初始化 */
+	for (v = 0; v < cthis->numV; v++) {
+		dist[v] = LOOC_GRAPH_NO_EDGE;
+		collected[v] = 0;
+		path[v] = -1;
+	}
+	listNode = cthis->h[S]->head;
+	while (listNode) {
+		node = (AdjVertexNode*) (listNode->_data);
+		/* 无法处理负数的权值 */
+		if (node->Weight < 0) {
+			return looc_false;
+		}
+		dist[node->AdjIndex] = node->Weight;
+		path[node->AdjIndex] = S;
+		listNode = listNode->next;
+	}
+	/* 将起点纳入集合中 */
+	collected[S] = 1;
+	dist[S] = 0;
+	/* 将未放入集合中的点放入集合，选取的标准是dist[]最小 */
+	while (1) {
+		/* 寻找最小的dist */
+		minV = S;
+		minDist = LOOC_GRAPH_NO_EDGE;
+		for (v = 0; v < cthis->numV; v++) {
+			if (collected[v] == 0 && dist[v] < minDist) {
+				minV = v;
+				minDist = dist[v];
+			}
+		}
+		/* 如果全部的点都已经收录 */
+		if (minDist == LOOC_GRAPH_NO_EDGE) {
+			break;
+		}
+		/* 收录minV */
+		collected[minV] = 1;
+		/* 更新dist */
+		listNode = cthis->h[minV]->head;
+		while (listNode) {
+			node = (AdjVertexNode*) (listNode->_data);
+			if (node->Weight < 0) {
+				return looc_false;	//无法处理负数的权值
+			}
+			if (dist[node->AdjIndex] > dist[minV] + node->Weight) {
+				dist[node->AdjIndex] = dist[minV] + node->Weight;
+				path[node->AdjIndex] = minV;
+			}
+			listNode = listNode->next;
+		}
+	}
+	/* 释放collected */
+	looc_free(collected);
+	return looc_true;
+}
+
+/**
  * 图的销毁函数
  * @param object loocObject对象指针
  */
@@ -435,6 +508,7 @@ CTOR(loocLinkedGraph)
 	FUNCTION_SETTING(DFS, loocLinkedGraph_DFS);
 	FUNCTION_SETTING(BFS, loocLinkedGraph_BFS);
 	FUNCTION_SETTING(topologySort, loocLinkedGraph_topologySort);
+	FUNCTION_SETTING(Dijkstra, loocLinkedGraph_Dijkstra);
 	FUNCTION_SETTING(loocObject.finalize, loocLinkedGraph_finalize);END_CTOR
 
 /**

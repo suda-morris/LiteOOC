@@ -146,7 +146,7 @@ static int Heap_compareStrategy(void* old, void* new) {
 
 int main(int argc, char **argv) {
 
-	int i = 0;
+	int i = 0, j = 0;
 	/**
 	 * 1. 顺序表的操作
 	 */
@@ -589,35 +589,28 @@ int main(int argc, char **argv) {
 	/* 初始化有向图，顶点元素为int数，最多10个顶点 */
 	adjGraph->init(adjGraph, 10, sizeof(int), 1);
 	/* 增加顶点 */
-	i = '0';
+	i = 'A';
 	adjGraph->addVertex(adjGraph, (void*) &i);
-	i = '1';
+	i = 'B';
 	adjGraph->addVertex(adjGraph, (void*) &i);
-	i = '2';
+	i = 'C';
 	adjGraph->addVertex(adjGraph, (void*) &i);
-	i = '3';
+	i = 'D';
 	adjGraph->addVertex(adjGraph, (void*) &i);
-	i = '4';
+	i = 'E';
 	adjGraph->addVertex(adjGraph, (void*) &i);
-	i = '5';
-	adjGraph->addVertex(adjGraph, (void*) &i);
-	i = '6';
-	adjGraph->addVertex(adjGraph, (void*) &i);
-	i = '7';
-	adjGraph->addVertex(adjGraph, (void*) &i);
-	i = '8';
+	i = 'F';
 	adjGraph->addVertex(adjGraph, (void*) &i);
 	/* 增加边 */
-	adjGraph->insertEdge(adjGraph, 0, 1, 1);
-	adjGraph->insertEdge(adjGraph, 0, 4, 1);
-	adjGraph->insertEdge(adjGraph, 1, 5, 2);
-	adjGraph->insertEdge(adjGraph, 5, 4, 2);
-	adjGraph->insertEdge(adjGraph, 5, 8, 2);
-	adjGraph->insertEdge(adjGraph, 4, 7, 3);
-	adjGraph->insertEdge(adjGraph, 4, 8, 3);
-	adjGraph->insertEdge(adjGraph, 3, 6, 4);
-	adjGraph->insertEdge(adjGraph, 6, 7, 5);
-	adjGraph->insertEdge(adjGraph, 8, 7, 5);
+	adjGraph->insertEdge(adjGraph, 0, 1, 6);
+	adjGraph->insertEdge(adjGraph, 0, 2, 3);
+	adjGraph->insertEdge(adjGraph, 2, 1, 2);
+	adjGraph->insertEdge(adjGraph, 1, 3, 5);
+	adjGraph->insertEdge(adjGraph, 2, 3, 3);
+	adjGraph->insertEdge(adjGraph, 3, 5, 3);
+	adjGraph->insertEdge(adjGraph, 3, 4, 2);
+	adjGraph->insertEdge(adjGraph, 2, 4, 4);
+	adjGraph->insertEdge(adjGraph, 4, 5, 5);
 	/* 拓扑排序 */
 	int topOrder_adj[10];
 	adjGraph->topologySort(adjGraph, topOrder_adj);
@@ -625,12 +618,37 @@ int main(int argc, char **argv) {
 		printf("%d\t", topOrder_adj[i]);
 	}
 	printf("\r\n");
-	/* 计算v5的出度 */
-	printf("out degree of node:%d\r\n", adjGraph->outDegree(adjGraph, 5));
-	/* 删除边 <v5,v8>*/
-	adjGraph->deleteEdge(adjGraph, 5, 8);
-	/* 计算入度 */
-	printf("in degree of node:%d\r\n", adjGraph->inDegree(adjGraph, 8));
+	/* 输出v0到各顶点的最短路径 */
+	int dist[10];
+	int path[10];
+	int s = 0;
+	adjGraph->Dijkstra(adjGraph, s, dist, path); //Dijkstra算法
+	for (i = 0; i < adjGraph->numV; i++) {
+		int stack[10];
+		int top = 0;
+		stack[top++] = i; //终点
+		int tempV = path[i]; //终点的前驱点
+		/* 循环知道没有前驱点或者前驱点是源点s */
+		while (tempV >= 0 && tempV != s) {
+			stack[top++] = tempV;
+			tempV = path[tempV];
+		}
+		stack[top] = s; //起点
+		/* 从起点开始输出路径 */
+		for (j = top; j >= 0; j--) {
+			if (j) {
+				printf("%d-->", stack[j]);
+			} else {
+				printf("%d:路径长度%d\r\n", stack[j], dist[i]);
+			}
+		}
+	}
+	/* 计算v3的出度 */
+	printf("out degree of node:%d\r\n", adjGraph->outDegree(adjGraph, 3));
+	/* 删除边 <v0,v1>*/
+	adjGraph->deleteEdge(adjGraph, 0, 1);
+	/* 计算v5的入度 */
+	printf("in degree of node:%d\r\n", adjGraph->inDegree(adjGraph, 5));
 	/* 深度优先遍历,从0号顶点开始 */
 	adjGraph->DFS(adjGraph, 0, actionPrint_Graph, NULL);
 	printf("\r\n");
@@ -651,35 +669,28 @@ int main(int argc, char **argv) {
 	/* 初始化有向图，顶点元素为int数，最多10个顶点 */
 	linkGraph->init(linkGraph, 10, sizeof(int), 1);
 	/* 增加顶点 */
-	i = '0';
+	i = 'A';
 	linkGraph->addVertex(linkGraph, (void*) &i);
-	i = '1';
+	i = 'B';
 	linkGraph->addVertex(linkGraph, (void*) &i);
-	i = '2';
+	i = 'C';
 	linkGraph->addVertex(linkGraph, (void*) &i);
-	i = '3';
+	i = 'D';
 	linkGraph->addVertex(linkGraph, (void*) &i);
-	i = '4';
+	i = 'E';
 	linkGraph->addVertex(linkGraph, (void*) &i);
-	i = '5';
-	linkGraph->addVertex(linkGraph, (void*) &i);
-	i = '6';
-	linkGraph->addVertex(linkGraph, (void*) &i);
-	i = '7';
-	linkGraph->addVertex(linkGraph, (void*) &i);
-	i = '8';
+	i = 'F';
 	linkGraph->addVertex(linkGraph, (void*) &i);
 	/* 增加边 */
-	linkGraph->insertEdge(linkGraph, 0, 1, 1);
-	linkGraph->insertEdge(linkGraph, 0, 4, 1);
-	linkGraph->insertEdge(linkGraph, 1, 5, 2);
-	linkGraph->insertEdge(linkGraph, 5, 4, 2);
-	linkGraph->insertEdge(linkGraph, 5, 8, 2);
-	linkGraph->insertEdge(linkGraph, 4, 7, 3);
-	linkGraph->insertEdge(linkGraph, 4, 8, 3);
-	linkGraph->insertEdge(linkGraph, 3, 6, 4);
-	linkGraph->insertEdge(linkGraph, 6, 7, 5);
-	linkGraph->insertEdge(linkGraph, 8, 7, 5);
+	linkGraph->insertEdge(linkGraph, 0, 1, 6);
+	linkGraph->insertEdge(linkGraph, 0, 2, 3);
+	linkGraph->insertEdge(linkGraph, 2, 1, 2);
+	linkGraph->insertEdge(linkGraph, 1, 3, 5);
+	linkGraph->insertEdge(linkGraph, 2, 3, 3);
+	linkGraph->insertEdge(linkGraph, 3, 5, 3);
+	linkGraph->insertEdge(linkGraph, 3, 4, 2);
+	linkGraph->insertEdge(linkGraph, 2, 4, 4);
+	linkGraph->insertEdge(linkGraph, 4, 5, 5);
 	/* 拓扑排序 */
 	int topOrder_link[10];
 	linkGraph->topologySort(linkGraph, topOrder_link);
@@ -687,12 +698,35 @@ int main(int argc, char **argv) {
 		printf("%d\t", topOrder_link[i]);
 	}
 	printf("\r\n");
-	/* 计算v5的出度 */
-	printf("out degree of node:%d\r\n", linkGraph->outDegree(linkGraph, 5));
-	/* 删除边 <v5,v8>*/
-	linkGraph->deleteEdge(linkGraph, 5, 8);
-	/* 计算入度 */
-	printf("in degree of node:%d\r\n", linkGraph->inDegree(linkGraph, 8));
+	/* 输出v0到各顶点的最短路径 */
+	s = 0;
+	linkGraph->Dijkstra(linkGraph, s, dist, path); //Dijkstra算法
+	for (i = 0; i < linkGraph->numV; i++) {
+		int stack[10];
+		int top = 0;
+		stack[top++] = i; //终点
+		int tempV = path[i]; //终点的前驱点
+		/* 循环知道没有前驱点或者前驱点是源点s */
+		while (tempV >= 0 && tempV != s) {
+			stack[top++] = tempV;
+			tempV = path[tempV];
+		}
+		stack[top] = s; //起点
+		/* 从起点开始输出路径 */
+		for (j = top; j >= 0; j--) {
+			if (j) {
+				printf("%d-->", stack[j]);
+			} else {
+				printf("%d:路径长度%d\r\n", stack[j], dist[i]);
+			}
+		}
+	}
+	/* 计算v3的出度 */
+	printf("out degree of node:%d\r\n", linkGraph->outDegree(linkGraph, 3));
+	/* 删除边 <v0,v1>*/
+	linkGraph->deleteEdge(linkGraph, 0, 1);
+	/* 计算v5的入度 */
+	printf("in degree of node:%d\r\n", linkGraph->inDegree(linkGraph, 5));
 	/* 深度优先遍历,从0号顶点开始 */
 	linkGraph->DFS(linkGraph, 0, actionPrint_Graph, NULL);
 	printf("\r\n");

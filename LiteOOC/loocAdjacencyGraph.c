@@ -312,6 +312,78 @@ static looc_bool loocAdjacencyGraph_topologySort(loocAdjacencyGraph* cthis,
 }
 
 /**
+ * 单元最短路径
+ * @param  cthis 当前图对象指针
+ * @param  S     源点
+ * @param  dist  各顶点到源的最短路径距离
+ * @param  path  记录最短路径上中间点的前驱点
+ * @return       成功返回true，失败返回false
+ */
+static looc_bool loocAdjacencyGraph_Dijkstra(loocAdjacencyGraph* cthis, int S,
+		int dist[], int path[]) {
+	int v, minV;
+	int minDist;
+	int* collected = looc_malloc(sizeof(int) * cthis->numV,
+			"loocAdjacencyGraph_collected", looc_file_line);
+	/* 初始化 */
+	for (v = 0; v < cthis->numV; v++) {
+		/* 获取图中S到各顶点的权值作为dist初始值 */
+		dist[v] = *(cthis->G + S * cthis->_maxVertex + v);
+		if (dist[v] < 0) {
+			return looc_false;	//无法处理负数的权值
+		}
+		collected[v] = 0;
+		if (dist[v] == LOOC_GRAPH_NO_EDGE) {
+			path[v] = -1;	//如果S和v之间无边，则赋值-1
+		} else {
+			path[v] = S;	//S和v之间有边，则前驱点初始化为S
+		}
+	}
+	/* 先将起点收入集合 */
+	dist[S] = 0;
+	collected[S] = 1;
+	/* 将未放入集合中的点放入集合，选取的标准是dist[]最小 */
+	while (1) {
+		/* minV = 未被收录顶点中dist最小者 */
+		minDist = LOOC_GRAPH_NO_EDGE;
+		minV = S;
+		for (v = 0; v < cthis->numV; v++) {
+			/* 若v未被收录，且dist[v]更小 */
+			if (collected[v] == 0 && dist[v] < minDist) {
+				minDist = dist[v];
+				minV = v;
+			}
+		}
+		/* 已经全部收录 */
+		if (minDist == LOOC_GRAPH_NO_EDGE) {
+			break;
+		}
+		/* 收录minV */
+		collected[minV] = 1;
+		/* 更新dist */
+		for (v = 0; v < cthis->numV; v++) {
+			/* 若v是minV的邻接点并且未被收录 */
+			if (*(cthis->G + minV * cthis->_maxVertex + v) < LOOC_GRAPH_NO_EDGE
+					&& collected[v] == 0) {
+				if (*(cthis->G + minV * cthis->_maxVertex + v) < 0) {
+					return looc_false; //若有负边,返回错误标记
+				}
+				/* 若收录minV使得dist[v]变小 */
+				if (dist[minV] + *(cthis->G + minV * cthis->_maxVertex + v)
+						< dist[v]) {
+					dist[v] = dist[minV]
+							+ *(cthis->G + minV * cthis->_maxVertex + v); //更新dist[v]
+					path[v] = minV; //v的前驱点就是minV
+				}
+			}
+		}
+	}
+	/* 释放collected的内存空间 */
+	looc_free(collected);
+	return looc_true;
+}
+
+/**
  * 图的销毁函数
  * @param object loocObject对象指针
  */
@@ -351,6 +423,7 @@ CTOR(loocAdjacencyGraph)
 	FUNCTION_SETTING(DFS, loocAdjacencyGraph_DFS);
 	FUNCTION_SETTING(BFS, loocAdjacencyGraph_BFS);
 	FUNCTION_SETTING(topologySort, loocAdjacencyGraph_topologySort);
+	FUNCTION_SETTING(Dijkstra, loocAdjacencyGraph_Dijkstra);
 	FUNCTION_SETTING(loocObject.finalize, loocAdjacencyGraph_finalize);END_CTOR
 
 /**
