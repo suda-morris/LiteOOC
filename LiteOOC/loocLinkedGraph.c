@@ -392,7 +392,7 @@ static looc_bool loocLinkedGraph_topologySort(loocLinkedGraph* cthis,
 }
 
 /**
- * 单元最短路径
+ * 单源最短路径
  * @param  cthis 当前图对象指针
  * @param  S     源点
  * @param  dist  各顶点到源的最短路径距离
@@ -465,6 +465,51 @@ static looc_bool loocLinkedGraph_Dijkstra(loocLinkedGraph* cthis, int S,
 }
 
 /**
+ * 多源最短路径
+ * @param  cthis 当前图对象指针
+ * @param  D     保存每对顶点的最短路径的权值
+ * @param  path  记录最短路径上中间点的前驱点
+ * @return       成功返回true，失败返回false
+ */
+static looc_bool loocLinkedGraph_Floyd(loocLinkedGraph* cthis,
+		int D[][LOOC_DEFAULT_LOOCLINKEDGRAPH_VERTEX],
+		int path[][LOOC_DEFAULT_LOOCLINKEDGRAPH_VERTEX]) {
+	int i, j, k;
+	loocSingleListNode* listNode;
+	AdjVertexNode* node;
+	/* 初始化 */
+	for (i = 0; i < cthis->_maxVertex; i++) {
+		for (j = 0; j < cthis->_maxVertex; j++) {
+			if (i == j) {
+				D[i][j] = 0;
+			} else {
+				D[i][j] = LOOC_GRAPH_NO_EDGE;
+			}
+			path[i][j] = -1;
+		}
+	}
+	for (i = 0; i < cthis->numV; i++) {
+		listNode = cthis->h[i]->head;
+		while (listNode) {
+			node = (AdjVertexNode*) (listNode->_data);
+			D[i][node->AdjIndex] = node->Weight;
+			listNode = listNode->next;
+		}
+	}
+	/* Floyd核心算法 */
+	for (k = 0; k < cthis->numV; k++)
+		for (i = 0; i < cthis->numV; i++)
+			for (j = 0; j < cthis->numV; j++)
+				if (D[i][k] + D[k][j] < D[i][j]) {
+					D[i][j] = D[i][k] + D[k][j];
+					if (i == j && D[i][j] < 0) //若发现负值圈
+						return looc_false; //不能正确解决，返回错误标记
+					path[i][j] = k;	//i到j的最短路径必须要经过k
+				}
+	return looc_true;
+}
+
+/**
  * 图的销毁函数
  * @param object loocObject对象指针
  */
@@ -509,6 +554,7 @@ CTOR(loocLinkedGraph)
 	FUNCTION_SETTING(BFS, loocLinkedGraph_BFS);
 	FUNCTION_SETTING(topologySort, loocLinkedGraph_topologySort);
 	FUNCTION_SETTING(Dijkstra, loocLinkedGraph_Dijkstra);
+	FUNCTION_SETTING(Floyd, loocLinkedGraph_Floyd);
 	FUNCTION_SETTING(loocObject.finalize, loocLinkedGraph_finalize);END_CTOR
 
 /**

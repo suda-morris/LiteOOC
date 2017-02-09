@@ -21,9 +21,9 @@ extern "C" {
 #include <limits.h>
 
 	/* 默认顶点的最大数*/
-#define LOOC_DEFAULT_LOOCLINKEDGRAPH_VERTEX			(20)
+#define LOOC_DEFAULT_LOOCLINKEDGRAPH_VERTEX			(10)
 
-#define LOOC_GRAPH_NO_EDGE 							(INT_MAX)
+#define LOOC_GRAPH_NO_EDGE 							(99999999)
 
 	/**
 	 * 邻接表存储的图
@@ -72,6 +72,10 @@ extern "C" {
 		/* 单源最短路径 */
 		looc_bool (*Dijkstra)(loocLinkedGraph* cthis, int S, int dist[],
 				int path[]);
+		/* 多源最短路径(每对顶点间的最短路径) */
+		looc_bool (*Floyd)(loocLinkedGraph* cthis,
+				int D[][LOOC_DEFAULT_LOOCLINKEDGRAPH_VERTEX],
+				int path[][LOOC_DEFAULT_LOOCLINKEDGRAPH_VERTEX]);
 	};
 
 #ifdef __cplusplus

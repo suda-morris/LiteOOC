@@ -11,6 +11,7 @@
 #include <loocAdjacencyGraph.h>
 #include <loocQueue.h>
 #include <string.h>
+#include <stdio.h>
 
 /**
  * 图的初始化
@@ -34,7 +35,11 @@ static void loocAdjacencyGraph_init(loocAdjacencyGraph* cthis, int maxVertex,
 	/* 初始化邻接矩阵 */
 	for (v = 0; v < maxVertex; v++) {
 		for (w = 0; w < maxVertex; w++) {
-			*(cthis->G + v * maxVertex + w) = LOOC_GRAPH_NO_EDGE;
+			if (v == w) {
+				*(cthis->G + v * maxVertex + w) = 0;	//邻接矩阵主对角线为0
+			} else {
+				*(cthis->G + v * maxVertex + w) = LOOC_GRAPH_NO_EDGE;
+			}
 		}
 	}
 }
@@ -115,6 +120,7 @@ static looc_bool loocAdjacencyGraph_addVertex(loocAdjacencyGraph* cthis,
 static looc_bool loocAdjacencyGraph_existEdge(loocAdjacencyGraph* cthis, int v1,
 		int v2) {
 	if ((cthis->numV <= v1) || (cthis->numV <= v2) || (v1 < 0) || (v2 < 0)
+			|| (v1 == v2)
 			|| ((*(cthis->G + v1 * cthis->_maxVertex + v2))
 					== LOOC_GRAPH_NO_EDGE)) {
 		return looc_false;
@@ -137,7 +143,9 @@ static int loocAdjacencyGraph_outDegree(loocAdjacencyGraph* cthis, int v) {
 	} else {
 		/* 就是计算G[v]这一行有边的元素个数 */
 		for (i = 0; i < cthis->numV; i++) {
-			if ((*(cthis->G + v * cthis->_maxVertex + i)) != LOOC_GRAPH_NO_EDGE) {
+			if ((i != v)
+					&& ((*(cthis->G + v * cthis->_maxVertex + i))
+							!= LOOC_GRAPH_NO_EDGE)) {
 				sum++;
 			}
 		}
@@ -159,7 +167,9 @@ static int loocAdjacencyGraph_inDegree(loocAdjacencyGraph* cthis, int v) {
 	} else {
 		/* 就是计算G[v]这一列有边的元素个数 */
 		for (i = 0; i < cthis->numV; i++) {
-			if ((*(cthis->G + i * cthis->_maxVertex + v)) != LOOC_GRAPH_NO_EDGE) {
+			if ((i != v)
+					&& ((*(cthis->G + i * cthis->_maxVertex + v))
+							!= LOOC_GRAPH_NO_EDGE)) {
 				sum++;
 			}
 		}
@@ -182,7 +192,9 @@ static void dfs(loocAdjacencyGraph* cthis, int v,
 	action(cthis->data_pool + cthis->_elementSize * v, args);
 	visited[v] = 1;
 	for (i = 0; i < cthis->numV; i++) {
-		if ((*(cthis->G + v * cthis->_maxVertex + i)) != LOOC_GRAPH_NO_EDGE) {
+		if ((i != v)
+				&& ((*(cthis->G + v * cthis->_maxVertex + i))
+						!= LOOC_GRAPH_NO_EDGE)) {
 			if (visited[i] == 0) {
 				dfs(cthis, i, action, args, visited);
 			}
@@ -275,8 +287,9 @@ static looc_bool loocAdjacencyGraph_topologySort(loocAdjacencyGraph* cthis,
 		/* 遍历图得到每个顶点的入度 */
 		for (i = 0; i < cthis->numV; i++) {
 			for (j = 0; j < cthis->numV; j++) {
-				if ((*(cthis->G + i * cthis->_maxVertex + j))
-						!= LOOC_GRAPH_NO_EDGE) {
+				if ((i != j)
+						&& ((*(cthis->G + i * cthis->_maxVertex + j))
+								!= LOOC_GRAPH_NO_EDGE)) {
 					indegree[j]++;
 				}
 			}
@@ -292,8 +305,9 @@ static looc_bool loocAdjacencyGraph_topologySort(loocAdjacencyGraph* cthis,
 			v = *(int*) queue->dequeue(queue);
 			order[cnt++] = v;
 			for (i = 0; i < cthis->numV; i++) {
-				if ((*(cthis->G + v * cthis->_maxVertex + i))
-						!= LOOC_GRAPH_NO_EDGE) {
+				if ((i != v)
+						&& ((*(cthis->G + v * cthis->_maxVertex + i))
+								!= LOOC_GRAPH_NO_EDGE)) {
 					if (--indegree[i] == 0) {
 						queue->enqueue(queue, (void*) &i);
 					}
@@ -312,7 +326,7 @@ static looc_bool loocAdjacencyGraph_topologySort(loocAdjacencyGraph* cthis,
 }
 
 /**
- * 单元最短路径
+ * 单源最短路径
  * @param  cthis 当前图对象指针
  * @param  S     源点
  * @param  dist  各顶点到源的最短路径距离
@@ -384,6 +398,37 @@ static looc_bool loocAdjacencyGraph_Dijkstra(loocAdjacencyGraph* cthis, int S,
 }
 
 /**
+ * 多源最短路径
+ * @param  cthis 当前图对象指针
+ * @param  D     保存每对顶点的最短路径的权值
+ * @param  path  记录最短路径上中间点的前驱点
+ * @return       成功返回true，失败返回false
+ */
+static looc_bool loocAdjacencyGraph_Floyd(loocAdjacencyGraph* cthis,
+		int D[][LOOC_DEFAULT_LOOCADJACENCYGRAPH_VERTEX],
+		int path[][LOOC_DEFAULT_LOOCADJACENCYGRAPH_VERTEX]) {
+	int i, j, k;
+	/* 初始化 */
+	for (i = 0; i < cthis->_maxVertex; i++) {
+		for (j = 0; j < cthis->_maxVertex; j++) {
+			D[i][j] = *(cthis->G + i * cthis->_maxVertex + j);
+			path[i][j] = -1;
+		}
+	}
+	/* Floyd核心算法 */
+	for (k = 0; k < cthis->numV; k++)
+		for (i = 0; i < cthis->numV; i++)
+			for (j = 0; j < cthis->numV; j++)
+				if (D[i][k] + D[k][j] < D[i][j]) {
+					D[i][j] = D[i][k] + D[k][j];
+					if (i == j && D[i][j] < 0) //若发现负值圈
+						return looc_false; //不能正确解决，返回错误标记
+					path[i][j] = k;	//i到j的最短路径必须要经过k
+				}
+	return looc_true;
+}
+
+/**
  * 图的销毁函数
  * @param object loocObject对象指针
  */
@@ -424,6 +469,7 @@ CTOR(loocAdjacencyGraph)
 	FUNCTION_SETTING(BFS, loocAdjacencyGraph_BFS);
 	FUNCTION_SETTING(topologySort, loocAdjacencyGraph_topologySort);
 	FUNCTION_SETTING(Dijkstra, loocAdjacencyGraph_Dijkstra);
+	FUNCTION_SETTING(Floyd, loocAdjacencyGraph_Floyd);
 	FUNCTION_SETTING(loocObject.finalize, loocAdjacencyGraph_finalize);END_CTOR
 
 /**

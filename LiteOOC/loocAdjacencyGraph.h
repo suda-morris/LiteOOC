@@ -19,10 +19,10 @@ extern "C" {
 #include <limits.h>
 
 	/* 默认顶点的最大数*/
-#define LOOC_DEFAULT_LOOCADJACENCYGRAPH_VERTEX			(20)
+#define LOOC_DEFAULT_LOOCADJACENCYGRAPH_VERTEX			(10)
 
 	/* ∞设为双字节无符号整数的最大值65535*/
-#define LOOC_GRAPH_NO_EDGE 								(INT_MAX)
+#define LOOC_GRAPH_NO_EDGE 								(99999999)
 
 	/**
 	 * 加权图的邻接矩阵存储结构
@@ -71,6 +71,10 @@ extern "C" {
 		/* 单源最短路径 */
 		looc_bool (*Dijkstra)(loocAdjacencyGraph* cthis, int S, int dist[],
 				int path[]);
+		/* 多源最短路径(每对顶点间的最短路径) */
+		looc_bool (*Floyd)(loocAdjacencyGraph* cthis,
+				int D[][LOOC_DEFAULT_LOOCADJACENCYGRAPH_VERTEX],
+				int path[][LOOC_DEFAULT_LOOCADJACENCYGRAPH_VERTEX]);
 	};
 
 #ifdef __cplusplus

@@ -144,6 +144,38 @@ static int Heap_compareStrategy(void* old, void* new) {
 	}
 }
 
+static void FloydDisplaySinglePath(
+		int path[][LOOC_DEFAULT_LOOCADJACENCYGRAPH_VERTEX], int i, int j) {
+	int k = path[i][j];
+	if (k != -1) {
+		FloydDisplaySinglePath(path, i, k);
+		printf("%d ", k);
+		FloydDisplaySinglePath(path, k, j);
+	}
+}
+
+/**
+ * 打印多源最短路径（每对顶点的最短路径）
+ * @param  cthis 当前图对象指针
+ * @param  D     保存每对顶点的最短路径的权值
+ * @param  path  记录最短路径上中间点的前驱点
+ */
+static void FloydDisplayPaths(loocAdjacencyGraph* cthis,
+		int D[][LOOC_DEFAULT_LOOCADJACENCYGRAPH_VERTEX],
+		int path[][LOOC_DEFAULT_LOOCADJACENCYGRAPH_VERTEX]) {
+	int i, j;
+	for (i = 0; i < cthis->numV; i++) {
+		for (j = 0; j < cthis->numV; j++) {
+			if (D[i][j] != LOOC_GRAPH_NO_EDGE) {
+				printf("顶点%d到顶点%d的最短路径权值为%d\r\n", i, j, D[i][j]);
+				printf("%d ", i);
+				FloydDisplaySinglePath(path, i, j);
+				printf("%d\r\n", j);
+			}
+		}
+	}
+}
+
 int main(int argc, char **argv) {
 
 	int i = 0, j = 0;
@@ -643,6 +675,11 @@ int main(int argc, char **argv) {
 			}
 		}
 	}
+	/* 多源最短路径 */
+	int D[10][10];
+	int pathij[10][10];
+	adjGraph->Floyd(adjGraph, D, pathij);
+	FloydDisplayPaths(adjGraph, D, pathij);
 	/* 计算v3的出度 */
 	printf("out degree of node:%d\r\n", adjGraph->outDegree(adjGraph, 3));
 	/* 删除边 <v0,v1>*/
@@ -721,6 +758,9 @@ int main(int argc, char **argv) {
 			}
 		}
 	}
+	/* 多源最短路径 */
+	linkGraph->Floyd(linkGraph, D, pathij);
+	FloydDisplayPaths(linkGraph, D, pathij);
 	/* 计算v3的出度 */
 	printf("out degree of node:%d\r\n", linkGraph->outDegree(linkGraph, 3));
 	/* 删除边 <v0,v1>*/
