@@ -57,6 +57,8 @@ extern "C" {
 		looc_bool (*deleteEdge)(loocLinkedGraph* cthis, int v1, int v2);
 		/* 判定顶点之间是否有边存在 */
 		looc_bool (*existEdge)(loocLinkedGraph* cthis, int v1, int v2);
+		/* 获取边的权值 */
+		int (*getValueOfEdge)(loocLinkedGraph* cthis, int v1, int v2);
 		/* 计算某个顶点的出度 */
 		int (*outDegree)(loocLinkedGraph* cthis, int v);
 		/* 计算某个顶点的入度 */
@@ -76,6 +78,8 @@ extern "C" {
 		looc_bool (*Floyd)(loocLinkedGraph* cthis,
 				int D[][LOOC_DEFAULT_LOOCLINKEDGRAPH_VERTEX],
 				int path[][LOOC_DEFAULT_LOOCLINKEDGRAPH_VERTEX]);
+		/* 最小生成树Prim算法 ,用于稠密图*/
+		looc_bool (*Prim)(loocLinkedGraph* cthis, loocLinkedGraph* MST);
 	};
 
 #ifdef __cplusplus

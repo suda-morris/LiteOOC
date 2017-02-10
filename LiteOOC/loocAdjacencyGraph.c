@@ -130,6 +130,22 @@ static looc_bool loocAdjacencyGraph_existEdge(loocAdjacencyGraph* cthis, int v1,
 }
 
 /**
+ * 获取边的权值
+ * @param  cthis 当前图对象指针
+ * @param  v1    顶点v1
+ * @param  v2    顶点v2
+ * @return       返回权值
+ */
+static int loocAdjacencyGraph_getValueOfEdge(loocAdjacencyGraph* cthis, int v1,
+		int v2) {
+	if ((cthis->numV <= v1) || (cthis->numV <= v2) || (v1 < 0) || (v2 < 0)) {
+		return LOOC_GRAPH_NO_EDGE;
+	} else {
+		return *(cthis->G + v1 * cthis->_maxVertex + v2);
+	}
+}
+
+/**
  * 计算顶点的出度
  * @param  cthis 当前图对象指针
  * @param  v     某个顶点的索引
@@ -429,6 +445,69 @@ static looc_bool loocAdjacencyGraph_Floyd(loocAdjacencyGraph* cthis,
 }
 
 /**
+ * 最小生成树Prim算法
+ * @param  cthis 当前图对象指针
+ * @param  MST   保存最小生成树
+ * @return       成功返回true，失败(非连通树)返回false
+ */
+static looc_bool loocAdjacencyGraph_Prim(loocAdjacencyGraph* cthis,
+		loocAdjacencyGraph* MST) {
+	int* dist = looc_malloc(sizeof(int) * cthis->_maxVertex,
+			"loocAdjacencyGraph_dist", looc_file_line);
+	int* parent = looc_malloc(sizeof(int) * cthis->_maxVertex,
+			"loocAdjacencyGraph_parent", looc_file_line);
+	int i;
+	int minV, minDist;
+	int VCount;
+	/* 初始化，默认初始点下标是0 */
+	for (i = 0; i < cthis->numV; i++) {
+		dist[i] = *(cthis->G + 0 * cthis->_maxVertex + i);
+		parent[i] = 0;	//暂且定义所有顶点的父节点都是初始点0
+		MST->addVertex(MST, cthis->data_pool + i * cthis->_elementSize);
+	}
+	VCount = 0;
+	/* 将初始点0收录进MST */
+	dist[0] = 0;
+	VCount++;
+	parent[0] = -1;	//当前树的根是0
+	while (1) {
+		/* 寻找未收录顶点中dist最小者 */
+		minDist = LOOC_GRAPH_NO_EDGE;
+		for (i = 0; i < cthis->numV; i++) {
+			if (dist[i] != 0 && dist[i] < minDist) {
+				minDist = dist[i];
+				minV = i;
+			}
+		}
+		/* 未找到最小dist */
+		if (minDist == LOOC_GRAPH_NO_EDGE) {
+			break;
+		}
+		/* 将minV以及相应的边<parent[minV],minV>收录进MST */
+		MST->insertEdge(MST, parent[minV], minV, dist[minV]);
+		dist[minV] = 0;
+		VCount++;
+		/* 更新dist和parent */
+		for (i = 0; i < cthis->numV; i++) {
+			/* 若i是minV的邻接点且未被收录 */
+			if (dist[i] != 0 && loocAdjacencyGraph_existEdge(cthis, minV, i)) {
+				if (*(cthis->G + minV * cthis->_maxVertex + i) < dist[i]) {
+					dist[i] = *(cthis->G + minV * cthis->_maxVertex + i);
+					parent[i] = minV;
+				}
+			}
+		}
+	}
+	/* 释放临时资源 */
+	looc_free(dist);
+	looc_free(parent);
+	if (VCount < cthis->numV) {
+		return looc_false;	//此树非连通
+	}
+	return looc_true;
+}
+
+/**
  * 图的销毁函数
  * @param object loocObject对象指针
  */
@@ -463,6 +542,7 @@ CTOR(loocAdjacencyGraph)
 	FUNCTION_SETTING(deleteEdge, loocAdjacencyGraph_deleteEdge);
 	FUNCTION_SETTING(addVertex, loocAdjacencyGraph_addVertex);
 	FUNCTION_SETTING(existEdge, loocAdjacencyGraph_existEdge);
+	FUNCTION_SETTING(getValueOfEdge, loocAdjacencyGraph_getValueOfEdge);
 	FUNCTION_SETTING(outDegree, loocAdjacencyGraph_outDegree);
 	FUNCTION_SETTING(inDegree, loocAdjacencyGraph_inDegree);
 	FUNCTION_SETTING(DFS, loocAdjacencyGraph_DFS);
@@ -470,6 +550,7 @@ CTOR(loocAdjacencyGraph)
 	FUNCTION_SETTING(topologySort, loocAdjacencyGraph_topologySort);
 	FUNCTION_SETTING(Dijkstra, loocAdjacencyGraph_Dijkstra);
 	FUNCTION_SETTING(Floyd, loocAdjacencyGraph_Floyd);
+	FUNCTION_SETTING(Prim, loocAdjacencyGraph_Prim);
 	FUNCTION_SETTING(loocObject.finalize, loocAdjacencyGraph_finalize);END_CTOR
 
 /**

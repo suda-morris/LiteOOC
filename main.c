@@ -869,4 +869,126 @@ int main(int argc, char **argv) {
 
 	/* 二分查找 */
 	printf("key:88@ %d\r\n", binSearch(data9, 10, 88));
+
+	/* 最小生成树算法Prim */
+	/* 邻接矩阵存储 */
+	/* 创建图对象 */
+	adjGraph = loocAdjacencyGraph_new(looc_file_line);
+	/* 初始化无向图，顶点元素为int类型，最多10个顶点 */
+	adjGraph->init(adjGraph, 10, sizeof(int), 0);
+	/* 增加顶点 */
+	i = 'A';
+	adjGraph->addVertex(adjGraph, (void*) &i);
+	i = 'B';
+	adjGraph->addVertex(adjGraph, (void*) &i);
+	i = 'C';
+	adjGraph->addVertex(adjGraph, (void*) &i);
+	i = 'D';
+	adjGraph->addVertex(adjGraph, (void*) &i);
+	i = 'E';
+	adjGraph->addVertex(adjGraph, (void*) &i);
+	i = 'F';
+	adjGraph->addVertex(adjGraph, (void*) &i);
+	i = 'G';
+	adjGraph->addVertex(adjGraph, (void*) &i);
+	i = 'H';
+	adjGraph->addVertex(adjGraph, (void*) &i);
+	i = 'I';
+	adjGraph->addVertex(adjGraph, (void*) &i);
+	/* 增加边 */
+	adjGraph->insertEdge(adjGraph, 0, 1, 4);
+	adjGraph->insertEdge(adjGraph, 0, 7, 8);
+	adjGraph->insertEdge(adjGraph, 1, 2, 8);
+	adjGraph->insertEdge(adjGraph, 1, 7, 11);
+	adjGraph->insertEdge(adjGraph, 2, 3, 7);
+	adjGraph->insertEdge(adjGraph, 2, 5, 4);
+	adjGraph->insertEdge(adjGraph, 2, 8, 2);
+	adjGraph->insertEdge(adjGraph, 3, 4, 9);
+	adjGraph->insertEdge(adjGraph, 3, 5, 14);
+	adjGraph->insertEdge(adjGraph, 4, 5, 10);
+	adjGraph->insertEdge(adjGraph, 5, 6, 2);
+	adjGraph->insertEdge(adjGraph, 6, 7, 1);
+	adjGraph->insertEdge(adjGraph, 6, 8, 6);
+	/* 存放最小生成树 */
+	loocAdjacencyGraph* MST_adj = loocAdjacencyGraph_new(looc_file_line);
+	MST_adj->init(MST_adj, adjGraph->numV, sizeof(int), adjGraph->check);
+	/* 调用最小生成树算法Prim */
+	adjGraph->Prim(adjGraph, MST_adj);
+	/* 打印最小生成树 */
+	for (i = 0; i < MST_adj->numV; i++) {
+		for (j = 0; j < MST_adj->numV; j++) {
+			int edgeValue = MST_adj->getValueOfEdge(MST_adj, i, j);
+			if (edgeValue < LOOC_GRAPH_NO_EDGE) {
+				printf("%d\t", edgeValue);
+			} else {
+				printf("-\t");
+			}
+		}
+		printf("\r\n");
+	}
+	/* 释放图对象内存空间 */
+	loocAdjacencyGraph_delete(adjGraph);
+	loocAdjacencyGraph_delete(MST_adj);
+	/* 报告内存泄露情况 */
+	looc_report();
+
+	/* 邻接链表存储 */
+	linkGraph = loocLinkedGraph_new(looc_file_line);
+	/* 初始化无向图，顶点元素为int数，最多10个顶点 */
+	linkGraph->init(linkGraph, 10, sizeof(int), 0);
+	/* 增加顶点 */
+	i = 'A';
+	linkGraph->addVertex(linkGraph, (void*) &i);
+	i = 'B';
+	linkGraph->addVertex(linkGraph, (void*) &i);
+	i = 'C';
+	linkGraph->addVertex(linkGraph, (void*) &i);
+	i = 'D';
+	linkGraph->addVertex(linkGraph, (void*) &i);
+	i = 'E';
+	linkGraph->addVertex(linkGraph, (void*) &i);
+	i = 'F';
+	linkGraph->addVertex(linkGraph, (void*) &i);
+	i = 'G';
+	linkGraph->addVertex(linkGraph, (void*) &i);
+	i = 'H';
+	linkGraph->addVertex(linkGraph, (void*) &i);
+	i = 'I';
+	linkGraph->addVertex(linkGraph, (void*) &i);
+	/* 增加边 */
+	linkGraph->insertEdge(linkGraph, 0, 1, 4);
+	linkGraph->insertEdge(linkGraph, 0, 7, 8);
+	linkGraph->insertEdge(linkGraph, 1, 2, 8);
+	linkGraph->insertEdge(linkGraph, 1, 7, 11);
+	linkGraph->insertEdge(linkGraph, 2, 3, 7);
+	linkGraph->insertEdge(linkGraph, 2, 5, 4);
+	linkGraph->insertEdge(linkGraph, 2, 8, 2);
+	linkGraph->insertEdge(linkGraph, 3, 4, 9);
+	linkGraph->insertEdge(linkGraph, 3, 5, 14);
+	linkGraph->insertEdge(linkGraph, 4, 5, 10);
+	linkGraph->insertEdge(linkGraph, 5, 6, 2);
+	linkGraph->insertEdge(linkGraph, 6, 7, 1);
+	linkGraph->insertEdge(linkGraph, 6, 8, 6);
+	/* 存放最小生成树 */
+	loocLinkedGraph* MST_link = loocLinkedGraph_new(looc_file_line);
+	MST_link->init(MST_link, linkGraph->numV, sizeof(int), linkGraph->check);
+	/* 调用最小生成树Prim算法 */
+	linkGraph->Prim(linkGraph, MST_link);
+	/* 打印最小生成树 */
+	for (i = 0; i < MST_link->numV; i++) {
+		for (j = 0; j < MST_link->numV; j++) {
+			int edgeValue = MST_link->getValueOfEdge(MST_link, i, j);
+			if (edgeValue < LOOC_GRAPH_NO_EDGE) {
+				printf("%d\t", edgeValue);
+			} else {
+				printf("-\t");
+			}
+		}
+		printf("\r\n");
+	}
+	/* 释放图对象内存空间 */
+	loocLinkedGraph_delete(linkGraph);
+	loocLinkedGraph_delete(MST_link);
+	/* 报告内存泄露情况 */
+	looc_report();
 }

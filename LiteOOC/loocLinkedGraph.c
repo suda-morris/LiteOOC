@@ -180,7 +180,8 @@ static looc_bool loocLinkedGraph_existEdge(loocLinkedGraph* cthis, int v1,
 		int v2) {
 	loocSingleListNode* listNode;
 	AdjVertexNode* node;
-	if ((cthis->numV <= v1) || (cthis->numV <= v2) || (v1 < 0) || (v2 < 0)) {
+	if ((cthis->numV <= v1) || (cthis->numV <= v2) || (v1 < 0) || (v2 < 0)
+			|| (v1 == v2)) {
 		return looc_false;
 	} else {
 		listNode = cthis->h[v1]->head;
@@ -189,8 +190,37 @@ static looc_bool loocLinkedGraph_existEdge(loocLinkedGraph* cthis, int v1,
 			if (node->AdjIndex == v2) {
 				return looc_true;
 			}
+			listNode = listNode->next;
 		}
 		return looc_false;
+	}
+}
+
+/**
+ * 获取边的权值
+ * @param  cthis 当前图对象指针
+ * @param  v1    顶点v1
+ * @param  v2    顶点v2
+ * @return       返回权值
+ */
+static int loocLinkedGraph_getValueOfEdge(loocLinkedGraph* cthis, int v1,
+		int v2) {
+	loocSingleListNode* listNode;
+	AdjVertexNode* node;
+	if ((cthis->numV <= v1) || (cthis->numV <= v2) || (v1 < 0) || (v2 < 0)) {
+		return LOOC_GRAPH_NO_EDGE;
+	} else if (v1 == v2) {
+		return 0;
+	} else {
+		listNode = cthis->h[v1]->head;
+		while (listNode) {
+			node = (AdjVertexNode*) (listNode->_data);
+			if (node->AdjIndex == v2) {
+				return node->Weight;
+			}
+			listNode = listNode->next;
+		}
+		return LOOC_GRAPH_NO_EDGE;
 	}
 }
 
@@ -510,6 +540,79 @@ static looc_bool loocLinkedGraph_Floyd(loocLinkedGraph* cthis,
 }
 
 /**
+ * 最小生成树Prim算法
+ * @param  cthis 当前图对象指针
+ * @param  MST   保存最小生成树
+ * @return       成功返回true，失败(非连通树)返回false
+ */
+static looc_bool loocLinkedGraph_Prim(loocLinkedGraph* cthis,
+		loocLinkedGraph* MST) {
+	int* dist = looc_malloc(sizeof(int) * cthis->_maxVertex,
+			"loocAdjacencyGraph_dist", looc_file_line);
+	int* parent = looc_malloc(sizeof(int) * cthis->_maxVertex,
+			"loocAdjacencyGraph_parent", looc_file_line);
+	int i;
+	int minV, minDist;
+	int VCount;
+	loocSingleListNode* listNode;
+	AdjVertexNode* node;
+	/* 初始化，默认初始点下标是0 */
+	for (i = 0; i < cthis->numV; i++) {
+		dist[i] = LOOC_GRAPH_NO_EDGE;
+		parent[i] = 0;	//暂且定义所有顶点的父节点都是初始点0
+		MST->addVertex(MST, cthis->data_pool + i * cthis->_elementSize);
+	}
+	listNode = cthis->h[0]->head;
+	while (listNode) {
+		node = (AdjVertexNode*) (listNode->_data);
+		dist[node->AdjIndex] = node->Weight;
+		listNode = listNode->next;
+	}
+	VCount = 0;
+	/* 将初始点0收录进MST */
+	dist[0] = 0;
+	VCount++;
+	parent[0] = -1;	//当前树的根是0
+	while (1) {
+		/* 寻找未收录顶点中dist最小者 */
+		minDist = LOOC_GRAPH_NO_EDGE;
+		for (i = 0; i < cthis->numV; i++) {
+			if (dist[i] != 0 && dist[i] < minDist) {
+				minDist = dist[i];
+				minV = i;
+			}
+		}
+		/* 未找到最小dist */
+		if (minDist == LOOC_GRAPH_NO_EDGE) {
+			break;
+		}
+		/* 将minV以及相应的边<parent[minV],minV>收录进MST */
+		MST->insertEdge(MST, parent[minV], minV, dist[minV]);
+		dist[minV] = 0;
+		VCount++;
+		/* 更新dist和parent */
+		listNode = cthis->h[minV]->head;
+		while (listNode) {
+			node = (AdjVertexNode*) (listNode->_data);
+			/* 若是minV的邻接点且未被收录 */
+			if ((dist[node->AdjIndex] != 0)
+					&& (node->Weight < dist[node->AdjIndex])) {
+				dist[node->AdjIndex] = node->Weight;
+				parent[node->AdjIndex] = minV;
+			}
+			listNode = listNode->next;
+		}
+	}
+	/* 释放临时资源 */
+	looc_free(dist);
+	looc_free(parent);
+	if (VCount < cthis->numV) {
+		return looc_false;	//此树非连通
+	}
+	return looc_true;
+}
+
+/**
  * 图的销毁函数
  * @param object loocObject对象指针
  */
@@ -548,6 +651,7 @@ CTOR(loocLinkedGraph)
 	FUNCTION_SETTING(insertEdge, loocLinkedGraph_insertEdge);
 	FUNCTION_SETTING(deleteEdge, loocLinkedGraph_deleteEdge);
 	FUNCTION_SETTING(existEdge, loocLinkedGraph_existEdge);
+	FUNCTION_SETTING(getValueOfEdge, loocLinkedGraph_getValueOfEdge);
 	FUNCTION_SETTING(outDegree, loocLinkedGraph_outDegree);
 	FUNCTION_SETTING(inDegree, loocLinkedGraph_inDegree);
 	FUNCTION_SETTING(DFS, loocLinkedGraph_DFS);
@@ -555,6 +659,7 @@ CTOR(loocLinkedGraph)
 	FUNCTION_SETTING(topologySort, loocLinkedGraph_topologySort);
 	FUNCTION_SETTING(Dijkstra, loocLinkedGraph_Dijkstra);
 	FUNCTION_SETTING(Floyd, loocLinkedGraph_Floyd);
+	FUNCTION_SETTING(Prim, loocLinkedGraph_Prim);
 	FUNCTION_SETTING(loocObject.finalize, loocLinkedGraph_finalize);END_CTOR
 
 /**

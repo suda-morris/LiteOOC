@@ -56,6 +56,8 @@ extern "C" {
 		looc_bool (*addVertex)(loocAdjacencyGraph* cthis, void* data);
 		/* 判定顶点之间是否有边存在 */
 		looc_bool (*existEdge)(loocAdjacencyGraph* cthis, int v1, int v2);
+		/* 获取边的权值 */
+		int (*getValueOfEdge)(loocAdjacencyGraph* cthis, int v1, int v2);
 		/* 计算某个顶点的出度 */
 		int (*outDegree)(loocAdjacencyGraph* cthis, int v);
 		/* 计算某个顶点的入度 */
@@ -75,6 +77,9 @@ extern "C" {
 		looc_bool (*Floyd)(loocAdjacencyGraph* cthis,
 				int D[][LOOC_DEFAULT_LOOCADJACENCYGRAPH_VERTEX],
 				int path[][LOOC_DEFAULT_LOOCADJACENCYGRAPH_VERTEX]);
+		/* 最小生成树Prim算法 ,用于稠密图*/
+		looc_bool (*Prim)(loocAdjacencyGraph* cthis, loocAdjacencyGraph* MST);
+
 	};
 
 #ifdef __cplusplus
