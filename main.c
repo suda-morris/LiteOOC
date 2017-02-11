@@ -21,6 +21,7 @@
 #include <loocHeap.h>
 #include <loocAdjacencyGraph.h>
 #include <loocLinkedGraph.h>
+#include <loocDisjointSet.h>
 #include <stdio.h>
 #include <lea.h>
 
@@ -775,6 +776,49 @@ int main(int argc, char **argv) {
 	printf("\r\n");
 	/* 释放图对象内存空间 */
 	loocLinkedGraph_delete(linkGraph);
+	/* 报告内存泄露情况 */
+	looc_report();
+
+	/**
+	 * 14. 并查集的操作
+	 */
+	printf("****************loocDisjointSet****************\r\n");
+	/* 创建并查集对象 */
+	loocDisjointSet* set = loocDisjointSet_new(looc_file_line);
+	/* 初始化并查集对象,存储int值 ,最多10个数据*/
+	set->init(set, 10, sizeof(int));
+	/* 插入数据 */
+	for (i = 1; i <= 10; i++) {
+		set->insert(set, (void*) &i);
+	}
+	/* 并操作 */
+	j = 6;
+	i = 9;
+	set->Union(set, (void*) &i, (void*) &j);
+	i = 10;
+	set->Union(set, (void*) &i, (void*) &j);
+	j = 3;
+	i = 5;
+	set->Union(set, (void*) &i, (void*) &j);
+	i = 8;
+	set->Union(set, (void*) &i, (void*) &j);
+	j = 1;
+	i = 2;
+	set->Union(set, (void*) &i, (void*) &j);
+	i = 4;
+	set->Union(set, (void*) &i, (void*) &j);
+	i = 7;
+	set->Union(set, (void*) &i, (void*) &j);
+	i = 3;
+	set->Union(set, (void*) &i, (void*) &j);
+	/* 打印并查集 */
+	for (i = 0; i < 10; i++) {
+		printf("data:%d,parent:%d\r\n",
+				*(int*) (set->data_pool + i * set->_elementSize),
+				set->parent[i]);
+	}
+	/* 释放图对象内存空间 */
+	loocDisjointSet_delete(set);
 	/* 报告内存泄露情况 */
 	looc_report();
 
