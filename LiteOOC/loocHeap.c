@@ -4,7 +4,7 @@
  Author      : morris
  Version     :
  Copyright   : Your copyright notice
- Description : 最大堆（优先队列，也是一种完全二叉树）
+ Description : 堆（优先队列，也是一种完全二叉树）
  ============================================================================
  */
 
@@ -19,12 +19,14 @@ static int (*compare)(void* old, void* new) = NULL;
 /**
  * 初始化堆
  * @param cthis       当前堆对象指针
+ * @param opt      	      堆的属性：最大堆还是最小堆
  * @param maxSize     堆中最多的元素数量
  * @param elementSize 堆中元素的大小
  * @param compare     堆中元素的比较策略,由用户去定义
  */
-static void loocHeap_init(loocHeap* cthis, int maxSize, int elementSize,
-		int (*compareStrategy)(void* old, void* new)) {
+static void loocHeap_init(loocHeap* cthis, int opt, int maxSize,
+		int elementSize, int (*compareStrategy)(void* old, void* new)) {
+	cthis->option = opt;
 	cthis->_elementSize = elementSize;
 	cthis->_maxSize = maxSize;
 	cthis->heap_pool = looc_malloc(maxSize * elementSize, "loocHeap_Entry",
@@ -46,8 +48,17 @@ static looc_bool loocHeap_insert(loocHeap* cthis, void* data) {
 		return looc_false;
 	} else {
 		while (i) {
-			if (compare(cthis->heap_pool + (i - 1) / 2 * cthis->_elementSize,
-					data) > 0) {
+			/* 根据最大最小堆的性质，从下往上递 */
+			if (((cthis->option == LOOC_MAX_HEAP)
+					&& (compare(
+							cthis->heap_pool
+									+ (i - 1) / 2 * cthis->_elementSize, data)
+							> 0))
+					|| ((cthis->option == LOOC_MIN_HEAP)
+							&& (compare(
+									cthis->heap_pool
+											+ (i - 1) / 2 * cthis->_elementSize,
+									data) < 0))) {
 				memcpy(cthis->heap_pool + i * cthis->_elementSize,
 						cthis->heap_pool + (i - 1) / 2 * cthis->_elementSize,
 						cthis->_elementSize);
@@ -64,11 +75,11 @@ static looc_bool loocHeap_insert(loocHeap* cthis, void* data) {
 }
 
 /**
- * 获取堆中的最大元素
+ * 获取堆中根节点的元素
  * @param cthis 当前堆对象指针
  * @return      成功返回数据指针
  */
-static void* loocHeap_getMax(loocHeap* cthis) {
+static void* loocHeap_getRoot(loocHeap* cthis) {
 	/* 判断堆是否为空 */
 	if (cthis->length == 0) {
 		return NULL;
@@ -78,11 +89,11 @@ static void* loocHeap_getMax(loocHeap* cthis) {
 }
 
 /**
- * 删除堆中最大值
+ * 删除堆中的根节点
  * @param  cthis 当前堆对象指针
  * @return       成功返回true，失败返回false
  */
-static looc_bool loocHeap_deleteMax(loocHeap* cthis) {
+static looc_bool loocHeap_deleteRoot(loocHeap* cthis) {
 	int child, parent = 0;
 	void* temp;
 	/* 判断堆是否为空 */
@@ -94,23 +105,45 @@ static looc_bool loocHeap_deleteMax(loocHeap* cthis) {
 		memcpy(temp,
 				cthis->heap_pool + (cthis->length - 1) * cthis->_elementSize,
 				cthis->_elementSize);
+		/* 从上到下依次递归 */
 		while ((parent * 2 + 1) < cthis->length) {
+			/* 左子节点 */
 			child = parent * 2 + 1;
-			if ((child + 1) < cthis->length
-					&& compare(cthis->heap_pool + child * cthis->_elementSize,
-							cthis->heap_pool
-									+ (child + 1) * cthis->_elementSize) > 0) {
-				child++;
+			/* 如果还有右子节点，从左右节点中选择最佳的 */
+			if ((child + 1) < cthis->length) {
+				if (((cthis->option == LOOC_MAX_HEAP)
+						&& (compare(
+								cthis->heap_pool + child * cthis->_elementSize,
+								cthis->heap_pool
+										+ (child + 1) * cthis->_elementSize) > 0))
+						|| ((cthis->option == LOOC_MIN_HEAP)
+								&& (compare(
+										cthis->heap_pool
+												+ child * cthis->_elementSize,
+										cthis->heap_pool
+												+ (child + 1)
+														* cthis->_elementSize)
+										< 0))) {
+					child++;
+				}
 			}
-			if (!(compare(cthis->heap_pool + child * cthis->_elementSize, temp)
-					< 0)) {
+			/* 如果最后一个节点temp满足下面的条件 */
+			if (((cthis->option == LOOC_MAX_HEAP)
+					&& (!(compare(
+							cthis->heap_pool + child * cthis->_elementSize,
+							temp) < 0)))
+					|| ((cthis->option == LOOC_MIN_HEAP)
+							&& (!(compare(
+									cthis->heap_pool
+											+ child * cthis->_elementSize, temp)
+									> 0)))) {
 				break;
 			} else {
 				memcpy(cthis->heap_pool + parent * cthis->_elementSize,
 						cthis->heap_pool + child * cthis->_elementSize,
 						cthis->_elementSize);
+				parent = child;
 			}
-			parent = child;
 		}
 		memcpy(cthis->heap_pool + parent * cthis->_elementSize, temp,
 				cthis->_elementSize);
@@ -138,6 +171,7 @@ static void loocHeap_finalize(loocObject* object) {
 CTOR(loocHeap)
 /* 调用父类的构造函数 */
 	SUPER_CTOR(loocObject);
+	cthis->option = LOOC_MAX_HEAP;	//默认是最大堆
 	cthis->_elementSize = 1;
 	cthis->_maxSize = LOOC_HEAP_DEFAULT_SIZE;
 	cthis->heap_pool = NULL;
@@ -145,8 +179,8 @@ CTOR(loocHeap)
 	/* 成员函数绑定 */
 	FUNCTION_SETTING(init, loocHeap_init);
 	FUNCTION_SETTING(insert, loocHeap_insert);
-	FUNCTION_SETTING(getMax, loocHeap_getMax);
-	FUNCTION_SETTING(deleteMax, loocHeap_deleteMax);
+	FUNCTION_SETTING(getRoot, loocHeap_getRoot);
+	FUNCTION_SETTING(deleteRoot, loocHeap_deleteRoot);
 	FUNCTION_SETTING(loocObject.finalize, loocHeap_finalize);END_CTOR
 
 /**

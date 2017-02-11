@@ -77,9 +77,10 @@ extern "C" {
 		looc_bool (*Floyd)(loocAdjacencyGraph* cthis,
 				int D[][LOOC_DEFAULT_LOOCADJACENCYGRAPH_VERTEX],
 				int path[][LOOC_DEFAULT_LOOCADJACENCYGRAPH_VERTEX]);
-		/* 最小生成树Prim算法 ,用于稠密图*/
+		/* 最小生成树Prim算法 ,用于稠密图，以顶点为基础*/
 		looc_bool (*Prim)(loocAdjacencyGraph* cthis, loocAdjacencyGraph* MST);
-
+		/* 最小生成树Kruskal算法 ,用于稀疏图，以边为基础*/
+		looc_bool (*Kruskal)(loocAdjacencyGraph* cthis, loocAdjacencyGraph* MST);
 	};
 
 #ifdef __cplusplus

@@ -586,8 +586,8 @@ int main(int argc, char **argv) {
 	printf("****************loocHeap****************\r\n");
 	/* 创建堆对象 */
 	loocHeap* heap = loocHeap_new(looc_file_line);
-	/* 初始化堆对象,存储int值 */
-	heap->init(heap, 10, sizeof(int), Heap_compareStrategy);
+	/* 初始化堆对象(最小堆),存储int值 */
+	heap->init(heap, LOOC_MIN_HEAP, 10, sizeof(int), Heap_compareStrategy);
 	/* 插入数据 */
 	i = 77;
 	heap->insert(heap, (void*) &i);
@@ -602,10 +602,10 @@ int main(int argc, char **argv) {
 	i = 140;
 	heap->insert(heap, (void*) &i);
 	for (i = 0; i < 6; i++) {
-		/* 打印堆中最大值 */
-		printf("%d\r\n", *(int*) (heap->getMax(heap)));
-		/* 删除堆中最大值 */
-		heap->deleteMax(heap);
+		/* 打印堆中的根节点元素 */
+		printf("%d\r\n", *(int*) (heap->getRoot(heap)));
+		/* 删除堆中的根节点元素 */
+		heap->deleteRoot(heap);
 	}
 	/* 释放堆对象内存空间 */
 	loocHeap_delete(heap);
