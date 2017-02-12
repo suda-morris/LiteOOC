@@ -79,9 +79,9 @@ extern "C" {
 				int D[][LOOC_DEFAULT_LOOCLINKEDGRAPH_VERTEX],
 				int path[][LOOC_DEFAULT_LOOCLINKEDGRAPH_VERTEX]);
 		/* 最小生成树Prim算法 ,用于稠密图,以顶点为基础*/
-		looc_bool (*Prim)(loocLinkedGraph* cthis, loocLinkedGraph* MST);
+		int (*Prim)(loocLinkedGraph* cthis, loocLinkedGraph* MST);
 		/* 最小生成树Kruskal算法 ,用于稀疏图，以边为基础*/
-		looc_bool (*Kruskal)(loocLinkedGraph* cthis, loocLinkedGraph* MST);
+		int (*Kruskal)(loocLinkedGraph* cthis, loocLinkedGraph* MST);
 	};
 
 #ifdef __cplusplus

@@ -956,8 +956,8 @@ int main(int argc, char **argv) {
 	/* 存放最小生成树 */
 	loocAdjacencyGraph* MST_adj = loocAdjacencyGraph_new(looc_file_line);
 	MST_adj->init(MST_adj, adjGraph->numV, sizeof(int), adjGraph->check);
-	/* 调用最小生成树算法Prim */
-	adjGraph->Prim(adjGraph, MST_adj);
+	/* 调用最小生成树算法Prim或者Kruskal */
+	adjGraph->Kruskal(adjGraph, MST_adj);
 	/* 打印最小生成树 */
 	for (i = 0; i < MST_adj->numV; i++) {
 		for (j = 0; j < MST_adj->numV; j++) {
@@ -1016,8 +1016,8 @@ int main(int argc, char **argv) {
 	/* 存放最小生成树 */
 	loocLinkedGraph* MST_link = loocLinkedGraph_new(looc_file_line);
 	MST_link->init(MST_link, linkGraph->numV, sizeof(int), linkGraph->check);
-	/* 调用最小生成树Prim算法 */
-	linkGraph->Prim(linkGraph, MST_link);
+	/* 调用最小生成树算法Prim或者Kruskal */
+	linkGraph->Kruskal(linkGraph, MST_link);
 	/* 打印最小生成树 */
 	for (i = 0; i < MST_link->numV; i++) {
 		for (j = 0; j < MST_link->numV; j++) {

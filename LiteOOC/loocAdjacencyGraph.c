@@ -10,8 +10,19 @@
 
 #include <loocAdjacencyGraph.h>
 #include <loocQueue.h>
+#include <loocHeap.h>
+#include <loocDisjointSet.h>
 #include <string.h>
 #include <stdio.h>
+
+/**
+ * 保存每一条边的权值和顶点,v1->v2
+ */
+typedef struct Edge_s {
+	int v1;
+	int v2;
+	int weight;
+} Edge;
 
 /**
  * 图的初始化
@@ -448,9 +459,9 @@ static looc_bool loocAdjacencyGraph_Floyd(loocAdjacencyGraph* cthis,
  * 最小生成树Prim算法
  * @param  cthis 当前图对象指针
  * @param  MST   保存最小生成树
- * @return       成功返回true，失败(非连通树)返回false
+ * @return       成功返回最小生成树的权值和，失败(非连通树)返回-1
  */
-static looc_bool loocAdjacencyGraph_Prim(loocAdjacencyGraph* cthis,
+static int loocAdjacencyGraph_Prim(loocAdjacencyGraph* cthis,
 		loocAdjacencyGraph* MST) {
 	int* dist = looc_malloc(sizeof(int) * cthis->_maxVertex,
 			"loocAdjacencyGraph_dist", looc_file_line);
@@ -459,6 +470,7 @@ static looc_bool loocAdjacencyGraph_Prim(loocAdjacencyGraph* cthis,
 	int i;
 	int minV, minDist;
 	int VCount;
+	int totalWeight;
 	/* 初始化，默认初始点下标是0 */
 	for (i = 0; i < cthis->numV; i++) {
 		dist[i] = *(cthis->G + 0 * cthis->_maxVertex + i);
@@ -466,6 +478,7 @@ static looc_bool loocAdjacencyGraph_Prim(loocAdjacencyGraph* cthis,
 		MST->addVertex(MST, cthis->data_pool + i * cthis->_elementSize);
 	}
 	VCount = 0;
+	totalWeight = 0;
 	/* 将初始点0收录进MST */
 	dist[0] = 0;
 	VCount++;
@@ -487,6 +500,7 @@ static looc_bool loocAdjacencyGraph_Prim(loocAdjacencyGraph* cthis,
 		MST->insertEdge(MST, parent[minV], minV, dist[minV]);
 		dist[minV] = 0;
 		VCount++;
+		totalWeight += dist[minV];
 		/* 更新dist和parent */
 		for (i = 0; i < cthis->numV; i++) {
 			/* 若i是minV的邻接点且未被收录 */
@@ -502,9 +516,88 @@ static looc_bool loocAdjacencyGraph_Prim(loocAdjacencyGraph* cthis,
 	looc_free(dist);
 	looc_free(parent);
 	if (VCount < cthis->numV) {
-		return looc_false;	//此树非连通
+		return -1;	//此树非连通
 	}
-	return looc_true;
+	return totalWeight;
+}
+
+static int Heap_compareStrategy(void* old, void* new) {
+	Edge* node1 = (Edge*) old;
+	Edge* node2 = (Edge*) new;
+	if (node1->weight > node2->weight) {
+		return -1;
+	} else if (node1->weight < node2->weight) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+/**
+ * 最小生成树Kruskal算法
+ * @param  cthis 当前图对象指针
+ * @param  MST   保存最小生成树
+ * @return       成功返回最小生成树的权值和，失败(非连通树)返回-1
+ */
+static int loocAdjacencyGraph_Kruskal(loocAdjacencyGraph* cthis,
+		loocAdjacencyGraph* MST) {
+	int totalWeight = 0;
+	int ECount = 0;	//收录的边数
+	int i, j;
+	int root1, root2;
+	Edge e;
+	/* 最小堆，保存每一条边 */
+	loocHeap* heap = loocHeap_new(looc_file_line);
+	heap->init(heap, LOOC_MIN_HEAP, cthis->numE, sizeof(Edge),
+			Heap_compareStrategy);
+	/* 并查集，保存顶点下标 */
+	loocDisjointSet* set = loocDisjointSet_new(looc_file_line);
+	set->init(set, cthis->numV, sizeof(int));
+	/* 初始化 */
+	for (i = 0; i < cthis->numV; i++) {
+		for (j = 0; j < cthis->numV; j++) {
+			/* 避免无向图中重复录入边 */
+			if (loocAdjacencyGraph_existEdge(cthis, i, j)
+					&& ((cthis->check == 1) || ((cthis->check == 0) && (i < j)))) {
+				e.v1 = i;
+				e.v2 = j;
+				e.weight = cthis->getValueOfEdge(cthis, i, j);
+				/* 插入边集 */
+				heap->insert(heap, (void*) &e);
+			}
+		}
+		/* MST包含所有顶点 */
+		MST->addVertex(MST, cthis->data_pool + i * cthis->_elementSize);
+		/* 插入顶点集合 */
+		set->insert(set, (void*) &i);
+	}
+	while (ECount < cthis->numV - 1) {
+		/* 取出权值最小的边 */
+		if (heap->getRoot(heap)) {
+			e = *(Edge*) heap->getRoot(heap);
+			root1 = set->find(set, &e.v1);
+			root2 = set->find(set, &e.v2);
+			/* 不能构成回路 */
+			if (root1 != root2) {
+				/* 将该边插入MST */
+				MST->insertEdge(MST, e.v1, e.v2, e.weight);
+				totalWeight += e.weight;
+				ECount++;
+				/* 并操作 */
+				set->Union(set, &e.v1, &e.v2);
+			}
+			heap->deleteRoot(heap);
+		} else {
+			break;	//边集已空
+		}
+	}
+	/* 释放临时内存 */
+	loocHeap_delete(heap);
+	loocDisjointSet_delete(set);
+	if (ECount < cthis->numV - 1) {
+		return -1;	//此树不连通
+	}
+	return totalWeight;
 }
 
 /**
@@ -551,6 +644,7 @@ CTOR(loocAdjacencyGraph)
 	FUNCTION_SETTING(Dijkstra, loocAdjacencyGraph_Dijkstra);
 	FUNCTION_SETTING(Floyd, loocAdjacencyGraph_Floyd);
 	FUNCTION_SETTING(Prim, loocAdjacencyGraph_Prim);
+	FUNCTION_SETTING(Kruskal, loocAdjacencyGraph_Kruskal);
 	FUNCTION_SETTING(loocObject.finalize, loocAdjacencyGraph_finalize);END_CTOR
 
 /**
