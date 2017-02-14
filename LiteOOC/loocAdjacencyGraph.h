@@ -41,7 +41,7 @@ extern "C" {
 		/* 边数 */
 		int numE;
 		/* 邻接矩阵，存放边的权重 */
-		int* G;
+		int** G;
 		/* 顶点的数据 */
 		void* data_pool;
 		/* 图的初始化函数 */

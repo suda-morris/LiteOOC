@@ -40,16 +40,20 @@ static void loocAdjacencyGraph_init(loocAdjacencyGraph* cthis, int maxVertex,
 	cthis->data_pool = looc_malloc(elementSize * maxVertex,
 			"loocAdjacencyGraph_data",
 			looc_file_line);
-	cthis->G = (int*) looc_malloc(sizeof(int) * maxVertex * maxVertex,
-			"loocAdjacency_G",
-			looc_file_line);
+	cthis->G = (int**) looc_malloc(sizeof(int*) * maxVertex, "loocAdjacency_G",
+	looc_file_line);
+	for (v = 0; v < maxVertex; v++) {
+		cthis->G[v] = (int*) looc_malloc(sizeof(int) * maxVertex,
+				"loocAdjacency_G[]",
+				looc_file_line);
+	}
 	/* 初始化邻接矩阵 */
 	for (v = 0; v < maxVertex; v++) {
 		for (w = 0; w < maxVertex; w++) {
 			if (v == w) {
-				*(cthis->G + v * maxVertex + w) = 0;	//邻接矩阵主对角线为0
+				cthis->G[v][w] = 0; //邻接矩阵主对角线为0
 			} else {
-				*(cthis->G + v * maxVertex + w) = LOOC_GRAPH_NO_EDGE;
+				cthis->G[v][w] = LOOC_GRAPH_NO_EDGE;
 			}
 		}
 	}
@@ -70,11 +74,11 @@ static looc_bool loocAdjacencyGraph_insertEdge(loocAdjacencyGraph* cthis,
 		return looc_false;
 	}
 	/* 插入边<v1,v2> */
-	*(cthis->G + v1 * cthis->_maxVertex + v2) = weight;
+	cthis->G[v1][v2] = weight;
 	cthis->numE++;
 	/* 如果是无向图，还要插入边<v2,v1> */
 	if (cthis->check == 0) {
-		*(cthis->G + v2 * cthis->_maxVertex + v1) = weight;
+		cthis->G[v2][v1] = weight;
 	}
 	return looc_true;
 }
@@ -93,11 +97,11 @@ static looc_bool loocAdjacencyGraph_deleteEdge(loocAdjacencyGraph* cthis,
 		return looc_false;
 	}
 	/* 删除边<v1,v2> */
-	*(cthis->G + v1 * cthis->_maxVertex + v2) = LOOC_GRAPH_NO_EDGE;
+	cthis->G[v1][v2] = LOOC_GRAPH_NO_EDGE;
 	cthis->numE--;
 	/* 如果是无向图，还要删除边<v2,v1> */
 	if (cthis->check == 0) {
-		*(cthis->G + v2 * cthis->_maxVertex + v1) = LOOC_GRAPH_NO_EDGE;
+		cthis->G[v2][v1] = LOOC_GRAPH_NO_EDGE;
 	}
 	return looc_true;
 }
@@ -131,9 +135,7 @@ static looc_bool loocAdjacencyGraph_addVertex(loocAdjacencyGraph* cthis,
 static looc_bool loocAdjacencyGraph_existEdge(loocAdjacencyGraph* cthis, int v1,
 		int v2) {
 	if ((cthis->numV <= v1) || (cthis->numV <= v2) || (v1 < 0) || (v2 < 0)
-			|| (v1 == v2)
-			|| ((*(cthis->G + v1 * cthis->_maxVertex + v2))
-					== LOOC_GRAPH_NO_EDGE)) {
+			|| (v1 == v2) || (cthis->G[v1][v2] == LOOC_GRAPH_NO_EDGE)) {
 		return looc_false;
 	} else {
 		return looc_true;
@@ -152,7 +154,7 @@ static int loocAdjacencyGraph_getValueOfEdge(loocAdjacencyGraph* cthis, int v1,
 	if ((cthis->numV <= v1) || (cthis->numV <= v2) || (v1 < 0) || (v2 < 0)) {
 		return LOOC_GRAPH_NO_EDGE;
 	} else {
-		return *(cthis->G + v1 * cthis->_maxVertex + v2);
+		return cthis->G[v1][v2];
 	}
 }
 
@@ -170,9 +172,7 @@ static int loocAdjacencyGraph_outDegree(loocAdjacencyGraph* cthis, int v) {
 	} else {
 		/* 就是计算G[v]这一行有边的元素个数 */
 		for (i = 0; i < cthis->numV; i++) {
-			if ((i != v)
-					&& ((*(cthis->G + v * cthis->_maxVertex + i))
-							!= LOOC_GRAPH_NO_EDGE)) {
+			if ((i != v) && (cthis->G[v][i] != LOOC_GRAPH_NO_EDGE)) {
 				sum++;
 			}
 		}
@@ -194,9 +194,7 @@ static int loocAdjacencyGraph_inDegree(loocAdjacencyGraph* cthis, int v) {
 	} else {
 		/* 就是计算G[v]这一列有边的元素个数 */
 		for (i = 0; i < cthis->numV; i++) {
-			if ((i != v)
-					&& ((*(cthis->G + i * cthis->_maxVertex + v))
-							!= LOOC_GRAPH_NO_EDGE)) {
+			if ((i != v) && (cthis->G[i][v] != LOOC_GRAPH_NO_EDGE)) {
 				sum++;
 			}
 		}
@@ -219,9 +217,7 @@ static void dfs(loocAdjacencyGraph* cthis, int v,
 	action(cthis->data_pool + cthis->_elementSize * v, args);
 	visited[v] = 1;
 	for (i = 0; i < cthis->numV; i++) {
-		if ((i != v)
-				&& ((*(cthis->G + v * cthis->_maxVertex + i))
-						!= LOOC_GRAPH_NO_EDGE)) {
+		if ((i != v) && (cthis->G[v][i] != LOOC_GRAPH_NO_EDGE)) {
 			if (visited[i] == 0) {
 				dfs(cthis, i, action, args, visited);
 			}
@@ -314,9 +310,7 @@ static looc_bool loocAdjacencyGraph_topologySort(loocAdjacencyGraph* cthis,
 		/* 遍历图得到每个顶点的入度 */
 		for (i = 0; i < cthis->numV; i++) {
 			for (j = 0; j < cthis->numV; j++) {
-				if ((i != j)
-						&& ((*(cthis->G + i * cthis->_maxVertex + j))
-								!= LOOC_GRAPH_NO_EDGE)) {
+				if ((i != j) && (cthis->G[i][j] != LOOC_GRAPH_NO_EDGE)) {
 					indegree[j]++;
 				}
 			}
@@ -332,9 +326,7 @@ static looc_bool loocAdjacencyGraph_topologySort(loocAdjacencyGraph* cthis,
 			v = *(int*) queue->dequeue(queue);
 			order[cnt++] = v;
 			for (i = 0; i < cthis->numV; i++) {
-				if ((i != v)
-						&& ((*(cthis->G + v * cthis->_maxVertex + i))
-								!= LOOC_GRAPH_NO_EDGE)) {
+				if ((i != v) && (cthis->G[v][i] != LOOC_GRAPH_NO_EDGE)) {
 					if (--indegree[i] == 0) {
 						queue->enqueue(queue, (void*) &i);
 					}
@@ -369,7 +361,7 @@ static looc_bool loocAdjacencyGraph_Dijkstra(loocAdjacencyGraph* cthis, int S,
 	/* 初始化 */
 	for (v = 0; v < cthis->numV; v++) {
 		/* 获取图中S到各顶点的权值作为dist初始值 */
-		dist[v] = *(cthis->G + S * cthis->_maxVertex + v);
+		dist[v] = cthis->G[S][v];
 		if (dist[v] < 0) {
 			return looc_false;	//无法处理负数的权值
 		}
@@ -404,16 +396,13 @@ static looc_bool loocAdjacencyGraph_Dijkstra(loocAdjacencyGraph* cthis, int S,
 		/* 更新dist */
 		for (v = 0; v < cthis->numV; v++) {
 			/* 若v是minV的邻接点并且未被收录 */
-			if (*(cthis->G + minV * cthis->_maxVertex + v) < LOOC_GRAPH_NO_EDGE
-					&& collected[v] == 0) {
-				if (*(cthis->G + minV * cthis->_maxVertex + v) < 0) {
+			if (cthis->G[minV][v] < LOOC_GRAPH_NO_EDGE && collected[v] == 0) {
+				if (cthis->G[minV][v] < 0) {
 					return looc_false; //若有负边,返回错误标记
 				}
 				/* 若收录minV使得dist[v]变小 */
-				if (dist[minV] + *(cthis->G + minV * cthis->_maxVertex + v)
-						< dist[v]) {
-					dist[v] = dist[minV]
-							+ *(cthis->G + minV * cthis->_maxVertex + v); //更新dist[v]
+				if (dist[minV] + cthis->G[minV][v] < dist[v]) {
+					dist[v] = dist[minV] + cthis->G[minV][v]; //更新dist[v]
 					path[v] = minV; //v的前驱点就是minV
 				}
 			}
@@ -438,7 +427,7 @@ static looc_bool loocAdjacencyGraph_Floyd(loocAdjacencyGraph* cthis,
 	/* 初始化 */
 	for (i = 0; i < cthis->_maxVertex; i++) {
 		for (j = 0; j < cthis->_maxVertex; j++) {
-			D[i][j] = *(cthis->G + i * cthis->_maxVertex + j);
+			D[i][j] = cthis->G[i][j];
 			path[i][j] = -1;
 		}
 	}
@@ -473,7 +462,7 @@ static int loocAdjacencyGraph_Prim(loocAdjacencyGraph* cthis,
 	int totalWeight;
 	/* 初始化，默认初始点下标是0 */
 	for (i = 0; i < cthis->numV; i++) {
-		dist[i] = *(cthis->G + 0 * cthis->_maxVertex + i);
+		dist[i] = cthis->G[0][i];
 		parent[i] = 0;	//暂且定义所有顶点的父节点都是初始点0
 		MST->addVertex(MST, cthis->data_pool + i * cthis->_elementSize);
 	}
@@ -505,8 +494,8 @@ static int loocAdjacencyGraph_Prim(loocAdjacencyGraph* cthis,
 		for (i = 0; i < cthis->numV; i++) {
 			/* 若i是minV的邻接点且未被收录 */
 			if (dist[i] != 0 && loocAdjacencyGraph_existEdge(cthis, minV, i)) {
-				if (*(cthis->G + minV * cthis->_maxVertex + i) < dist[i]) {
-					dist[i] = *(cthis->G + minV * cthis->_maxVertex + i);
+				if (cthis->G[minV][i] < dist[i]) {
+					dist[i] = cthis->G[minV][i];
 					parent[i] = minV;
 				}
 			}
@@ -605,11 +594,15 @@ static int loocAdjacencyGraph_Kruskal(loocAdjacencyGraph* cthis,
  * @param object loocObject对象指针
  */
 static void loocAdjacencyGraph_finalize(loocObject* object) {
+	int i;
 	loocAdjacencyGraph* graph = SUB_PTR(object, loocObject, loocAdjacencyGraph);
 	if (graph->data_pool) {
 		looc_free(graph->data_pool);
 	}
 	if (graph->G) {
+		for (i = 0; i < graph->_maxVertex; i++) {
+			looc_free(graph->G[i]);
+		}
 		looc_free(graph->G);
 	}
 	graph->numE = 0;
