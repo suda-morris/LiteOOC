@@ -8,6 +8,7 @@
  ============================================================================
  */
 #include "lea.h"
+#include <stdio.h>
 
 /**
  * 验证一个数组是否是一个二叉查找树的后序遍历结果
@@ -85,17 +86,56 @@ void transNum(int num, int d, char result[]) {
 
 /**
  * 判断CPU是否是小端模式
- * @return  如果是小端模式返回1，否则返回0
+ * @return  如果是小端模式返回true，否则返回false
  */
-int isLittleEndian(void) {
+looc_bool isLittleEndian(void) {
 	union w {
 		int a;
 		char b;
 	} c;
 	c.a = 1;
 	if (c.b == 1) {
+		return looc_true;
+	}
+	return looc_false;
+}
+
+/**
+ * 判断是否为完全平方数
+ * @param  x 待判断的整数
+ * @return   是完全平方数返回true，否则返回false
+ */
+looc_bool isPerfectSquare(int x) {
+	int sum = 0;
+	int i = 1;
+	for (i = 1; sum < x; i += 2) {
+		sum += i;
+	}
+	if (sum == x) {
+		return looc_true;
+	} else {
+		return looc_false;
+	}
+}
+
+/**
+ * 计算第n个斐波那契数
+ * @param  n 第几个斐波那契数
+ * @return   返回计算结果
+ */
+int Fibonacci(int n) {
+	int result;
+	int last, nextToLast;
+	int i;
+	if (n <= 1) {
 		return 1;
 	}
-	return 0;
+	last = nextToLast = 1;
+	for (i = 0; i < n - 1; i++) {
+		result = last + nextToLast;
+		nextToLast = last;
+		last = result;
+	}
+	return result;
 }
 

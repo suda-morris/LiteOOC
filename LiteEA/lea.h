@@ -18,6 +18,7 @@ extern "C" {
 #include "looc.h"
 #include "leaSort.h"
 #include "leaSearch.h"
+#include "leaDP.h"
 
 /**
  * 验证一个数组是否是一个二叉查找树的后序遍历的结果
@@ -26,14 +27,24 @@ extern "C" {
 looc_bool verifySquenceOfBST(int squence[], int length);
 
 /**
- * 判断CPU是否是小端模式
- */
-int isLittleEndian(void);
-
-/**
  * 数制转换，直接转换成字符串
  */
 void transNum(int num, int d, char result[]);
+
+/**
+ * 判断CPU是否是小端模式
+ */
+looc_bool isLittleEndian(void);
+
+/**
+ * 判断整数x是否为完全平方数
+ */
+looc_bool isPerfectSquare(int x);
+
+/**
+ * 计算斐波那契数
+ */
+int Fibonacci(int n);
 
 #ifdef __cplusPlus
 }

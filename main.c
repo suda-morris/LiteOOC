@@ -839,6 +839,14 @@ int main(int argc, char **argv) {
 	/* 大小端模式 */
 	printf("Machine %s little endian\r\n", isLittleEndian() ? "is" : "isn't");
 
+	/* 判断完全平方数 */
+	i = 144;
+	printf("%d %s Perfect Square\r\n", i, isPerfectSquare(i) ? "is" : "isn't");
+
+	/* 计算斐波那契数 */
+	i = 5;
+	printf("第%d个斐波那契数:%d\r\n", i, Fibonacci(i));
+
 	/* 插入排序 */
 	int data1[10] = { 45, 43, 23, 76, 897, 567, 32, 0, 24, 43 };
 	insertSort(data1, 10);
@@ -1035,4 +1043,28 @@ int main(int argc, char **argv) {
 	loocLinkedGraph_delete(MST_link);
 	/* 报告内存泄露情况 */
 	looc_report();
+
+	/* 最长递增子序列 */
+	int X[9] = { 3, 6, 1, 4, 2, 8, 9, 5, 7 };
+	int LIS_Res[9];
+	int LIS_Path[9];
+	int LIS_max = LIS(X, 9, LIS_Res, LIS_Path);
+	printf("LIS:\r\n");
+	printLIS(X, 9, LIS_Res, LIS_Path, LIS_max);
+
+	/* 最长公共子序列 */
+	int Y[9] = { 3, 6, 0, 2, 8, 9, 7, 1, 5 };
+	int** LCS_Res = (int**) looc_malloc(10 * sizeof(int*), "LCS_Res",
+	looc_file_line);
+	int** LCS_Path = (int**) looc_malloc(10 * sizeof(int*), "LCS_Path",
+	looc_file_line);
+	for (i = 0; i < 10; i++) {
+		LCS_Res[i] = (int*) looc_malloc(10 * sizeof(int), "LCS_Res[]",
+		looc_file_line);
+		LCS_Path[i] = (int*) looc_malloc(10 * sizeof(int), "LCS_Path[]",
+		looc_file_line);
+	}
+	int LCS_max = LCS(X, Y, 9, 9, LCS_Res, LCS_Path, 0);
+	printf("LCS:\r\n");
+	printLCS(X, Y, 9, 9, LCS_Res, LCS_Path, LCS_max);
 }
