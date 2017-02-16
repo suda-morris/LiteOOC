@@ -1049,10 +1049,9 @@ int main(int argc, char **argv) {
 	int LIS_Res[9];
 	int LIS_Path[9];
 	int LIS_max = LIS(X, 9, LIS_Res, LIS_Path);
-	printf("LIS:\r\n");
 	printLIS(X, 9, LIS_Res, LIS_Path, LIS_max);
 
-	/* 最长公共子序列 */
+	/* 最长公共子序列/串 */
 	int Y[9] = { 3, 6, 0, 2, 8, 9, 7, 1, 5 };
 	int** LCS_Res = (int**) looc_malloc(10 * sizeof(int*), "LCS_Res",
 	looc_file_line);
@@ -1065,6 +1064,22 @@ int main(int argc, char **argv) {
 		looc_file_line);
 	}
 	int LCS_max = LCS(X, Y, 9, 9, LCS_Res, LCS_Path, 0);
-	printf("LCS:\r\n");
 	printLCS(X, Y, 9, 9, LCS_Res, LCS_Path, LCS_max);
+	for (i = 0; i < 10; i++) {
+		looc_free(LCS_Res[i]);
+		looc_free(LCS_Path[i]);
+	}
+	looc_free(LCS_Res);
+	looc_free(LCS_Path);
+	looc_report();
+
+	int weight[3] = { 3, 4, 5 };
+	int price[3] = { 4, 5, 6 };
+	int check[3];
+	int maxValue = Knapsack(3, 10, weight, price, check);
+	printf("Max Value:%d\r\n", maxValue);
+	for (i = 0; i < 3; i++) {
+		printf("%d\t", check[i]);
+	}
+	printf("\r\n");
 }

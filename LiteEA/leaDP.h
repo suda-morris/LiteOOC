@@ -29,4 +29,9 @@ int LIS(int* x, int n, int* result, int* path);
  */
 void printLIS(int* x, int n, int* result, int* path, int max);
 
+/**
+ * 背包问题
+ */
+int Knapsack(int count, int capacity, int* weight, int* value, int* check);
+
 #endif /* LITEEA_LEADP_H_ */

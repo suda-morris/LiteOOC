@@ -9,6 +9,7 @@
  */
 
 #include "leaDP.h"
+#include "looc.h"
 #include <stdio.h>
 
 /**
@@ -101,6 +102,7 @@ void printLCS(int* x, int* y, int m, int n, int** result, int** path, int max) {
 			break;
 		}
 	}
+	printf("LCS:\r\n");
 	while (path[i][j] != -1) {
 		if (path[i][j] == 'i') {
 			printf("%d\t", x[i - 1]);
@@ -112,6 +114,7 @@ void printLCS(int* x, int* y, int m, int n, int** result, int** path, int max) {
 			i--;
 		}
 	}
+	printf("\r\n");
 }
 
 /**
@@ -161,9 +164,76 @@ void printLIS(int* x, int n, int* result, int* path, int max) {
 			break;
 		}
 	}
+	printf("LIS:\r\n");
 	while (path[i] != -1) {
 		printf("%d\t", x[i]);
 		i = path[i];
 	}
 	printf("%d\r\n", x[i]);
+}
+
+/**
+ * 背包问题
+ * @param  count    物品个数
+ * @param  capacity 背包载重量
+ * @param  weight   物品重量数组
+ * @param  value    物品价值数组
+ * @param  check    物品是否被选中数组，若果物品被装入，则为1
+ * @return          返回背包能够装入最大的价值
+ */
+int Knapsack(int count, int capacity, int* weight, int* price, int* check) {
+	int row = count + 1;
+	int col = capacity + 1;
+	int i, j;
+	int max = 0;
+	/* table表格保存子问题的解：即前i个物品能够装入载重量为j的背包中物品的最大价值 */
+	int** value = (int**) looc_malloc(row * sizeof(int*), "Knapsack_table",
+	looc_file_line);
+	for (i = 0; i < row; i++) {
+		value[i] = (int*) looc_malloc(col * sizeof(int), "Knapsack_table_i",
+		looc_file_line);
+	}
+	/* 初始化所有物品都没有选中 */
+	for (i = 0; i < count; i++) {
+		check[i] = 0;
+	}
+	/* 初始化table表格 */
+	for (i = 0; i < row; i++) {
+		for (j = 0; j < col; j++) {
+			value[i][j] = 0;
+		}
+	}
+
+	/* 递归填表 */
+	for (i = 1; i < row; i++) {
+		for (j = 1; j < col; j++) {
+			/* 第i个物品先不装入背包 */
+			value[i][j] = value[i - 1][j];
+			/* 第i个物品的重量不超过背包的容量j */
+			if (weight[i] <= j) {
+				int temp = value[i - 1][j - weight[i]] + price[i];
+				/* 装入的第i个物品有助于总价值的提升 */
+				if (value[i][j] < temp) {
+					value[i][j] = temp;
+				}
+			}
+		}
+	}
+	/* 逆推求装入的物品 */
+	j = capacity;
+	for (i = count; i > 0; i--) {
+		if (value[i][j] > value[i - 1][j]) {
+			check[i] = 1;
+			j -= weight[i];
+		}
+	}
+
+	/* 记录最大价值 */
+	max = value[row - 1][col - 1];
+	/* 释放table的内存空间 */
+	for (i = 0; i < row; i++) {
+		looc_free(value[i]);
+	}
+	looc_free(value);
+	return max;
 }
