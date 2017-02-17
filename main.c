@@ -22,6 +22,7 @@
 #include <loocAdjacencyGraph.h>
 #include <loocLinkedGraph.h>
 #include <loocDisjointSet.h>
+#include <loocMatrix.h>
 #include <stdio.h>
 #include <lea.h>
 
@@ -1073,6 +1074,7 @@ int main(int argc, char **argv) {
 	looc_free(LCS_Path);
 	looc_report();
 
+	/* 背包问题 */
 	int weight[3] = { 3, 4, 5 };
 	int price[3] = { 4, 5, 6 };
 	int check[3];

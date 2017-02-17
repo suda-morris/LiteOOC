@@ -42,6 +42,9 @@
 ## loocDisjointSet
 >并查集（不相交集）的基本操作
 
+## loocMatrix
+>矩阵的基本操作
+
 ## loocAdjacencyGraph
 >加权图的邻接矩阵存储
 
