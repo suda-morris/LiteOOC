@@ -23,8 +23,9 @@
 #include <loocLinkedGraph.h>
 #include <loocDisjointSet.h>
 #include <loocMatrix.h>
-#include <stdio.h>
 #include <lea.h>
+#include <stdio.h>
+#include <string.h>
 
 #define SEQLIST_LENGTH				(10)
 #define SINGLELIST_LENGTH			(5)
@@ -1084,4 +1085,39 @@ int main(int argc, char **argv) {
 		printf("%d\t", check[i]);
 	}
 	printf("\r\n");
+
+	/* 字符串匹配 */
+	char* T = "morrisandwendy";
+	char* P = "nd";
+	int position[10];
+	int valid = RabinKarp(T, strlen(T), P, strlen(P), 7, position);
+	printf("Rabin-Karp:");
+	for (i = 0; i < valid; i++) {
+		printf("%d\t", position[i]);
+	}
+	printf("\r\n");
+
+	/* 最大公约数 */
+	printf("%d和%d的最大公约数是%d\r\n", 12456, 32516, gcd(12456, 32516));
+
+	/* 寻找指定范围内的所有素数 */
+	int prime_result[100];
+	prime(100, prime_result);
+	for (i = 0; i < 100; i++) {
+		if (prime_result[i]) {
+			printf("%d\t", prime_result[i]);
+		}
+	}
+
+	/* 打印5阶幻方 */
+	loocMatrix* magic = loocMatrix_magicMatrix(5);
+	magic->print(magic);
+	loocMatrix_delete(magic);
+	looc_report();
+
+	/* N皇后问题 */
+	printf("%d皇后问题的解决方案共有%d\r\n", 4, loocMatrix_placeNQueen(4, 1));
+	looc_report();
+
+	return 0;
 }

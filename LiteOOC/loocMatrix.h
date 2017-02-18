@@ -44,6 +44,11 @@ extern "C" {
 	loocMatrix* loocMatrix_subtraction(loocMatrix* A, loocMatrix* B);
 	/* 矩阵乘法 */
 	loocMatrix* loocMatrix_multiplication(loocMatrix* A, loocMatrix* B);
+	/* 创建一个n(奇数)阶幻方 */
+	loocMatrix* loocMatrix_magicMatrix(int n);
+
+	/* N皇后问题 */
+	int loocMatrix_placeNQueen(int n, int show);
 
 #ifdef __cplusPlus
 }

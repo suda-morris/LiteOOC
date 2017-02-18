@@ -22,7 +22,6 @@ extern "C" {
 
 /**
  * 验证一个数组是否是一个二叉查找树的后序遍历的结果
- * 如果是则返回looc_true，否则返回looc_false
  */
 looc_bool verifySquenceOfBST(int squence[], int length);
 
@@ -45,6 +44,25 @@ looc_bool isPerfectSquare(int x);
  * 计算斐波那契数
  */
 int Fibonacci(int n);
+
+/**
+ * 字符串匹配算法
+ */
+int RabinKarp(char* T, int n, char* P, int m, int q, int* position);
+
+/**
+ * 最大公约数
+ */
+int gcd(int a, int b);
+
+/**
+ * 判断一个数是否为素数
+ */
+looc_bool isPrime(int number);
+/**
+ * 寻找指定范围内的所有素数
+ */
+void prime(int number, int* result);
 
 #ifdef __cplusPlus
 }

@@ -175,3 +175,185 @@ loocMatrix* loocMatrix_multiplication(loocMatrix* A, loocMatrix* B) {
 	}
 	return C;
 }
+
+/**
+ * 创建一个n阶的幻方
+ * @param  n 幻方的阶数
+ * @return   返回创建后的幻方
+ */
+loocMatrix* loocMatrix_magicMatrix(int n) {
+	int row = 0;
+	int col = n / 2;
+	int i;
+	loocMatrix* magic;
+	if (n <= 0 || n % 2 == 0) {
+		return NULL;
+	}
+	magic = loocMatrix_new(looc_file_line);
+	magic->init(magic, n, n);
+	/* 初始化第一行中间为1 */
+	magic->matrix_pool[row][col] = 1;
+	/* 斜排法往幻方中填数2~n^2 */
+	for (i = 2; i <= n * n; i++) {
+		/* 右上，行没有越界 */
+		if (row - 1 >= 0) {
+			/* 右上，列没有越界 */
+			if (col + 1 < n) {
+				if (magic->matrix_pool[row - 1][col + 1] == 0) {
+					magic->matrix_pool[row - 1][col + 1] = i;
+					row = row - 1;
+					col = col + 1;
+				}
+				/* 右上已有数据 */
+				else {
+					magic->matrix_pool[row + 1][col] = i;
+					row = row + 1;
+				}
+			}
+			/* 右上，列越界 */
+			else {
+				if (magic->matrix_pool[row - 1][0] == 0) {
+					magic->matrix_pool[row - 1][0] = i;
+					row = row - 1;
+					col = 0;
+				}
+				/* 右上已有数据 */
+				else {
+					magic->matrix_pool[row + 1][col] = i;
+					row = row + 1;
+				}
+			}
+		}
+		/* 右上，行越界 */
+		else {
+			/* 右上，列没有越界 */
+			if (col + 1 < n) {
+				if (magic->matrix_pool[n - 1][col + 1] == 0) {
+					magic->matrix_pool[n - 1][col + 1] = i;
+					row = n - 1;
+					col = col + 1;
+				}
+				/* 右上已有数据 */
+				else {
+					magic->matrix_pool[row + 1][col] = i;
+					row = row + 1;
+				}
+			}
+			/* 右上，列越界 */
+			else {
+				if (magic->matrix_pool[n - 1][0] == 0) {
+					magic->matrix_pool[n - 1][0] = i;
+					row = n - 1;
+					col = 0;
+				}
+				/* 右上已有数据 */
+				else {
+					magic->matrix_pool[row + 1][col] = i;
+					row = row + 1;
+				}
+			}
+		}
+	}
+	return magic;
+}
+
+/********************************N皇后问题***************************/
+static int NQueueCount = 0;
+
+/**
+ * 判断位置(row,col)是否适合放棋子
+ */
+static int NQueue_isSafe(int row, int col, loocMatrix* chess) {
+	int i, j;
+	int n = chess->rows;
+	int flagRow = 0, flagCol = 0, flagLeftUp = 0, flagLeftDown = 0,
+			flagRightUp = 0, flagRightDown = 0;
+	for (i = 0; i < n; i++) {
+		if (chess->matrix_pool[i][col]) {
+			flagCol = 1;
+			break;
+		}
+		if (chess->matrix_pool[row][i]) {
+			flagRow = 1;
+			break;
+		}
+	}
+	for (i = row, j = col; i >= 0 && j >= 0; i--, j--) {
+		if (chess->matrix_pool[i][j]) {
+			flagLeftUp = 1;
+			break;
+		}
+	}
+	for (i = row, j = col; i < n && j >= 0; i++, j--) {
+		if (chess->matrix_pool[i][j]) {
+			flagLeftDown = 1;
+			break;
+		}
+	}
+	for (i = row, j = col; i >= 0 && j < n; i--, j++) {
+		if (chess->matrix_pool[i][j]) {
+			flagRightUp = 1;
+			break;
+		}
+	}
+	for (i = row, j = col; i < n && j < n; i++, j++) {
+		if (chess->matrix_pool[i][j]) {
+			flagRightDown = 1;
+			break;
+		}
+	}
+	if (flagRow || flagCol || flagLeftUp || flagLeftDown || flagRightUp
+			|| flagRightDown) {
+		return 0;
+	}
+	return 1;
+}
+
+static void _NQueen(int row, int show, loocMatrix* chess) {
+	int n = chess->cols;
+	int i, j;
+	/* 复制棋盘，用于递归操作 */
+	loocMatrix* copy = loocMatrix_new(looc_file_line);
+	copy->init(copy, n, n);
+	for (i = 0; i < n; i++) {
+		for (j = 0; j < n; j++) {
+			copy->matrix_pool[i][j] = chess->matrix_pool[i][j];
+		}
+	}
+
+	if (row == n) {
+		/* 如果row=n，说明该棋盘布局完成 */
+		NQueueCount++;	//增加方案数
+		if (show) {
+			printf("方案%d:\r\n", NQueueCount);
+			copy->print(copy);	//打印棋盘
+		}
+	} else {
+		for (i = 0; i < n; i++) {
+			/* 如果适合放置棋子，则递归进行下一行的检测 */
+			if (NQueue_isSafe(row, i, chess)) {
+				for (j = 0; j < n; j++) {
+					copy->matrix_pool[row][j] = 0;
+				}
+				copy->matrix_pool[row][i] = 1;
+				_NQueen(row + 1, show, copy);	//递归调用本函数
+			}
+		}
+	}
+	loocMatrix_delete(copy);
+}
+
+/**
+ * N皇后问题
+ * @param  n    皇后的数量
+ * @param  show 是否要打印出每个结果
+ * @return      返回N皇后问题解的数量
+ */
+int loocMatrix_placeNQueen(int n, int show) {
+	NQueueCount = 0;
+	loocMatrix* chess = loocMatrix_new(looc_file_line);
+	chess->init(chess, n, n);
+	_NQueen(0, show, chess); //调用递归函数
+	loocMatrix_delete(chess);
+	return NQueueCount;
+}
