@@ -10,6 +10,7 @@
 #include "lea.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include <time.h>
 
 /**
@@ -229,7 +230,7 @@ looc_bool isPrime(int number) {
 }
 
 /**
- * 寻找指定范围内的所有素数
+ * 寻找指定范围内的所有素数(筛选法)
  * @param number 指定范围
  * @param result 保存指定范围内的素数
  */
@@ -277,7 +278,7 @@ void shuffle(int* card, int n) {
  */
 void Josephus(int n, int m, int* order) {
 	int* status = (int*) looc_malloc(sizeof(int) * n, "Josephus_status",
-			looc_file_line);
+	looc_file_line);
 	int i, j;
 	int count;
 	for (i = 0; i < n; i++) {
@@ -301,3 +302,88 @@ void Josephus(int n, int m, int* order) {
 	}
 	looc_free(status);
 }
+
+static int HanoiSteps = 0;
+
+static void _hanoiMove(int n, char a, char b, char c, int show) {
+	if (n == 1) {
+		HanoiSteps++;
+		if (show) {
+			printf("%c --> %c\r\n", a, c);
+		}
+	} else {
+		/* 先将a中的n-1个圆盘借助c移动到b中 */
+		_hanoiMove(n - 1, a, c, b, show);
+		/* 将a中最后一个圆盘移动到c中 */
+		HanoiSteps++;
+		if (show) {
+			printf("%c --> %c\r\n", a, c);
+		}
+		/* 再将b中n-1个圆盘借助a移动到c中 */
+		_hanoiMove(n - 1, b, a, c, show);
+	}
+}
+
+/**
+ * 汉诺塔问题(将a中的圆盘借助b移动到c中，其中任何时刻要保证大盘在下，小盘在上)
+ * @param  n    汉诺塔中需要移动的圆盘的数目
+ * @param  a    圆盘a的标识
+ * @param  b    圆盘b的标识
+ * @param  c    圆盘c的标识
+ * @param  show 是否需要打印中间过程
+ * @return      总共需要的步骤
+ */
+int stepsOfHanoi(int n, char a, char b, char c, int show) {
+	HanoiSteps = 0;
+	_hanoiMove(n, a, b, c, show);
+	return HanoiSteps;
+}
+
+/**
+ * 迭代法求平方根
+ * @param  a 根
+ * @return   返回a的平方根
+ * 求解平方根的迭代公式：
+ * 	X(n+1) = 1/2*(X(n)+a/X(n))
+ */
+double SQR(double a) {
+	double x = a, y = 0;	//迭代初始值
+	while (fabs(y - x) > 0.000001) {
+		y = x;
+		x = 0.5 * (x + a / x);
+	}
+	return x;
+}
+
+/**
+ * 一重定积分(梯形法)
+ * @param  express	表达式函数指针
+ * @param  down 	积分下限
+ * @param  up 		积分上限
+ * @return   		返回定积分值
+ */
+double DefiniteIntegration(double (*express)(double x), double down, double up) {
+	double T1, T2;
+	double S = 0;	//梯形面积和
+	double x = down;
+	double h = up - down;
+	/* 初始化面积 */
+	T1 = h / 2 * (express(down) + express(up));
+	while (1) {
+		S = 0;
+		x = down + h / 2;
+		while (x < up) {
+			S += express(x);
+			x += h;
+		}
+		T2 = T1 / 2 + h / 2 * S;
+		if (fabs(T1 - T2) >= 0.000001) {
+			h /= 2;
+			T1 = T2;
+		} else {
+			break;
+		}
+	}
+	return T2;
+}
+

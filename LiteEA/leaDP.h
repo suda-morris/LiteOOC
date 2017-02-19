@@ -34,4 +34,9 @@ void printLIS(int* x, int n, int* result, int* path, int max);
  */
 int Knapsack(int count, int capacity, int* weight, int* value, int* check);
 
+/**
+ * 整数划分
+ */
+int IntegerPart(int n);
+
 #endif /* LITEEA_LEADP_H_ */

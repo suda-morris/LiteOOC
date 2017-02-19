@@ -26,6 +26,7 @@
 #include <lea.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 #define SEQLIST_LENGTH				(10)
 #define SINGLELIST_LENGTH			(5)
@@ -176,6 +177,17 @@ static void FloydDisplayPaths(loocAdjacencyGraph* cthis,
 				printf("%d\r\n", j);
 			}
 		}
+	}
+}
+
+/**
+ * 欲求定积分的表达式
+ */
+static double expression(double x) {
+	if (x != 0) {
+		return sin(x) / x;
+	} else {
+		return 1;
 	}
 }
 
@@ -1168,6 +1180,18 @@ int main(int argc, char **argv) {
 	}
 	printf("\r\n");
 	looc_report();
+
+	/* 汉诺塔问题 */
+	printf("移动汉诺塔中的%d个圆盘需要%d歩\r\n", 5, stepsOfHanoi(5, 'A', 'B', 'C', 1));
+
+	/* 迭代法求平方根 */
+	printf("71的平方根为:%lf(标准库)\t%lf(迭代法)\r\n", sqrt(71), SQR(71));
+
+	/* 梯形法求定积分 */
+	printf("定积分的值:%lf\r\n", DefiniteIntegration(expression, 0, 1));
+
+	/* 整数划分 */
+	printf("整数%d划分的方案数总共有%d中\r\n", 5, IntegerPart(5));
 
 	return 0;
 }

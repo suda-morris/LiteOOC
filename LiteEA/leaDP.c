@@ -237,3 +237,57 @@ int Knapsack(int count, int capacity, int* weight, int* price, int* check) {
 	looc_free(value);
 	return max;
 }
+
+/**
+ * 整数划分问题(n=m1+m2+...+mi;其中mi为正整数，且1<=mi<=n)
+ * @param  n 要被划分的整数
+ * @return   总共的划分方案
+ * 递归方程:
+ * 						1					(n=1 or m=1)
+ * 			f(n,m)	=	f(n,n)				(n<m)
+ * 						f(n,m-1)+1			(n=m)
+ * 						f(n-m,m)+f(n-1,m)	(n>m)
+ */
+int IntegerPart(int n) {
+	int i, j;
+	int result = 0;
+	/* 保存动态规划的中间结果 */
+	int** table = (int**) looc_malloc(sizeof(int*) * n, "IntegerPart_table",
+	looc_file_line);
+	for (i = 0; i < n; i++) {
+		table[i] = (int*) looc_malloc(sizeof(int) * n, "IntegerPart_table[]",
+		looc_file_line);
+	}
+	/* 初始化 */
+	for (i = 0; i < n; i++) {
+		table[i][0] = 1;
+		table[0][i] = 1;
+	}
+	/* 动态规划过程 */
+	for (i = 1; i < n; i++) {
+		for (j = 1; j < n; j++) {
+			if (i > j) {
+				/* 分两种情况：包含了最大数j与没有包含最大数j */
+				table[i][j] = table[i - j - 1][j] + table[i][j - 1];
+			} else if (i == j) {
+				/* 分两种：包含本身与不包含本身 */
+				table[i][j] = table[i][j - 1] + 1;
+			} else {
+				table[i][j] = table[i][i];
+			}
+		}
+	}
+	for (i = 0; i < n; i++) {
+		for (j = 0; j < n; j++) {
+			printf("%d\t", table[i][j]);
+		}
+		printf("\r\n");
+	}
+	result = table[n - 1][n - 1];
+	/* 回收内存 */
+	for (i = 0; i < n; i++) {
+		looc_free(table[i]);
+	}
+	looc_free(table);
+	return result;
+}

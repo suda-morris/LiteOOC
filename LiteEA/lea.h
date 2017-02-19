@@ -74,6 +74,21 @@ void shuffle(int* card, int n);
  */
 void Josephus(int n, int m, int* order);
 
+/**
+ * 汉诺塔问题
+ */
+int stepsOfHanoi(int n, char a, char b, char c, int show);
+
+/**
+ * 迭代法求平方根
+ */
+double SQR(double a);
+
+/**
+ * 一重定积分
+ */
+double DefiniteIntegration(double (*express)(double x), double down, double up);
+
 #ifdef __cplusPlus
 }
 #endif
