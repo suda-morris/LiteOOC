@@ -9,6 +9,8 @@
  */
 #include "lea.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 /**
  * 验证一个数组是否是一个二叉查找树的后序遍历结果
@@ -245,4 +247,57 @@ void prime(int number, int* result) {
 			}
 		}
 	}
+}
+
+/**
+ * 将n张牌重新洗牌(实质上是简单的数组元素交换)
+ * @param card 牌数组
+ * @param n    牌的张数，一般扑克牌共52张，包括花色
+ */
+void shuffle(int* card, int n) {
+	int i, j, temp;
+	for (i = 0; i < n; i++) {
+		card[i] = i + 1;
+	}
+	srand(time(NULL));	//随机数种子
+	/* 进行洗牌 */
+	for (i = 0; i < n; i++) {
+		j = rand() % n + 1;	//1,2,3...n
+		temp = card[i];
+		card[i] = card[j];
+		card[j] = temp;
+	}
+}
+
+/**
+ * 约瑟夫问题
+ * @param n     总人数
+ * @param m     死亡报数
+ * @param order 保存自杀的顺序号
+ */
+void Josephus(int n, int m, int* order) {
+	int* status = (int*) looc_malloc(sizeof(int) * n, "Josephus_status",
+			looc_file_line);
+	int i, j;
+	int count;
+	for (i = 0; i < n; i++) {
+		status[i] = 1;	//1表示活着，0表示死亡
+	}
+	i = 0;
+	j = 0;
+	while (count < n) {
+		if (status[i]) {
+			j++;
+			if (j == m) {
+				status[i] = 0;
+				j = 0;
+				order[count++] = i;
+			}
+		}
+		i++;
+		if (i == n) {
+			i = 0;
+		}
+	}
+	looc_free(status);
 }

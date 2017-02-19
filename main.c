@@ -1116,7 +1116,57 @@ int main(int argc, char **argv) {
 	looc_report();
 
 	/* N皇后问题 */
-	printf("%d皇后问题的解决方案共有%d\r\n", 4, loocMatrix_placeNQueen(4, 1));
+	printf("%d皇后问题的解决方案共有%d\r\n", 10, loocMatrix_placeNQueen(10, 1));
+	looc_report();
+
+	/* 洗牌问题 */
+	int card[52];
+	shuffle(card, 52);
+	for (i = 0; i < 52; i++) {
+		switch ((card[i] - 1) / 13) {
+		case 0:
+			printf("黑桃");
+			break;
+		case 1:
+			printf("红心");
+			break;
+		case 2:
+			printf("方块");
+			break;
+		case 3:
+			printf("梅花");
+			break;
+		}
+		switch (card[i] % 13) {
+		case 0:
+			printf("K ");
+			break;
+		case 1:
+			printf("A ");
+			break;
+		case 12:
+			printf("Q ");
+			break;
+		case 11:
+			printf("J ");
+			break;
+		default:
+			printf("%d ", card[i] % 13);
+			break;
+		}
+		if ((i + 1) % 13 == 0) {
+			printf("\r\n");
+		}
+	}
+
+	/* 约瑟夫问题 */
+	int dieOrder[41];
+	Josephus(41, 3, dieOrder);
+	printf("死亡顺序：");
+	for (i = 0; i < 41; i++) {
+		printf("%d ", dieOrder[i]);
+	}
+	printf("\r\n");
 	looc_report();
 
 	return 0;

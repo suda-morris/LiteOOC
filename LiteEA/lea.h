@@ -64,6 +64,16 @@ looc_bool isPrime(int number);
  */
 void prime(int number, int* result);
 
+/**
+ * 将n张牌重新洗牌
+ */
+void shuffle(int* card, int n);
+
+/**
+ * 约瑟夫问题
+ */
+void Josephus(int n, int m, int* order);
+
 #ifdef __cplusPlus
 }
 #endif

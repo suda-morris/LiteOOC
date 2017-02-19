@@ -311,36 +311,30 @@ static int NQueue_isSafe(int row, int col, loocMatrix* chess) {
 
 static void _NQueen(int row, int show, loocMatrix* chess) {
 	int n = chess->cols;
-	int i, j;
-	/* 复制棋盘，用于递归操作 */
-	loocMatrix* copy = loocMatrix_new(looc_file_line);
-	copy->init(copy, n, n);
-	for (i = 0; i < n; i++) {
-		for (j = 0; j < n; j++) {
-			copy->matrix_pool[i][j] = chess->matrix_pool[i][j];
-		}
-	}
+	int i, j, k;
 
 	if (row == n) {
 		/* 如果row=n，说明该棋盘布局完成 */
 		NQueueCount++;	//增加方案数
 		if (show) {
 			printf("方案%d:\r\n", NQueueCount);
-			copy->print(copy);	//打印棋盘
+			chess->print(chess);	//打印棋盘
 		}
 	} else {
-		for (i = 0; i < n; i++) {
-			/* 如果适合放置棋子，则递归进行下一行的检测 */
-			if (NQueue_isSafe(row, i, chess)) {
+		for (k = 0; k < n; k++) {
+			/* 避免前面递归过程中修改矩阵带来的干扰 */
+			for (i = row; i < n; i++) {
 				for (j = 0; j < n; j++) {
-					copy->matrix_pool[row][j] = 0;
+					chess->matrix_pool[i][j] = 0;
 				}
-				copy->matrix_pool[row][i] = 1;
-				_NQueen(row + 1, show, copy);	//递归调用本函数
+			}
+			/* 如果适合放置棋子，则递归进行下一行的检测 */
+			if (NQueue_isSafe(row, k, chess)) {
+				chess->matrix_pool[row][k] = 1;
+				_NQueen(row + 1, show, chess);	//递归调用本函数
 			}
 		}
 	}
-	loocMatrix_delete(copy);
 }
 
 /**
