@@ -23,6 +23,7 @@
 #include <loocLinkedGraph.h>
 #include <loocDisjointSet.h>
 #include <loocMatrix.h>
+#include <loocString.h>
 #include <lea.h>
 #include <stdio.h>
 #include <string.h>
@@ -1202,6 +1203,21 @@ int main(int argc, char **argv) {
 		printf("%d\t", pfNumber[i]);
 	}
 	printf("\r\n");
+	looc_report();
+
+	/* 字符串 */
+	loocString* lstr = loocString_new(looc_file_line);
+	lstr->init(lstr, "helloworldworldhello");
+	lstr->print(lstr);
+	/* 获取子字符串 */
+	loocString* childstr = lstr->substr(lstr, 2, 8);
+	childstr->print(childstr);
+	/* 正序查找字符串 */
+	printf("%d\r\n", lstr->find(lstr, "world"));
+	/* 逆序查找字符串 */
+	printf("%d\r\n", lstr->rfind(lstr, "world"));
+	loocString_delete(childstr);
+	loocString_delete(lstr);
 	looc_report();
 
 	return 0;

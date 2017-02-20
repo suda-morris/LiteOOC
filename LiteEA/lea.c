@@ -264,7 +264,7 @@ int prime(int number, int* result) {
  * 寻找指定范围内的完美数(一个自然数的所有因子的和是这个数的本身)
  * @param  n      指定的数据
  * @param result  保存指定范围内的完美数
- * @return        返回指定范围内所有的完美数
+ * @return        返回指定范围内完美数的个数
  */
 int PerfectNumber(int n, int* result) {
 	int i, j, k;

@@ -11,6 +11,9 @@
 #ifndef LITEEA_LEADP_H_
 #define LITEEA_LEADP_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * 最长公共子序列/串(LCS)
  */
@@ -39,4 +42,7 @@ int Knapsack(int count, int capacity, int* weight, int* value, int* check);
  */
 int IntegerPart(int n);
 
+#ifdef __cplusPlus
+}
+#endif
 #endif /* LITEEA_LEADP_H_ */

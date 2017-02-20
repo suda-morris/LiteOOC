@@ -45,6 +45,9 @@
 ## loocMatrix
 >矩阵的基本操作
 
+## loocString
+>字符串的基本操作
+
 ## loocAdjacencyGraph
 >加权图的邻接矩阵存储
 
