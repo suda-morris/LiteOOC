@@ -1114,12 +1114,13 @@ int main(int argc, char **argv) {
 
 	/* 寻找指定范围内的所有素数 */
 	int prime_result[100];
-	prime(100, prime_result);
+	printf("100以内总共 %d 个质数:\r\n", prime(100, prime_result));
 	for (i = 0; i < 100; i++) {
 		if (prime_result[i]) {
 			printf("%d\t", prime_result[i]);
 		}
 	}
+	printf("\r\n");
 
 	/* 打印5阶幻方 */
 	loocMatrix* magic = loocMatrix_magicMatrix(5);
@@ -1128,7 +1129,7 @@ int main(int argc, char **argv) {
 	looc_report();
 
 	/* N皇后问题 */
-	printf("%d皇后问题的解决方案共有%d\r\n", 10, loocMatrix_placeNQueen(10, 1));
+	printf("%d皇后问题的解决方案共有%d\r\n", 8, loocMatrix_placeNQueen(8, 1));
 	looc_report();
 
 	/* 洗牌问题 */
@@ -1192,6 +1193,16 @@ int main(int argc, char **argv) {
 
 	/* 整数划分 */
 	printf("整数%d划分的方案数总共有%d中\r\n", 5, IntegerPart(5));
+
+	/* 完美数 */
+	int pfNumber[10];
+	j = PerfectNumber(500, pfNumber);
+	printf("500以内共有%d个完美数: ", j);
+	for (i = 0; i < j; i++) {
+		printf("%d\t", pfNumber[i]);
+	}
+	printf("\r\n");
+	looc_report();
 
 	return 0;
 }

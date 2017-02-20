@@ -62,7 +62,12 @@ looc_bool isPrime(int number);
 /**
  * 寻找指定范围内的所有素数
  */
-void prime(int number, int* result);
+int prime(int number, int* result);
+
+/**
+ * 寻找指定范围内的完美数
+ */
+int PerfectNumber(int n, int* result);
 
 /**
  * 将n张牌重新洗牌

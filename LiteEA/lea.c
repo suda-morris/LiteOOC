@@ -233,21 +233,97 @@ looc_bool isPrime(int number) {
  * 寻找指定范围内的所有素数(筛选法)
  * @param number 指定范围
  * @param result 保存指定范围内的素数
+ * @return       返回指定范围内素数的个数
  */
-void prime(int number, int* result) {
+int prime(int number, int* result) {
 	int i, j;
-	/* 初始化result数组保存1~number所有整数 */
+	int count = 0;
+	int* temp = (int*) looc_malloc(sizeof(int) * number, "prime_temp",
+	looc_file_line);
+	/* 初始化temp数组保存1~number所有整数 */
 	for (i = 0; i < number; i++) {
-		result[i] = i + 1;
+		temp[i] = i + 1;
 	}
 	/* 筛选法找素数 */
 	for (i = 2; i * i <= number; i++) {
-		for (j = 2 * i; j <= number; j++) {
-			if (j % i == 0) {
-				result[j - 1] = 0;
-			}
+		for (j = 2 * i; j <= number; j += i) {
+			temp[j - 1] = 0;
 		}
 	}
+	/* 保存素数 */
+	for (i = 1; i < number; i++) {
+		if (temp[i]) {
+			result[count++] = i + 1;
+		}
+	}
+	looc_free(temp);
+	return count;
+}
+
+/**
+ * 寻找指定范围内的完美数(一个自然数的所有因子的和是这个数的本身)
+ * @param  n      指定的数据
+ * @param result  保存指定范围内的完美数
+ * @return        返回指定范围内所有的完美数
+ */
+int PerfectNumber(int n, int* result) {
+	int i, j, k;
+	int num;
+	int totalPrime;
+	int s, r, q;
+	int count = 0;
+	/* 保存素数表 */
+	int* tPrime = (int*) looc_malloc(sizeof(int) * 100, "perfectNumber_tPrime",
+	looc_file_line);
+	/* 保存质因数分解结果 */
+	int* tFactor = (int*) looc_malloc(sizeof(int) * 100,
+			"perfectNumber_tFactor",
+			looc_file_line);
+	/* 先求解n以内的所有质因数 */
+	totalPrime = prime(n, tPrime);
+	/* 循环判断每个数k是否是完美数 */
+	for (k = 1; k <= n; k++) {
+		num = k;
+		j = 0;
+		while (1) {
+			for (i = 0; i < totalPrime; i++) {
+				/* 找到了质因数 */
+				if (tPrime[i] && num % tPrime[i] == 0) {
+					/* 保存到质因数表中 */
+					tFactor[j++] = tPrime[i];
+					num /= tPrime[i];
+					break;
+				}
+			}
+			if (num <= 1) {
+				break;
+			}
+		}
+		/* 判断是否是完美数 */
+		r = 1;
+		s = 1;
+		q = 1;
+		for (i = 0; i < j; i++) {
+			r *= tFactor[i];
+			s += r;
+			if (i + 1 < j && tFactor[i] == tFactor[i + 1]) {
+				continue;
+			} else {
+				q *= s;
+				r = 1;
+				s = 1;
+			}
+		}
+		/* 完美数等于其质因数的i次幂之和的乘积的一半 */
+		/* 比如28=(2^0+2^1+2^2)*(7^0+7^1)/2 */
+		if ((k == 1) || (q == 2 * k)) {
+			result[count++] = k;
+		}
+	}
+	/* 释放内存 */
+	looc_free(tPrime);
+	looc_free(tFactor);
+	return count;
 }
 
 /**
