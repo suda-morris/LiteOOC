@@ -463,3 +463,115 @@ double DefiniteIntegration(double (*express)(double x), double down, double up) 
 	return T2;
 }
 
+static void shift_reverse(int* array, int start, int end) {
+	int temp;
+	int i, j;
+	/* 对称翻转 */
+	for (i = start, j = end; i < j; i++, j--) {
+		temp = array[i];
+		array[i] = array[j];
+		array[j] = temp;
+	}
+}
+
+/**
+ * 将数组array循环左移num个单位
+ * @param array 数组
+ * @param len   array的长度
+ * @param num   循环左移的长度
+ * 原理：通过ab来求ba可以转换成将a翻转，再将b翻转，最后将数组整体翻转
+ */
+void shift_left(int* array, int len, int num) {
+	shift_reverse(array, 0, num - 1);	//递归对每一部分进行翻转
+	shift_reverse(array, num, len - 1);
+	shift_reverse(array, 0, len - 1);	//对整个数组进行翻转
+}
+
+static void keepMinHeap(int* array, int n, int k) {
+	int left = k * 2 + 1;
+	int right = k * 2 + 2;
+	int min = k;
+	int temp;
+	if (left < n && array[left] < array[k]) {
+		min = left;
+	}
+	if (right < n && array[right] < array[min]) {
+		min = right;
+	}
+	if (min != k) {
+		/* 因为局部根不是最小节点，所以需要替换 */
+		temp = array[min];
+		array[min] = array[k];
+		array[k] = temp;
+		/* 一次向下递归 */
+		keepMinHeap(array, n, min);
+	}
+}
+
+static void buildMinHeap(int* array, int n) {
+	int i = n / 2 - 1;	//最后一个非叶子结点
+	/* 从最后一个非叶子结点开始向上递归，保持最小堆的性质 */
+	while (i >= 0) {
+		keepMinHeap(array, n, i);
+		i--;
+	}
+}
+
+/**
+ * 寻找最大的N个数
+ * @param  data   待查找数组
+ * @param  m      数组data的长度
+ * @param  N      寻找最大的N个数
+ * @param  result 保存最大的N个数
+ * @return        成功返回true，失败返回false
+ * 时间复杂度：O(mlog2N)，比直接快速排序要好
+ */
+looc_bool maxN(int* data, int m, int N, int* result) {
+	int i;
+	if (data == NULL || N > m) {
+		return looc_false;
+	}
+	/* 用data数组中的前N数据来初始化最小堆 */
+	for (i = 0; i < N; i++) {
+		result[i] = data[i];
+	}
+	buildMinHeap(result, N);
+	/* 拿data中后续的数据中大的值与最小堆中的根节点替换 */
+	for (i = N; i < m; i++) {
+		if (data[i] > result[0]) {
+			result[0] = data[i];
+			keepMinHeap(result, N, 0);
+		}
+	}
+	return looc_true;
+}
+
+/**
+ * 查找数组中的最大值和最小值
+ * @param  array  数组
+ * @param  n      数组大小
+ * @param  result 保存最大值和最小值，result[0]是最大值，result[1]是最小值
+ * @return        成功返回true，失败返回false
+ * 时间复杂度：O(n)，但是该方法遍历整个数组只需要1.5n次比较
+ */
+looc_bool getMaxMin(int* array, int n, int* result) {
+	int max, min;
+	int i;
+	if (array == NULL || n <= 0) {
+		return looc_false;
+	}
+	max = min = array[n - 1];
+	for (i = 0; i < n / 2; i++) {
+		if (array[2 * i] < array[2 * i + 1]) {
+			max = array[2 * i + 1] > max ? array[2 * i + 1] : max;
+			min = array[2 * i] < min ? array[2 * i] : min;
+		} else if (array[2 * i] > array[2 * i + 1]) {
+			max = array[2 * i] > max ? array[2 * i] : max;
+			min = array[2 * i + 1] < min ? array[2 * i + 1] : min;
+		}
+	}
+	/* 保存最大最小值 */
+	result[0] = max;
+	result[1] = min;
+	return looc_true;
+}

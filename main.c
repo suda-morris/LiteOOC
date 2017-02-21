@@ -1220,5 +1220,29 @@ int main(int argc, char **argv) {
 	loocString_delete(lstr);
 	looc_report();
 
+	/* 数组循环左移 */
+	int shift_array[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+	shift_left(shift_array, 10, 3);
+	for (i = 0; i < 10; i++) {
+		printf("%d ", shift_array[i]);
+	}
+	printf("\r\n");
+
+	/* 寻找最大的N个数 */
+	int origin_array[15] = { 5, 488, 21, 4554, 1, 33, 45, 64, 12, 14, 55, 74,
+			12, 3, 123 };
+	int result_array[5];
+	maxN(origin_array, 15, 5, result_array);
+	printf("最大的5个数是: ");
+	for (i = 0; i < 5; i++) {
+		printf("%d ", result_array[i]);
+	}
+	printf("\r\n");
+
+	/* 查找数组中的最大最小值 */
+	int maxmin_array[2];
+	getMaxMin(origin_array, 15, maxmin_array);
+	printf("最大值：%d\t最小值:%d\r\n", maxmin_array[0], maxmin_array[1]);
+
 	return 0;
 }

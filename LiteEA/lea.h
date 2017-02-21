@@ -94,6 +94,21 @@ double SQR(double a);
  */
 double DefiniteIntegration(double (*express)(double x), double down, double up);
 
+/**
+ * 将数组循环左移num长度
+ */
+void shift_left(int* array, int len, int num);
+
+/**
+ * 寻找最大的N个数
+ */
+looc_bool maxN(int* data, int m, int N, int* result);
+
+/**
+ * 查找数组中的最大值和最小值
+ */
+looc_bool getMaxMin(int* array, int n, int* result);
+
 #ifdef __cplusPlus
 }
 #endif
