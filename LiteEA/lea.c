@@ -575,3 +575,17 @@ looc_bool getMaxMin(int* array, int n, int* result) {
 	result[1] = min;
 	return looc_true;
 }
+
+/**
+ * 计算整数n的二进制表示中的1的个数
+ * @param  n      整数n
+ * @return        成功n的二进制表示中的1的个数
+ */
+int countBinaryOne(int n) {
+	int count = 0;
+	while (n) {
+		count++;
+		n = n & (n - 1);
+	}
+	return count;
+}

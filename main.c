@@ -1244,5 +1244,8 @@ int main(int argc, char **argv) {
 	getMaxMin(origin_array, 15, maxmin_array);
 	printf("最大值：%d\t最小值:%d\r\n", maxmin_array[0], maxmin_array[1]);
 
+	/* 计算二进制1的个数 */
+	printf("%d has %d '1'\r\n", 65530, countBinaryOne(65530));
+
 	return 0;
 }

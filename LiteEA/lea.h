@@ -109,6 +109,11 @@ looc_bool maxN(int* data, int m, int N, int* result);
  */
 looc_bool getMaxMin(int* array, int n, int* result);
 
+/**
+ * 计算整数n二进制表示中的1的个数
+ */
+int countBinaryOne(int n);
+
 #ifdef __cplusPlus
 }
 #endif
