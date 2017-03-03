@@ -19,7 +19,7 @@
 static void loocString_init(loocString* cthis, const char* cstr) {
 	cthis->string_pool = (char*) looc_malloc(sizeof(char) * strlen(cstr) * 2,
 			"loocString_pool", looc_file_line);
-	strncpy(cthis->string_pool, cstr, strlen(cstr));
+	strncpy(cthis->string_pool, cstr, strlen(cstr) + 1);
 }
 
 /**
@@ -157,6 +157,29 @@ static int loocString_rfind(loocString* cthis, const char* s) {
 }
 
 /**
+ * 字符串整理函数
+ * @param  cthis 当前字符串对象
+ * @return       返回整理后的字符串对象
+ */
+static loocString* loocString_trim(loocString* cthis) {
+	char* p = cthis->c_str(cthis);
+	char* q = p;
+	while (*p) {
+		while (*p && *p != ' ') {
+			*q++ = *p++;
+		}
+		while (*p == ' ') {
+			p++;
+		}
+		if (q != cthis->c_str(cthis) && *p) {
+			*q++ = ' ';
+		}
+	}
+	*q = '\0';
+	return cthis;
+}
+
+/**
  * 字符串销毁函数
  * @param object loocObject对象指针
  */
@@ -181,6 +204,7 @@ CTOR(loocString)
 	FUNCTION_SETTING(substr, loocString_substr);
 	FUNCTION_SETTING(find, loocString_find);
 	FUNCTION_SETTING(rfind, loocString_rfind);
+	FUNCTION_SETTING(trim, loocString_trim);
 	FUNCTION_SETTING(print, loocString_print);
 	FUNCTION_SETTING(loocObject.finalize, loocString_finalize);END_CTOR
 

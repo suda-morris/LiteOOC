@@ -39,6 +39,8 @@ extern "C" {
 		int (*find)(loocString* cthis, const char* s);
 		/* 字符串逆序查找 */
 		int (*rfind)(loocString* cthis, const char* s);
+		/* 字符串整理 */
+		loocString* (*trim)(loocString* cthis);
 	};
 
 #ifdef __cplusPlus

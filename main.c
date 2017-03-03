@@ -1207,7 +1207,8 @@ int main(int argc, char **argv) {
 
 	/* 字符串 */
 	loocString* lstr = loocString_new(looc_file_line);
-	lstr->init(lstr, "helloworldworldhello");
+	lstr->init(lstr, "  helloworld    worldhello  ");
+	lstr->trim(lstr);
 	lstr->print(lstr);
 	/* 获取子字符串 */
 	loocString* childstr = lstr->substr(lstr, 2, 8);
