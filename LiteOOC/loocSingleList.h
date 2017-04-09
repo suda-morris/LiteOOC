@@ -58,6 +58,8 @@ extern "C" {
 		void* (*getAt)(loocSingleList* cthis, int position);
 		/* 判断是否有环，并找出环的起始位置 */
 		loocSingleListNode* (*haveCircle)(loocSingleList* cthis);
+		/* 单链表翻转 */
+		looc_bool (*reverse)(loocSingleList* cthis);
 	};
 
 #ifdef __cplusPlus

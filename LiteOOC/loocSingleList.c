@@ -219,6 +219,30 @@ static loocSingleListNode* loocSingleList_haveCircle(loocSingleList* cthis) {
 	}
 
 }
+
+/**
+ * 单链表翻转
+ */
+static looc_bool loocSingleList_reverse(loocSingleList* cthis) {
+	/* 头结点指针 */
+	loocSingleListNode* head = cthis->head;
+	loocSingleListNode* n = NULL;
+	loocSingleListNode* m = NULL;
+	/* 0个节点或者1个节点不操作 */
+	if (cthis->length > 1) {
+		n = head;
+		head = NULL;
+		while (n) {
+			m = n;
+			n = n->next;
+			m->next = head;
+			head = m;
+		}
+		cthis->head = head;
+	}
+	return looc_true;
+}
+
 /**
  * loocSingleList对象的销毁函数
  * @param object loocObject对象指针
@@ -251,6 +275,7 @@ CTOR(loocSingleList)
 	FUNCTION_SETTING(removeAt, loocSingleList_removeAt);
 	FUNCTION_SETTING(getAt, loocSingleList_getAt);
 	FUNCTION_SETTING(haveCircle, loocSingleList_haveCircle);
+	FUNCTION_SETTING(reverse, loocSingleList_reverse);
 	FUNCTION_SETTING(loocObject.finalize, loocSingleList_finalize);END_CTOR
 
 /**

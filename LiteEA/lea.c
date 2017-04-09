@@ -503,7 +503,7 @@ static void keepMinHeap(int* array, int n, int k) {
 		temp = array[min];
 		array[min] = array[k];
 		array[k] = temp;
-		/* 一次向下递归 */
+		/* 依次向下递归 */
 		keepMinHeap(array, n, min);
 	}
 }
