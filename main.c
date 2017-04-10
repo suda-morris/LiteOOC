@@ -1248,5 +1248,11 @@ int main(int argc, char **argv) {
 	/* 计算二进制1的个数 */
 	printf("%d has %d '1'\r\n", 65530, countBinaryOne(65530));
 
+	/* 计算表达式的值 */
+	char express[100];
+	while (scanf("%s", express) != EOF) {
+		printf("%s=%f\r\n", express, computeExpress(express));
+	}
+
 	return 0;
 }

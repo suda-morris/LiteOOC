@@ -62,6 +62,9 @@ extern "C" {
 		looc_bool (*reverse)(loocSingleList* cthis);
 	};
 
+	loocSingleListNode* findIntersection(loocSingleList* listA,
+			loocSingleList* listB);
+
 #ifdef __cplusPlus
 }
 #endif

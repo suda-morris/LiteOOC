@@ -589,3 +589,145 @@ int countBinaryOne(int n) {
 	}
 	return count;
 }
+
+struct _opera_s {
+	char opr;
+	int prio;
+};
+
+static int getOpPrio(char oper) {
+	int ret = -1;
+	switch (oper) {
+	case '(':
+		ret = 0;
+		break;
+	case '+':
+		ret = 1;
+		break;
+	case '-':
+		ret = 1;
+		break;
+	case '*':
+		ret = 2;
+		break;
+	case '/':
+		ret = 2;
+		break;
+	case '^':
+		ret = 3;
+		break;
+	default:
+		break;
+	}
+	return ret;
+}
+
+static double getOpResult(char oper, double num1, double num2) {
+	double ret = 0;
+	switch (oper) {
+	case '+':
+		ret = num2 + num1;
+		break;
+	case '-':
+		ret = num2 - num1;
+		break;
+	case '*':
+		ret = num2 * num1;
+		break;
+	case '/':
+		ret = num2 / num1;
+		break;
+	case '^':
+		ret = pow(num2, num1);
+		break;
+	default:
+		break;
+	}
+	return ret;
+}
+
+/**
+ * 表达式求值(加、减、乘、除、乘方)
+ */
+double computeExpress(const char* express) {
+	double result = 0.0;
+	const char* p = express;
+	struct _opera_s opStack[20];
+	struct _opera_s tempOP;
+	double numStack[20];
+	int opIndex = 0;
+	int numIndex = 0;
+	double internNum = 0;
+	char numStr[10];
+	int strIndex = 0;
+	double num1, num2;
+	while (*p) {
+		if ((*p >= '0' && *p <= '9') || *p == '.') {
+			numStr[strIndex++] = *p;
+		} else if (*p != ' ') {
+			/* 遇到运算符 */
+			if (strIndex) {
+				numStr[strIndex] = '\0';
+				strIndex = 0;
+				internNum = atof(numStr);
+				numStack[numIndex++] = internNum;
+			}
+
+			if (opIndex) {
+				tempOP = opStack[opIndex - 1];
+				if (*p == '(' || getOpPrio(*p) > tempOP.prio) {
+					opStack[opIndex].opr = *p;
+					opStack[opIndex++].prio = getOpPrio(*p);
+				} else if (*p == ')') {
+					while (tempOP.opr != '(') {
+						num1 = numStack[numIndex - 1];
+						num2 = numStack[numIndex - 2];
+						num1 = getOpResult(tempOP.opr, num1, num2);
+						numStack[numIndex - 2] = num1;
+						numIndex--;
+						opIndex--;
+						tempOP = opStack[opIndex - 1];
+					}
+					opIndex--;
+				} else {
+					while (tempOP.prio >= getOpPrio(*p)) {
+						num1 = numStack[numIndex - 1];
+						num2 = numStack[numIndex - 2];
+						num1 = getOpResult(tempOP.opr, num1, num2);
+						numStack[numIndex - 2] = num1;
+						numIndex--;
+						opIndex--;
+						if (opIndex) {
+							tempOP = opStack[opIndex - 1];
+						} else {
+							break;
+						}
+					}
+					opStack[opIndex].opr = *p;
+					opStack[opIndex++].prio = getOpPrio(*p);
+				}
+			} else {
+				opStack[opIndex].opr = *p;
+				opStack[opIndex++].prio = getOpPrio(*p);
+			}
+		}
+		p++;
+	}
+	if (strIndex) {
+		numStr[strIndex] = '\0';
+		strIndex = 0;
+		internNum = atof(numStr);
+		numStack[numIndex++] = internNum;
+	}
+	while (opIndex) {
+		tempOP = opStack[opIndex - 1];
+		num1 = numStack[numIndex - 1];
+		num2 = numStack[numIndex - 2];
+		num1 = getOpResult(tempOP.opr, num1, num2);
+		numStack[numIndex - 2] = num1;
+		numIndex--;
+		opIndex--;
+	}
+	result = numStack[numIndex - 1];
+	return result;
+}

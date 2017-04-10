@@ -285,3 +285,23 @@ DTOR(loocSingleList)
 /* 调用父类的析构函数，实质上就是子类实现的finalize方法 */
 	SUPER_DTOR(loocObject);END_DTOR
 
+loocSingleListNode* findIntersection(loocSingleList* listA,
+		loocSingleList* listB) {
+	loocSingleListNode* p = NULL;
+	loocSingleListNode* q = NULL;
+	int lenA = listA->length;
+	int lenB = listB->length;
+	/* 将两个链表以表尾对齐 */
+	for (p = listA->head; lenA > lenB; lenA--) {
+		p = p->next;
+	}
+	for (q = listB->head; lenB > lenA; lenB--) {
+		q = q->next;
+	}
+	while (p && q && p != q) {
+		p = p->next;
+		q = q->next;
+	}
+	return p;
+}
+

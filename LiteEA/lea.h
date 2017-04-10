@@ -114,6 +114,11 @@ looc_bool getMaxMin(int* array, int n, int* result);
  */
 int countBinaryOne(int n);
 
+/**
+ * 表达式求值
+ */
+double computeExpress(const char* express);
+
 #ifdef __cplusPlus
 }
 #endif
