@@ -731,3 +731,39 @@ double computeExpress(const char* express) {
 	result = numStack[numIndex - 1];
 	return result;
 }
+
+/**
+ * 寻找数组中的主元素
+ * 成功返回0，错误返回-1
+ * 基本思路：如果让主元素与一个非主元素“配对”，则最后多出来的元素就是主元素
+ * 从前向后扫描数组元素，假定遇到的当前值选定为主元素，再次遇到它时，技术加1，遇到与它不等的值时，计数减1。当计数减为0后，将遇到的下一个值重新选定为主元素
+ * 扫描完毕，当前选定的元素（计数大于0）可能是主元素，但未必一定就是，还需要对数组再进行一次扫描，记录它出现的实际个数，以判定它是否是主元素
+ */
+int findMajority(int A[], int n, int* major) {
+	int i;
+	int c = A[0];
+	int count = 1;
+	for (i = 1; i < n; i++) {
+		if (c == A[i]) {
+			count++;
+		} else if (count) {
+			count--;
+		} else {
+			c = A[i];
+			count = 1;
+		}
+	}
+	if (count > 0) {
+		count = 0;
+		for (i = 0; i < n; i++) {
+			if (A[i] == c) {
+				count++;
+			}
+		}
+		if (count > n / 2) {
+			*major = c;
+			return 0;
+		}
+	}
+	return -1;
+}

@@ -119,6 +119,11 @@ int countBinaryOne(int n);
  */
 double computeExpress(const char* express);
 
+/**
+ * 寻找数组的主元素
+ */
+int findMajority(int A[], int n, int* major);
+
 #ifdef __cplusPlus
 }
 #endif

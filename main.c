@@ -1254,5 +1254,11 @@ int main(int argc, char **argv) {
 		printf("%s=%f\r\n", express, computeExpress(express));
 	}
 
+	int A[] = { 0, 5, 5, 3, 5, 7, 5, 5 };
+	int major = 0;
+	if (findMajority(A, 8, &major) == 0) {
+		printf("主元素为:%d\r\n", major);
+	}
+
 	return 0;
 }
