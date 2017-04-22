@@ -80,40 +80,64 @@ void bubbleSort(int D[], int n) {
 }
 
 /* 序列划分函数 */
-static int partition(int D[], int p, int r) {
-	int i, j;
-	i = p - 1;
-	for (j = p; j < r; j++) {
-		if (D[j] <= D[r]) {	//发现小于划界元素的键值
-			i++;
-			if (D[i] != D[j]) {	//使用异或来交换数值
-				D[i] = D[i] ^ D[j];
-				D[j] = D[i] ^ D[j];
-				D[i] = D[i] ^ D[j];
-			}
+static int partition(int D[], int low, int high) {
+	int middle = low + (high - low) / 2;
+	if (D[low] > D[high]) {
+		D[low] = D[low] ^ D[high];
+		D[high] = D[low] ^ D[high];
+		D[low] = D[low] ^ D[high];
+	}
+	if (D[middle] > D[high]) {
+		D[middle] = D[middle] ^ D[high];
+		D[high] = D[middle] ^ D[high];
+		D[middle] = D[middle] ^ D[high];
+	}
+	if (D[middle] > D[low]) {
+		D[middle] = D[middle] ^ D[low];
+		D[low] = D[middle] ^ D[low];
+		D[middle] = D[middle] ^ D[low];
+	}
+	int point = D[low];
+	while (low < high) {
+		while (low < high && D[high] >= point) {
+			high--;
 		}
+		D[low] = D[high];
+		while (low < high && D[low] <= point) {
+			low++;
+		}
+		D[high] = D[low];
 	}
-	if (D[i + 1] != D[r]) {
-		D[i + 1] = D[i + 1] ^ D[r];
-		D[r] = D[i + 1] ^ D[r];
-		D[i + 1] = D[i + 1] ^ D[r];
-	}
-	return i + 1;
+	D[low] = point;
+	return low;
 }
 
 /**
  * 快速排序(不稳定)
  * @param D 待排序数组
- * @param p 起始元素下标，从0开始
- * @param r 末尾元素下标，从0开始
+ * @param low 起始元素下标，从0开始
+ * @param high 末尾元素下标，从0开始
  * 时间复杂度：O(nlog2n)
+ * 以完成四项优化：	1. 使用中间数充当枢轴，避免序列划分后得到的序列长度相差很大
+ * 				2. 递归过程中当序列长度小于7的时候，选择使用插入排序
+ * 				3. 减少不必要的数据交换，改为数据赋值
+ * 				4. 使用尾递归，优化递归的性能
  */
-void quickSort(int D[], int p, int r) {
-	int position = 0;
-	if (p < r) {
-		position = partition(D, p, r);	//返回划界元素最终位置
-		quickSort(D, p, position - 1);	//对划分的子序列进行递归操作
-		quickSort(D, position + 1, r);
+void quickSort(int D[], int low, int high) {
+	int point;
+	if ((high - low) > 7) {
+		while (low < high) {
+			point = partition(D, low, high);
+			if ((point - low) < (high - point)) {
+				quickSort(D, low, point - 1);
+				low = point + 1;
+			} else {
+				quickSort(D, point + 1, high);
+				high = point - 1;
+			}
+		}
+	} else {
+		insertSort(D + low, high - low + 1);
 	}
 }
 

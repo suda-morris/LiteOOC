@@ -38,7 +38,7 @@ void bubbleSort(int D[], int n);
 /**
  * 快速排序
  */
-void quickSort(int D[], int p, int r);
+void quickSort(int D[], int low, int high);
 
 /**
  * 归并排序
