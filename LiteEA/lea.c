@@ -524,7 +524,7 @@ static void buildMinHeap(int* array, int n) {
  * @param  N      寻找最大的N个数
  * @param  result 保存最大的N个数
  * @return        成功返回true，失败返回false
- * 时间复杂度：O(mlog2N)，比直接快速排序要好
+ * 时间复杂度：O(mlogN)，比直接快速排序要好
  */
 looc_bool maxN(int* data, int m, int N, int* result) {
 	int i;
@@ -542,6 +542,60 @@ looc_bool maxN(int* data, int m, int N, int* result) {
 			result[0] = data[i];
 			keepMinHeap(result, N, 0);
 		}
+	}
+	return looc_true;
+}
+
+/**
+ * 寻找最小的N个数
+ * @param  data   待查找数组
+ * @param  m      数组data的长度
+ * @param  N      寻找最小的N个数
+ * @param  result 保存最小的N个数
+ * @return        成功返回true，失败返回false
+ * 时间复杂度：O(mlogN)，可以采用maxN一样的算法思想，这里模仿快速排序中的序列划分，同样能够达到相同的效果
+ * 注意：此算法会对data中的数据进行部分的排序操作
+ */
+looc_bool minN(int* data, int m, int N, int* result) {
+	int pivotkey, low = 0, high = m - 1, low0 = low, high0 = high;
+	int flag = 1;
+	int i;
+	if (data == NULL || N > m) {
+		return looc_false;
+	}
+	while (flag) {
+		pivotkey = data[low];
+		while (low < high) {
+			while (low < high && data[high] >= pivotkey) {
+				high--;
+			}
+			if (low != high) {
+				data[low] = data[high];
+			}
+			while (low < high && data[low] <= pivotkey) {
+				low++;
+			}
+			if (low != high) {
+				data[high] = data[low];
+			}
+		}
+		data[low] = pivotkey;
+		if (low == N - 1) {
+			flag = 0;	//如果枢轴是第N个小元素，则划分成功
+		} else {
+			if (low < N - 1) {
+				low++;
+				low0 = low;
+				high = high0;
+			} else {
+				low = low0;
+				high--;
+				high0 = high;
+			}
+		}
+	}
+	for (i = 0; i < N; i++) {
+		result[i] = data[i];
 	}
 	return looc_true;
 }

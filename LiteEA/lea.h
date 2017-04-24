@@ -105,6 +105,11 @@ void shift_left(int* array, int len, int num);
 looc_bool maxN(int* data, int m, int N, int* result);
 
 /**
+ * 寻找最小的N个数
+ */
+looc_bool minN(int* data, int m, int N, int* result);
+
+/**
  * 查找数组中的最大值和最小值
  */
 looc_bool getMaxMin(int* array, int n, int* result);

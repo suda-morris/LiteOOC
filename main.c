@@ -1240,6 +1240,14 @@ int main(int argc, char **argv) {
 	}
 	printf("\r\n");
 
+	/* 寻找最大的N个数 */
+	minN(origin_array, 15, 5, result_array);
+	printf("最小的5个数是: ");
+	for (i = 0; i < 5; i++) {
+		printf("%d ", result_array[i]);
+	}
+	printf("\r\n");
+
 	/* 查找数组中的最大最小值 */
 	int maxmin_array[2];
 	getMaxMin(origin_array, 15, maxmin_array);
