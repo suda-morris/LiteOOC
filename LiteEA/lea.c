@@ -821,3 +821,68 @@ int findMajority(int A[], int n, int* major) {
 	}
 	return -1;
 }
+
+/**
+ * 求n个元素的所有不同的排列
+ * @param  A      元素集合
+ * @param  n      集合中元素的个数
+ * @param  k      从下标k开始到下标n-1为止的这些元素的所有排列
+ */
+void Permutation(int A[], int n, int k) {
+	int i, j;
+	if (k == n - 1) {
+		for (i = 0; i < n; i++) {
+			printf("%d ", A[i]);
+		}
+		printf("\r\n");
+	} else {
+		for (j = k; j < n; j++) {
+			if (A[k] != A[j]) {
+				A[k] = A[k] ^ A[j];
+				A[j] = A[k] ^ A[j];
+				A[k] = A[k] ^ A[j];
+			}
+			Permutation(A, n, k + 1);
+			if (A[k] != A[j]) {
+				A[k] = A[k] ^ A[j];
+				A[j] = A[k] ^ A[j];
+				A[k] = A[k] ^ A[j];
+			}
+		}
+	}
+}
+
+/**
+ * 求n个元素的所有不同的排列中的第k个排列(从小到大排序)
+ * @param  A      元素集合
+ * @param  n      集合中元素的个数
+ * @param  k      要求第k个排列
+ * 注意：元素集合中的元素要求是有序的
+ */
+void Kth_Permutation(int A[], int n, int k) {
+	int i, j, m;
+	int a, b;
+	m = 1;
+	//1. 计算(n-1)!
+	for (i = 1; i < n; i++) {
+		m *= i;
+	}
+	//2. 初始编号为k-1
+	a = b = k - 1;
+	//3. 根据k值来判断最前面的数
+	for (i = n - 1; i >= 0; i--) {
+		a = a / m;	//最前的数的下标
+		b = b % m;
+		printf("%d ", A[a]);
+		//4. 被选中的数从数组中删除
+		for (j = a; j < n - 1; j++) {
+			A[j] = A[j + 1];
+		}
+		//5. 开始下一轮寻找“次前面”的数
+		a = b;
+		if (i > 0) {
+			m = m / i;	//除数也需要跟着变化
+		}
+	}
+	printf("\r\n");
+}

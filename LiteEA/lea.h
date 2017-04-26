@@ -129,6 +129,16 @@ double computeExpress(const char* express);
  */
 int findMajority(int A[], int n, int* major);
 
+/**
+ * 求n个元素的所有不同的排列
+ */
+void Permutation(int A[], int n, int k);
+
+/**
+ * 求n个元素的所有不同的排列中的第k个排列(从小到大排序)
+ */
+void Kth_Permutation(int A[], int n, int k);
+
 #ifdef __cplusPlus
 }
 #endif

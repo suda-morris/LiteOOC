@@ -1268,5 +1268,10 @@ int main(int argc, char **argv) {
 		printf("主元素为:%d\r\n", major);
 	}
 
+	/* 数字排列 */
+	int Perm[] = { 1, 2, 3, 4 };
+	Permutation(Perm, sizeof(Perm) / sizeof(Perm[0]), 0);
+	Kth_Permutation(Perm, sizeof(Perm) / sizeof(Perm[0]), 6);
+
 	return 0;
 }
