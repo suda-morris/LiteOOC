@@ -886,3 +886,25 @@ void Kth_Permutation(int A[], int n, int k) {
 	}
 	printf("\r\n");
 }
+
+/**
+ * 寻找和为s的两个数
+ * @param  A      元素集合
+ * @param  n      集合中元素的个数
+ * @param  s      和
+ * 注意：元素集合中的元素要求是有序的(从小到大)
+ */
+void findTwoSum(int A[], int n, int s) {
+	int i = 0, j = n - 1;
+	while (i < j) {
+		if (A[i] + A[j] < s) {
+			i++;
+		} else if (A[i] + A[j] > s) {
+			j--;
+		} else {
+			printf("%d + %d = %d\r\n", A[i], A[j], s);
+			i++;
+			j--;
+		}
+	}
+}

@@ -1179,10 +1179,8 @@ int main(int argc, char **argv) {
 	printf("%d has %d '1'\r\n", 65530, countBinaryOne(65530));
 
 	/* 计算表达式的值 */
-	char express[100];
-	while (scanf("%s", express) != EOF) {
-		printf("%s=%f\r\n", express, computeExpress(express));
-	}
+	char express[100] = "1+9/3*2-1";
+	printf("%s=%f\r\n", express, computeExpress(express));
 
 	int A[] = { 0, 5, 5, 3, 5, 7, 5, 5 };
 	int major = 0;
@@ -1194,6 +1192,10 @@ int main(int argc, char **argv) {
 	int Perm[] = { 1, 2, 3, 4 };
 	Permutation(Perm, sizeof(Perm) / sizeof(Perm[0]), 0);
 	Kth_Permutation(Perm, sizeof(Perm) / sizeof(Perm[0]), 6);
+
+	/* 寻找和为s的两个数 */
+	int f2s[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+	findTwoSum(f2s, sizeof(f2s) / sizeof(f2s[0]), 10);
 
 	return 0;
 }

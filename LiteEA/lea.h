@@ -139,6 +139,11 @@ void Permutation(int A[], int n, int k);
  */
 void Kth_Permutation(int A[], int n, int k);
 
+/**
+ * 从数组A中寻找和为s的两个数
+ */
+void findTwoSum(int A[], int n, int s);
+
 #ifdef __cplusPlus
 }
 #endif
