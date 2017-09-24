@@ -33,9 +33,6 @@
 ## loocBinSearchTree
 >二叉查找树的基本操作
 
-## loocRedBlackTree
->红黑树的基本操作
-
 ## loocHeap
 >堆（优先队列）的基本操作
 

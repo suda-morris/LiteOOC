@@ -17,7 +17,6 @@
 #include <loocHashMap.h>
 #include <loocBinTree.h>
 #include <loocBinSearchTree.h>
-#include <loocRedBlackTree.h>
 #include <loocHeap.h>
 #include <loocAdjacencyGraph.h>
 #include <loocLinkedGraph.h>
@@ -51,30 +50,6 @@ static void actionPrint_BinSearchTree(loocBinSearchTreeNode* node, void* args) {
 }
 
 /**
- * 针对红黑树节点的操作
- * @param node 当前二叉查找树节点
- * @param args 参数
- */
-static void actionPrint_RedBlackTree(loocRedBlackTreeNode* node, void* args) {
-	printf("%d(%s)", *(int*) (node->_data),
-			(node->color == looc_RBT_Black) ? "black" : "red");
-	if (node->lChild->_data) {
-		printf("\tleft:%d(%s)", *(int*) (node->lChild->_data),
-				(node->lChild->color == looc_RBT_Black) ? "black" : "red");
-	}
-	if (node->rChild->_data) {
-		printf("\tright:%d(%s)", *(int*) (node->rChild->_data),
-				(node->rChild->color == looc_RBT_Black) ? "black" : "red");
-	}
-	if (node->parent->_data) {
-		printf("\tparent:%d(%s)\r\n", *(int*) (node->parent->_data),
-				(node->parent->color == looc_RBT_Black) ? "black" : "red");
-	} else {
-		printf("\r\n");
-	}
-}
-
-/**
  * 针对图的节点的操作
  * @param node 当前图顶点节点
  * @param args 参数
@@ -101,25 +76,6 @@ static int hash(loocHashMap* cthis, void* value) {
  */
 static int BST_compareStrategy(loocBinSearchTreeNode* cthis,
 		loocBinSearchTreeNode* node) {
-	int a = *(int*) cthis->_data;
-	int b = *(int*) node->_data;
-	if (a > b) {
-		return -1;
-	} else if (a < b) {
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-/**
- * 红黑树的比较策略
- * @param  cthis 旧节点
- * @param  node  新节点
- * @return       新节点的关键字大于旧节点的关键字就返回1，小于返回-1，等于返回0
- */
-static int RBT_compareStrategy(loocRedBlackTreeNode* cthis,
-		loocRedBlackTreeNode* node) {
 	int a = *(int*) cthis->_data;
 	int b = *(int*) node->_data;
 	if (a > b) {
@@ -559,40 +515,6 @@ int main(int argc, char **argv) {
 			*(int*) binSearchTree->getMinNode(binSearchTree)->_data);
 	/* 释放二叉查找树对象内存空间 */
 	loocBinSearchTree_delete(binSearchTree);
-	/* 报告内存泄漏情况 */
-	looc_report();
-
-	/**
-	 * 10. 红黑树的操作
-	 */
-	printf("****************loocRedBlackTree****************\r\n");
-	i = 1;
-	/* 创建红黑树节点对象 */
-	loocRedBlackTreeNode* redBlackTreeNode = loocRedBlackTreeNode_new(
-	looc_file_line);
-	/* 初始化红黑树节点 */
-	redBlackTreeNode->init(redBlackTreeNode, sizeof(int), (void*) &i,
-			looc_RBT_Black);
-	/* 创建红黑树对象 */
-	loocRedBlackTree* redBlackTree = loocRedBlackTree_new(looc_file_line);
-	/* 初始化红黑树对象 */
-	redBlackTree->init(redBlackTree, sizeof(int), redBlackTreeNode,
-			RBT_compareStrategy);
-	/* 红黑树插入结点操作 */
-	for (i = 2; i < 15; i++) {
-		redBlackTree->insert(redBlackTree, (void*) &i);
-	}
-	/* 中序遍历打印节点,即排序 */
-	redBlackTree->inOrder(redBlackTree, actionPrint_RedBlackTree, NULL);
-	/* 红黑树的查找操作 */
-	i = 10;
-	redBlackTreeNode = redBlackTree->search(redBlackTree, (void*) &i);
-	/* 红黑树删除节点操作 */
-	redBlackTree->deleteNode(redBlackTree, redBlackTreeNode);
-	/* 中序遍历打印节点,即排序 */
-	redBlackTree->inOrder(redBlackTree, actionPrint_RedBlackTree, NULL);
-	/* 释放红黑树对象内存空间 */
-	loocRedBlackTree_delete(redBlackTree);
 	/* 报告内存泄漏情况 */
 	looc_report();
 

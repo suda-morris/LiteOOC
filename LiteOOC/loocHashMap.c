@@ -25,7 +25,7 @@ static void loocHashMap_init(loocHashMap* cthis, int maxSize, int elementSize,
 	cthis->_hash = hash;
 	cthis->hashPool = looc_malloc(maxSize * elementSize, "loocHashMap_Entry",
 	looc_file_line);
-	bzero(cthis->hashPool, maxSize * elementSize);
+	memset(cthis->hashPool, 0, maxSize * elementSize);
 }
 
 /**
