@@ -1197,5 +1197,16 @@ int main(int argc, char **argv) {
 	int f2s[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 	findTwoSum(f2s, sizeof(f2s) / sizeof(f2s[0]), 10);
 
+	/* 寻找和为s的整数序列 */
+	int fss[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
+	findSequenceSum(fss, sizeof(fss) / sizeof(fss[0]), 21);
+
+	int rd[] = { 1, 2, 2, 2, 3, 3, 5, 5, 6, 6, 7, 8, 9, 9, 10, 10, 11, 13 };
+	int rd_len = removeDuplicate(rd, sizeof(rd) / sizeof(rd[0]));
+	for (int i = 0; i < rd_len; i++) {
+		printf("%d ", rd[i]);
+	}
+	printf("\r\n");
+
 	return 0;
 }

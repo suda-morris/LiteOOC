@@ -908,3 +908,52 @@ void findTwoSum(int A[], int n, int s) {
 		}
 	}
 }
+
+/**
+ * 寻找和为s的序列
+ * @param  A      元素集合
+ * @param  n      集合中元素的个数
+ * @param  s      和
+ * 注意：元素集合中的元素要求是有序的(从小到大)
+ */
+void findSequenceSum(int A[], int n, int s) {
+	int i = 0, j = 1;
+	int k;
+	int half = (s + 1) / 2;
+	int sum = A[i] + A[j];
+	while (A[i] < half) {
+		if (sum < s && j < n - 1) {
+			sum += A[++j];
+		} else if (sum > s) {
+			sum -= A[i++];
+		} else if (sum == s) {
+			printf("%d", A[i]);
+			for (k = i + 1; k <= j; k++) {
+				printf("+%d", A[k]);
+			}
+			printf("=%d\r\n", s);
+			sum -= A[i++];
+			sum += A[++j];
+		} else {
+			break;
+		}
+	}
+}
+
+/**
+ * 删除数组中重复的元素
+ * @param  A      元素集合
+ * @param  n      集合中元素的个数
+ * @return 新数组的长度
+ * 注意：元素集合中的元素要求是有序的
+ */
+int removeDuplicate(int A[], int n) {
+	int i = 0, j = 1;
+	while (j < n) {
+		if (A[j] != A[i]) {
+			A[++i] = A[j];
+		}
+		j++;
+	}
+	return i + 1;
+}

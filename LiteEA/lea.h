@@ -144,6 +144,16 @@ void Kth_Permutation(int A[], int n, int k);
  */
 void findTwoSum(int A[], int n, int s);
 
+/**
+ * 从数组A中寻找和为s的正整数序列
+ */
+void findSequenceSum(int A[], int n, int s);
+
+/**
+ * 删除数组中重复的元素
+ */
+int removeDuplicate(int A[], int n);
+
 #ifdef __cplusPlus
 }
 #endif
