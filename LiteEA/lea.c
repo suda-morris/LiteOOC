@@ -7,11 +7,13 @@
  Description : 一些工程算法或面试题目
  ============================================================================
  */
-#include "lea.h"
+
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
+#include <string.h>
 #include <time.h>
+#include "lea.h"
 
 /**
  * 验证一个数组是否是一个二叉查找树的后序遍历结果
@@ -956,4 +958,35 @@ int removeDuplicate(int A[], int n) {
 		j++;
 	}
 	return i + 1;
+}
+
+/**
+ * 实现strStr方法
+ * @param  haystack		文本字符串
+ * @param  needle      	模式字符串
+ * @return 返回needle在haystack中出现的第一个位置
+ */
+int strStr(const char* haystack, const char* needle) {
+	int n = strlen(haystack);
+	int m = strlen(needle);
+	int i, j;
+	int count;
+	if (m == 0) {
+		return 0;
+	} else {
+		for (i = 0; i < n; i++) {
+			count = 0;
+			for (j = 0; j < m && i + j < n; j++) {
+				if (haystack[i + j] != needle[j]) {
+					break;
+				} else {
+					count++;
+				}
+			}
+			if (count == m) {
+				return i;
+			}
+		}
+	}
+	return -1;
 }

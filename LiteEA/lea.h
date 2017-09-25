@@ -154,6 +154,11 @@ void findSequenceSum(int A[], int n, int s);
  */
 int removeDuplicate(int A[], int n);
 
+/**
+ * 返回needle在haystack中出现的第一个位置
+ */
+int strStr(const char* haystack, const char* needle);
+
 #ifdef __cplusPlus
 }
 #endif
