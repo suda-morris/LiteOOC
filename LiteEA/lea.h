@@ -159,6 +159,26 @@ int removeDuplicate(int A[], int n);
  */
 int strStr(const char* haystack, const char* needle);
 
+/**
+ * 给定压栈序列，判断弹栈序列是否合法
+ */
+int checkPopSequence(int pushSequence[], int popSequence[], int n);
+
+/**
+ * 判断字符串中的括号是否匹配
+ */
+int isValidParentheses(const char* str);
+
+/**
+ * 简化路径
+ */
+char* simplifyPath(char* path);
+
+/**
+ * 判断一个数是否是丑数
+ */
+int isUgly(int num);
+
 #ifdef __cplusPlus
 }
 #endif

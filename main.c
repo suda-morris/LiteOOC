@@ -1214,5 +1214,19 @@ int main(int argc, char **argv) {
 	char* ppp = "bbccd";
 	printf("%d\r\n", strStr(pps, ppp));
 
+	/* 指定压栈序列，判断弹栈序列是否合法 */
+	int push_seq[] = { 1, 2, 3, 4, 5 };
+	int pop_seq[] = { 4, 3, 5, 1, 2 };
+	printf("%d\r\n",
+			checkPopSequence(push_seq, pop_seq,
+					sizeof(push_seq) / sizeof(push_seq[0])));
+
+	/* 括号匹配 */
+	printf("%d\r\n", isValidParentheses("{([]})"));
+
+	/* 路径简化 */
+	char sp[] = "/a/b/../c/../../d/./e/./f/g/";
+	printf("%s\r\n", simplifyPath(sp));
+
 	return 0;
 }

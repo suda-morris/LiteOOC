@@ -990,3 +990,149 @@ int strStr(const char* haystack, const char* needle) {
 	}
 	return -1;
 }
+
+/**
+ * 给定压栈序列，判断弹栈序列是否合法
+ * @param  pushSequence		压栈序列
+ * @param  popSequence		弹栈序列
+ * @param  n      			序列长度
+ * @return 弹栈序列合法返回1，否则返回0
+ * 注意：默认压栈序列和弹栈序列的长度相等
+ */
+int checkPopSequence(int pushSequence[], int popSequence[], int n) {
+	int i = 0, j = 0;
+	int k;
+	int stack[n];
+	int top = -1;
+	for (i = 0; i < n; i++) {
+		k = popSequence[i];
+		if (top >= 0 && stack[top] == k) {
+			top--;
+		} else {
+			while (1) {
+				if (j >= n) {
+					return 0;
+				}
+				if (pushSequence[j] != k) {
+					stack[++top] = pushSequence[j++];
+				} else {
+					j++;
+					break;
+				}
+			}
+		}
+	}
+	return 1;
+}
+
+/**
+ * 括号匹配
+ * @param  str		输入的字符串序列
+ * @return 字符串中的括号匹配则返回1，否则返回0
+ */
+int isValidParentheses(const char* str) {
+	int n = strlen(str);
+	char stack[n];
+	int top = -1;
+	char* p = (char*) str;
+	while (*p) {
+		switch (*p) {
+		case '(':
+		case '[':
+		case '{':
+			stack[++top] = *p;
+			break;
+		case ')':
+			if (top >= 0 && stack[top] == '(') {
+				top--;
+			} else {
+				return 0;
+			}
+			break;
+		case ']':
+			if (top >= 0 && stack[top] == '[') {
+				top--;
+			} else {
+				return 0;
+			}
+			break;
+		case '}':
+			if (top >= 0 && stack[top] == '{') {
+				top--;
+			} else {
+				return 0;
+			}
+			break;
+		default:
+			break;
+		}
+		p++;
+	}
+	if (top >= 0) {
+		return 0;
+	} else {
+		return 1;
+	}
+}
+
+/**
+ * 简化路径
+ * @param  path		待简化的路径字符串
+ * @return 简化后的路径字符串
+ */
+char* simplifyPath(char* path) {
+	int n = strlen(path) + 1;
+	char stack[n];
+	int top = -1;
+	char* p = path;
+	while (*p) {
+		if ((*p == '/' && top >= 0 && stack[top] == '/')
+				|| (*p == '/' && *(p + 1) == '\0')) {	//去除多余的/和末尾的/
+			p++;
+			continue;
+		} else if (*p == '.' && top >= 0 && stack[top] == '.') {	//检测到..，路径回退
+			top--;
+			if (top >= 0) {
+				while (top >= 0 && stack[top] != '/') {
+					top--;
+				}
+				if (top >= 0) {
+					top--;
+				}
+				while (top >= 0 && stack[top] != '/') {
+					top--;
+				}
+			}
+		} else if (*p == '/' && top >= 0 && stack[top] == '.') {	//检测到./，省略
+			top--;
+		} else {
+			stack[++top] = *p;
+		}
+		p++;
+	}
+	stack[++top] = '\0';
+	strcpy(path, stack);
+	return path;
+}
+
+/**
+ * 判断是否是丑数(一个整数，只包含2，3，5这三种素数因子)
+ * @param	num  待判断的数
+ * @return 是丑数返回1，否则返回0
+ */
+int isUgly(int num) {
+	while (num % 2 == 0) {
+		num /= 2;
+	}
+	while (num % 3 == 0) {
+		num /= 3;
+	}
+	while (num % 5 == 0) {
+		num /= 5;
+	}
+	if (num == 1) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
