@@ -184,6 +184,11 @@ int isUgly(int num);
  */
 int maxSubseqSum(int A[], int N, int* start, int* end);
 
+/**
+ * 最大矩形面积
+ */
+int maxRectArea(int h[], int n, int* start, int* end);
+
 #ifdef __cplusPlus
 }
 #endif

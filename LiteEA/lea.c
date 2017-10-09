@@ -1171,3 +1171,47 @@ int maxSubseqSum(int A[], int N, int* start, int* end) {
 	}
 	return max_sum;
 }
+
+/**
+ * 最大矩形面积
+ * @param	h  每个矩形的高度
+ * @param	N  矩形的数量
+ * @param	start  最大矩形的开始下标
+ * @param	end	最大矩形的结束下标
+ * @return 返回最大矩形面积
+ */
+int maxRectArea(int h[], int n, int* start, int* end) {
+	int stack[n];
+	int top = -1;
+	int height;
+	int max_sum = 0;
+	int this_sum = 0;
+	int i = 0;
+	int t;
+	*start = *end = 0;
+	while (i < n) {
+		// 如果栈为空，或者输入元素大于等于栈顶元素==>压栈
+		if (top < 0 || h[i] >= h[stack[top]]) {
+			stack[++top] = i++;
+		} else {
+			t = stack[top--];
+			this_sum = h[t] * (top < 0 ? i : i - stack[top] - 1);
+			if (this_sum > max_sum) {
+				max_sum = this_sum;
+				*end = i - 1;
+				height = h[t];
+			}
+		}
+	}
+	while (top >= 0) { //出栈，直到为空
+		t = stack[top--];
+		this_sum = h[t] * (top < 0 ? i : i - stack[top] - 1);
+		if (this_sum > max_sum) {
+			max_sum = this_sum;
+			*end = i - 1;
+			height = h[t];
+		}
+	}
+	*start = *end - max_sum / height + 1;
+	return max_sum;
+}

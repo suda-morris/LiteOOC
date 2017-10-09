@@ -1236,5 +1236,13 @@ int main(int argc, char **argv) {
 					&mss_end));
 	printf("开始下标：%d,结束下标:%d\r\n", mss_start, mss_end);
 
+	/*最大矩形面积*/
+	int mra[] = { 2, 1, 5, 6, 2, 3 };
+	int mra_start, mra_end;
+	printf("最大矩形面积：%d,",
+			maxRectArea(mra, sizeof(mra) / sizeof(mra[0]), &mra_start,
+					&mra_end));
+	printf("开始下标：%d,结束下标:%d\r\n", mra_start, mra_end);
+
 	return 0;
 }
