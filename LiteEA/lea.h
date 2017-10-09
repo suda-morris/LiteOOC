@@ -189,6 +189,11 @@ int maxSubseqSum(int A[], int N, int* start, int* end);
  */
 int maxRectArea(int h[], int n, int* start, int* end);
 
+/**
+ * 找出函数的最宽尖峰
+ */
+int findMaxPulse(int A[], int n, int* start, int* end);
+
 #ifdef __cplusPlus
 }
 #endif

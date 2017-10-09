@@ -1215,3 +1215,41 @@ int maxRectArea(int h[], int n, int* start, int* end) {
 	*start = *end - max_sum / height + 1;
 	return max_sum;
 }
+
+/**
+ * 找出函数的最宽尖峰
+ * @param	A  函数的离散取值
+ * @param	n  数组A的大小
+ * @param	start  最宽尖峰的开始下标
+ * @param	end	最宽尖峰的结束下标
+ * @return 返回最宽尖峰的长度
+ */
+int findMaxPulse(int A[], int n, int* start, int* end) {
+	int l[n];
+	int r[n];
+	int max = 0;
+	*start = 0;
+	*end = 0;
+	memset(l, 0, sizeof(int) * n);
+	memset(r, 0, sizeof(int) * n);
+	int i;
+	//左右各做一遍最长上升子串
+	for (i = 1; i < n; i++) {
+		if (A[i] > A[i - 1]) {
+			l[i] = l[i - 1] + 1;
+		}
+	}
+	for (i = n - 2; i >= 0; i--) {
+		if (A[i] > A[i + 1]) {
+			r[i] = r[i + 1] + 1;
+		}
+	}
+	for (i = 0; i < n; i++) {
+		if (l[i] > 0 && r[i] > 0 && l[i] + r[i] > max) {
+			max = l[i] + r[i];
+			*start = i - l[i];
+			*end = i + r[i];
+		}
+	}
+	return max + 1;
+}

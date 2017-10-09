@@ -1244,5 +1244,13 @@ int main(int argc, char **argv) {
 					&mra_end));
 	printf("开始下标：%d,结束下标:%d\r\n", mra_start, mra_end);
 
+	/*函数最宽尖峰*/
+	int fmp[] = { 1, 3, 1, 2, 5, 4, 3, 1, 9, 10 };
+	int fmp_start, fmp_end;
+	printf("函数最宽尖峰：%d,",
+			findMaxPulse(fmp, sizeof(fmp) / sizeof(fmp[0]), &fmp_start,
+					&fmp_end));
+	printf("开始下标：%d,结束下标:%d\r\n", fmp_start, fmp_end);
+
 	return 0;
 }
