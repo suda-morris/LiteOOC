@@ -179,6 +179,11 @@ char* simplifyPath(char* path);
  */
 int isUgly(int num);
 
+/**
+ * 最大子序列和
+ */
+int maxSubseqSum(int A[], int N, int* start, int* end);
+
 #ifdef __cplusPlus
 }
 #endif

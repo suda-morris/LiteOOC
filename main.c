@@ -1228,5 +1228,13 @@ int main(int argc, char **argv) {
 	char sp[] = "/a/b/../c/../../d/./e/./f/g/";
 	printf("%s\r\n", simplifyPath(sp));
 
+	/*最大子列和*/
+	int mss[] = { -3, 0, -2, -1, 1, 2, 3, -4 };
+	int mss_start, mss_end;
+	printf("最大子序列,和为：%d,",
+			maxSubseqSum(mss, sizeof(mss) / sizeof(mss[0]), &mss_start,
+					&mss_end));
+	printf("开始下标：%d,结束下标:%d\r\n", mss_start, mss_end);
+
 	return 0;
 }

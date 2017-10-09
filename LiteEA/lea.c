@@ -1136,3 +1136,38 @@ int isUgly(int num) {
 		return 0;
 	}
 }
+
+/**
+ * 最大子序列和
+ * @param	A  输入子序列
+ * @param	N  输入子序列的长度
+ * @param	start  最大子序列和的开始下标
+ * @param	end	最大子序列和的结束下标
+ * @return 返回最大子序列和
+ */
+int maxSubseqSum(int A[], int N, int* start, int* end) {
+	int this_sum = A[0];
+	int max_sum = A[0];
+	int i;
+	*start = *end = 0;
+	for (i = 1; i < N; i++) {
+		if (this_sum > 0) {
+			this_sum += A[i];
+		} else {
+			this_sum = A[i];
+		}
+		if (this_sum > max_sum) {
+			max_sum = this_sum;
+			*end = i;
+		}
+	}
+	this_sum = max_sum;
+	for (int j = *end; j >= 0; j--) {
+		this_sum -= A[j];
+		if (this_sum == 0) {
+			*start = j;
+			break;
+		}
+	}
+	return max_sum;
+}
