@@ -1253,3 +1253,18 @@ int findMaxPulse(int A[], int n, int* start, int* end) {
 	}
 	return max + 1;
 }
+
+/**
+ * 求n！的末尾有多少个0
+ * @param	n  阶乘的底数
+ * @return 返回阶乘后末尾的0的个数
+ * 提示：0是5和2贡献出来的，但是因子2出现的频率高得多，所以统计因子5的个数即可
+ */
+int countZeroInFactorial(int n) {
+	int cnt = 0;
+	while (n) {
+		cnt += n / 5;
+		n /= 5;
+	}
+	return cnt;
+}

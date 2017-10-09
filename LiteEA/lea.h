@@ -194,6 +194,11 @@ int maxRectArea(int h[], int n, int* start, int* end);
  */
 int findMaxPulse(int A[], int n, int* start, int* end);
 
+/**
+ * 统计阶乘末尾0的个数
+ */
+int countZeroInFactorial(int n);
+
 #ifdef __cplusPlus
 }
 #endif

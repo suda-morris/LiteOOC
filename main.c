@@ -1252,5 +1252,8 @@ int main(int argc, char **argv) {
 					&fmp_end));
 	printf("开始下标：%d,结束下标:%d\r\n", fmp_start, fmp_end);
 
+	/* 统计阶乘后末尾0的个数 */
+	printf("10!末尾有%d个0\r\n", countZeroInFactorial(10));
+
 	return 0;
 }
