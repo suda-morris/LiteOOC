@@ -1268,3 +1268,31 @@ int countZeroInFactorial(int n) {
 	}
 	return cnt;
 }
+
+/**
+ * 判断数组中是否有重复元素
+ * @param	a  数组数组
+ * @param	n  数组元素个数
+ * @return 	返回判断结果：1表示有重复元素
+ * 假设数组元素的值都不超过10000
+ */
+int hasDuplicated(int* a, int n) {
+	// 1. 抽屉原理
+	if (n > 10000) {
+		return 1;
+	}
+	// 2. bitmap思想
+	else {
+		char map[1250] = { 0 };	//1250=10000/8;
+		for (int i = 0; i < n; i++) {
+			int group = (a[i] - 1) >> 3;
+			int index = (a[i] - 1) - (group << 3);
+			if (map[group] & (1 << index)) {
+				return 1;
+			} else {
+				map[group] |= 1 << index;
+			}
+		}
+	}
+	return 0;
+}

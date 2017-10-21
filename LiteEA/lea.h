@@ -199,6 +199,11 @@ int findMaxPulse(int A[], int n, int* start, int* end);
  */
 int countZeroInFactorial(int n);
 
+/**
+ * 判断数组中是否存在重复元素
+ */
+int hasDuplicated(int* a, int n);
+
 #ifdef __cplusPlus
 }
 #endif
